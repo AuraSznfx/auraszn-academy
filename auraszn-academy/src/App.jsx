@@ -54,6 +54,7 @@ function Boot({onDone}) {
     if(phase==="flash")setTimeout(onDone,2200);
   },[phase]);
   if(phase==="flash") return <div style={{position:"fixed",inset:0,background:"#000",zIndex:9999,display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
+    <img src="/aurabot-logo.png" alt="" style={{width:80,height:80,borderRadius:"50%",marginBottom:20,opacity:0.9,animation:"fadeIn .5s ease"}}/>
     <div style={{fontSize:"clamp(28px,6vw,44px)",fontFamily:"'Oxanium',sans-serif",fontWeight:800,letterSpacing:8,color:"#BF00FF",textShadow:"0 0 60px #BF00FF80"}}>AURASZN</div>
     <div style={{fontSize:12,letterSpacing:4,color:"#6a6a80",marginTop:8,fontFamily:"'JetBrains Mono',monospace"}}>SECRET VAULT</div>
     <div style={{fontSize:10,letterSpacing:3,color:"#BF00FF80",marginTop:16,fontFamily:"'JetBrains Mono',monospace"}}>CLASSIFIED SYSTEMS ARCHIVE</div>
@@ -432,14 +433,20 @@ function OperatorProfile({systems,onOpenGuide}) {
       {/* Message from Aura */}
       <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #ffd700"}}>
         <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#ffd700",letterSpacing:2,marginBottom:10}}>// Message from Aura</div>
-        <div style={{fontSize:14,lineHeight:1.8,color:"var(--tx)"}}>
-          Welcome to the crew, <strong style={{color:"#fff"}}>{name}</strong>. You didn't just join a Discord — you joined a movement. This isn't about signals. This isn't about hype. This is about <strong style={{color:"#fff"}}>discipline, faith, and execution.</strong>
-          <br/><br/>
-          I built this because I believe trading should change your life — not drain it. You've got the tools. You've got the community. Now it's on you to show up, trust the process, and put in the work.
-          <br/><br/>
-          Believe in yourself. Bet on yourself. Stay dangerous.
+        <div style={{display:"flex",gap:14,alignItems:"flex-start"}}>
+          <img src="/aura-avatar.png" style={{width:48,height:48,borderRadius:"50%",border:"2px solid #BF00FF40",objectFit:"cover",flexShrink:0,boxShadow:"0 0 20px #BF00FF20"}}/>
+          <div style={{fontSize:14,lineHeight:1.8,color:"var(--tx)"}}>
+            Welcome to the crew, <strong style={{color:"#fff"}}>{name}</strong>. You didn't just join a Discord — you joined a movement. This isn't about signals. This isn't about hype. This is about <strong style={{color:"#fff"}}>discipline, faith, and execution.</strong>
+            <br/><br/>
+            I built this because I believe trading should change your life — not drain it. You've got the tools. You've got the community. Now it's on you to show up, trust the process, and put in the work.
+            <br/><br/>
+            Believe in yourself. Bet on yourself. Stay dangerous.
+          </div>
         </div>
-        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:12,color:"#ffd700",marginTop:12,fontWeight:600}}>— AURA™ ⚡</div>
+        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:12,color:"#ffd700",marginTop:12,fontWeight:600,display:"flex",alignItems:"center",gap:10}}>
+          <img src="/aura-avatar.png" alt="" style={{width:36,height:36,borderRadius:"50%",border:"2px solid #BF00FF40",objectFit:"cover"}}/>
+          — AURA™ ⚡
+        </div>
       </div>
 
       {/* Operator Stats */}
@@ -570,6 +577,7 @@ function OperatorProfile({systems,onOpenGuide}) {
 
       {/* Footer */}
       <div style={{textAlign:"center",padding:"20px 0 10px",borderTop:"1px solid #1a1a2e"}}>
+        <img src="/aurabot-logo.png" style={{width:50,height:50,borderRadius:"50%",objectFit:"cover",margin:"0 auto 10px",display:"block",opacity:0.8}}/>
         <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:13,fontWeight:700,color:"#ffd700",letterSpacing:3,marginBottom:4}}>AURASZN™</div>
         <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",letterSpacing:1,marginBottom:8}}>Trade like you've seen the future.</div>
         <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,color:"#333",letterSpacing:1}}>This dossier is your operator file. Keep it. Reference it. Live it.</div>
@@ -622,6 +630,7 @@ export default function App(){
       {/* Header */}
       <header style={{position:"sticky",top:0,zIndex:100,background:"#06060cee",borderBottom:"1px solid var(--brd)",padding:"12px 20px",display:"flex",justifyContent:"space-between",alignItems:"center",backdropFilter:"blur(12px)"}}>
         <div onClick={function(){setPage("home");}} style={{cursor:"pointer",display:"flex",alignItems:"center",gap:10}}>
+          <img src="/aura-avatar.png" style={{width:30,height:30,borderRadius:"50%",border:"1.5px solid #BF00FF40",objectFit:"cover"}}/>
           <span style={{fontFamily:"'Oxanium',sans-serif",fontSize:18,fontWeight:800,letterSpacing:4,color:"#BF00FF"}}>AURASZN</span>
           <span style={{fontSize:10,letterSpacing:2,color:"var(--tx2)",fontFamily:"'JetBrains Mono',monospace"}}>VAULT</span>
         </div>
@@ -639,6 +648,7 @@ export default function App(){
           <div style={{textAlign:"center",padding:"50px 0 20px",position:"relative"}}>
             <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:300,height:300,background:"radial-gradient(circle,#BF00FF,transparent 70%)",opacity:0.06,borderRadius:"50%"}}/>
             <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:3,color:"#BF00FF80",marginBottom:8}}>⚡ CLASSIFIED SYSTEMS ARCHIVE</div>
+            <img src="/aura-avatar.png" style={{width:70,height:70,borderRadius:"50%",border:"2px solid #BF00FF40",objectFit:"cover",margin:"0 auto 14px",display:"block",boxShadow:"0 0 30px #BF00FF20"}}/>
             <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:"clamp(26px,5vw,38px)",fontWeight:800,color:"#fff",lineHeight:1.2}}>The <span style={{color:"#BF00FF"}}>Weapons</span> Vault</div>
             <div style={{fontSize:14,color:"var(--tx2)",marginTop:12,maxWidth:500,margin:"12px auto 0",lineHeight:1.7}}>Every system AuraSzn has built. Tap any weapon to open its full classified guide.</div>
           </div>
@@ -712,6 +722,7 @@ export default function App(){
         {page==="mindset"&&<div>
           <div style={{textAlign:"center",padding:"40px 0 30px"}}>
             <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:3,color:"#BF00FF80",marginBottom:8}}>MENTAL MODELS</div>
+            <img src="/aura-fire.png" style={{width:80,height:80,borderRadius:"50%",border:"2px solid #BF00FF40",objectFit:"cover",margin:"0 auto 14px",display:"block",boxShadow:"0 0 30px #BF00FF20"}}/>
             <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:"clamp(24px,5vw,32px)",fontWeight:800,color:"#fff"}}>The <span style={{color:"#BF00FF"}}>Operator</span> Mindset</div>
             <div style={{fontSize:13,color:"var(--tx2)",marginTop:10,lineHeight:1.7,maxWidth:500,margin:"10px auto 0"}}>Tools don't make the trader. Mindset does. These are the mental models that separate the funded from the blown.</div>
           </div>
@@ -719,11 +730,17 @@ export default function App(){
             {QUOTES.map(function(q,i){var colors=["#00FFFF","#BF00FF","#FFD700","#00FF88","#FF3366","#FF00FF","#FFEA00","#FF6B00"];var c=colors[i%colors.length];
               return <div key={i} className="card" style={{borderLeft:"3px solid "+c,padding:"20px 18px"}}>
                 <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:15,fontWeight:500,color:c,lineHeight:1.7}}>"{q}"</div>
-                <div style={{fontSize:10,color:"var(--tx2)",marginTop:6,fontFamily:"'JetBrains Mono',monospace",letterSpacing:1}}>— AuraSzn</div>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginTop:8}}>
+                  <img src="/aura-avatar.png" style={{width:22,height:22,borderRadius:"50%",border:"1px solid #BF00FF30",objectFit:"cover"}}/>
+                  <span style={{fontSize:10,color:"var(--tx2)",fontFamily:"'JetBrains Mono',monospace",letterSpacing:1}}>— AuraSzn</span>
+                </div>
               </div>;
             })}
           </div>
-          <div style={{textAlign:"center",marginTop:40,padding:"24px 0"}}><div style={{fontFamily:"'Oxanium',sans-serif",fontSize:11,color:"#BF00FF",letterSpacing:3}}>BUILT BY AURASZN. FOR THE 1%.</div></div>
+          <div style={{textAlign:"center",marginTop:40,padding:"24px 0"}}>
+            <img src="/aurabot-logo.png" style={{width:44,height:44,borderRadius:"50%",objectFit:"cover",margin:"0 auto 10px",display:"block",opacity:0.7}}/>
+            <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:11,color:"#BF00FF",letterSpacing:3}}>BUILT BY AURASZN. FOR THE 1%.</div>
+          </div>
         </div>}
 
       </div>
