@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import NexusGuide from "./guides/NexusGuide";
 import MidasGuide from "./guides/MidasGuide";
 import LondonGuide from "./guides/LondonGuide";
@@ -240,6 +240,7 @@ function OperatorProfile({systems,onOpenGuide}) {
   var [showResult,setShowResult]=useState(false);
   var [showDossier,setShowDossier]=useState(false);
   var [particles,setParticles]=useState([]);
+  var canvasRef=useRef(null);
 
   function shuffleArray(arr){var a=arr.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
 
@@ -275,8 +276,66 @@ function OperatorProfile({systems,onOpenGuide}) {
     }
   }
 
-  function openDossier(){setShowDossier(true);setScreen("dossier");window.scrollTo(0,0);}
+  function openDossier(){setShowDossier(true);setScreen("dossier");window.scrollTo(0,0);generateCard(result);}
   function reset(){setScreen("name");setName("");setScores({sniper:0,breacher:0,ghost:0});setStep(0);setResult(null);setScanPhase(0);setShowResult(false);setShowDossier(false);setParticles([]);}
+
+  function generateCard(res){
+    setTimeout(function(){
+      var canvas=canvasRef.current;if(!canvas)return;
+      var ctx=canvas.getContext("2d");var w=600,h=340;canvas.width=w;canvas.height=h;
+      var c=CLASS_DATA[res];var colorMap={sniper:"#00f0ff",breacher:"#ff00ff",ghost:"#00ff88"};var ac=colorMap[res];
+      var today=new Date();var dateStr=today.toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
+      // Background
+      var bg=ctx.createLinearGradient(0,0,w,h);bg.addColorStop(0,"#080810");bg.addColorStop(1,"#0c0c1a");ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+      // Border
+      ctx.strokeStyle=ac+"60";ctx.lineWidth=1;ctx.strokeRect(0,0,w,h);
+      // Top accent line
+      var lg=ctx.createLinearGradient(0,0,w,0);lg.addColorStop(0,ac);lg.addColorStop(0.6,ac+"40");lg.addColorStop(1,"transparent");ctx.fillStyle=lg;ctx.fillRect(0,0,w,2);
+      // Ambient glow
+      var gl=ctx.createRadialGradient(80,60,0,80,60,200);gl.addColorStop(0,ac+"18");gl.addColorStop(1,"transparent");ctx.fillStyle=gl;ctx.fillRect(0,0,w,h);
+      // Scanlines
+      ctx.fillStyle="rgba(0,0,0,0.04)";for(var y=0;y<h;y+=4){ctx.fillRect(0,y,w,2);}
+      // CLASSIFIED tag
+      ctx.font='9px monospace';ctx.fillStyle="#ff335580";ctx.textAlign="left";
+      ctx.fillText("◈  C L A S S I F I E D  —  O P E R A T O R   C A R D  ◈",30,30);
+      // Brand
+      ctx.font='bold 11px monospace';ctx.fillStyle="#ffd700";ctx.fillText("AURASZN™ HQ",30,55);
+      // Date
+      ctx.font='10px monospace';ctx.fillStyle="#555570";ctx.textAlign="right";ctx.fillText(dateStr,w-30,55);ctx.textAlign="left";
+      // Divider
+      ctx.strokeStyle="#1a1a2e";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(30,70);ctx.lineTo(w-30,70);ctx.stroke();
+      // Icon
+      ctx.font="48px sans-serif";ctx.fillStyle=ac;ctx.fillText(c.icon,30,128);
+      // Name
+      ctx.font="bold 32px monospace";ctx.fillStyle="#e8e8f0";ctx.fillText(name.toUpperCase(),95,115);
+      // Class
+      ctx.font="bold 16px monospace";ctx.fillStyle=ac;ctx.fillText(c.label,95,140);
+      // Subtitle
+      ctx.font="10px monospace";ctx.fillStyle="#555570";ctx.fillText(c.subtitle,95,160);
+      // Divider 2
+      ctx.strokeStyle="#1a1a2e";ctx.beginPath();ctx.moveTo(30,180);ctx.lineTo(w-30,180);ctx.stroke();
+      // Stats
+      var statsY=200;var boxW=160;var boxH=60;
+      [{label:"TRADES",value:"0"},{label:"COMBINE",value:"PENDING"},{label:"PAYOUT",value:"$0.00"}].forEach(function(stat,i){
+        var x=30+i*(boxW+15);
+        ctx.fillStyle="#0a0a14";ctx.fillRect(x,statsY,boxW,boxH);ctx.strokeStyle="#1a1a2e";ctx.strokeRect(x,statsY,boxW,boxH);
+        ctx.font="bold 18px monospace";ctx.fillStyle=stat.label==="COMBINE"?"#555570":"#e8e8f0";ctx.textAlign="center";ctx.fillText(stat.value,x+boxW/2,statsY+28);
+        ctx.font="8px monospace";ctx.fillStyle="#555570";ctx.fillText(stat.label,x+boxW/2,statsY+48);
+      });
+      ctx.textAlign="left";
+      // Bottom bar
+      ctx.fillStyle="#0a0a14";ctx.fillRect(0,h-40,w,40);
+      ctx.font="bold 10px monospace";ctx.fillStyle="#ffd700";ctx.fillText("AURASZN™",30,h-16);
+      ctx.font="9px monospace";ctx.fillStyle="#555570";ctx.textAlign="right";ctx.fillText("Trade like you've seen the future.",w-30,h-16);ctx.textAlign="left";
+      // Accent dot
+      ctx.fillStyle=ac;ctx.beginPath();ctx.arc(16,h-18,3,0,Math.PI*2);ctx.fill();
+    },300);
+  }
+
+  function downloadCard(){
+    var canvas=canvasRef.current;if(!canvas)return;
+    var link=document.createElement("a");link.download="AURASZN-"+name.replace(/\s+/g,"_")+"-Operator-Card.png";link.href=canvas.toDataURL("image/png");link.click();
+  }
 
   var cls=result?CLASS_DATA[result]:null;
   var accentColor=cls?cls.color:"#00f0ff";
@@ -466,7 +525,44 @@ function OperatorProfile({systems,onOpenGuide}) {
         })}
       </div>
 
-      {/* Quote */}
+      {/* Discord Quick-Start */}
+      <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #00ff88"}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#00ff88",letterSpacing:2,marginBottom:12}}>// Discord Quick-Start — Hit These First</div>
+        <div style={{display:"grid",gap:6}}>
+          {[
+            {icon:"👽",name:"#how-to-setup-backtest-videos",desc:"Start here"},
+            {icon:"⚙️",name:"#aurabot-indicator-settings",desc:"Your settings"},
+            {icon:"😈",name:"#aurabot-sniper-killshot-exe",desc:"Executions"},
+            {icon:"🤫",name:"#the-prop-firm-blueprint",desc:"The playbook"},
+            {icon:"🏰",name:"#aurabot-master-chatroom",desc:"Daily ops"},
+            {icon:"📺",name:"#results-vault",desc:"Post wins"},
+            {icon:"🧠",name:"#trading-psychology",desc:"Stay sharp"},
+            {icon:"🙏",name:"#prayer-requests",desc:"Morning ritual"}
+          ].map(function(ch){
+            return <div key={ch.name} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 14px",background:"#0a0a14",borderRadius:6,border:"1px solid #1a1a2e"}}>
+              <div style={{fontSize:16,flexShrink:0}}>{ch.icon}</div>
+              <div style={{flex:1,fontFamily:"'JetBrains Mono',monospace",fontSize:13,color:"#e8e8f0"}}>{ch.name}</div>
+              <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)"}}>{ch.desc}</div>
+            </div>;
+          })}
+        </div>
+      </div>
+
+      {/* Operator Card */}
+      <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #ffd700"}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#ffd700",letterSpacing:2,marginBottom:12}}>// Operator Card — Save & Share</div>
+        <div style={{borderRadius:8,overflow:"hidden",border:"1px solid #1a1a2e",marginBottom:16}}>
+          <canvas ref={canvasRef} style={{width:"100%",height:"auto",display:"block"}}/>
+        </div>
+        <div onClick={downloadCard} style={{width:"100%",padding:"14px",borderRadius:6,background:accentColor+"15",border:"1px solid "+accentColor+"40",color:accentColor,fontSize:13,fontFamily:"'Oxanium',sans-serif",fontWeight:700,letterSpacing:2,cursor:"pointer",textAlign:"center",transition:"all .2s"}}>⬇ DOWNLOAD OPERATOR CARD</div>
+        <div style={{textAlign:"center",marginTop:12}}>
+          <div style={{fontSize:12,color:"var(--tx)",lineHeight:1.6}}><strong style={{color:"#ffd700"}}>FINAL STEP:</strong> Post your Operator Card in <span style={{color:"#00ff88",fontFamily:"'JetBrains Mono',monospace"}}>#introductions</span> to complete your activation.</div>
+          <div style={{fontSize:11,color:"var(--tx2)",marginTop:4}}>This is how the crew knows you're locked in.</div>
+        </div>
+        <div style={{textAlign:"center",marginTop:12,fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#ff335580",letterSpacing:1}}>⚠ ACTIVATION INCOMPLETE UNTIL POSTED</div>
+      </div>
+
+      {/* Closing Quote */}
       <div style={{textAlign:"center",padding:"30px 20px",marginBottom:14}}>
         <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:15,fontWeight:500,color:"#ffd700",lineHeight:1.7,fontStyle:"italic"}}>"It is not real money... until you make that first payout."</div>
         <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",marginTop:8,letterSpacing:1}}>— AURASZN</div>
