@@ -166,6 +166,329 @@ function LockScreen({onUnlock}) {
   </div>;
 }
 
+// ═══ OPERATOR CLASSIFICATION SYSTEM ═══
+var QUIZ_QUESTIONS = [
+  {
+    num:"QUERY 01 OF 03",
+    q:"You see a setup forming on the chart. What's your instinct?",
+    opts:[
+      {text:"Get in early — ride the momentum before it leaves without me.",cls:"breacher"},
+      {text:"Wait for the sweep, the reclaim, the perfect confirmation — then strike.",cls:"sniper"},
+      {text:"Check the session and time first. The clock matters as much as the chart.",cls:"ghost"}
+    ]
+  },
+  {
+    num:"QUERY 02 OF 03",
+    q:"How do you want your trading day to feel?",
+    opts:[
+      {text:"Fast. In and out. Stack contracts, hit TP, move on with my day.",cls:"breacher"},
+      {text:"Patient. One perfect trade is enough. Quality over quantity.",cls:"sniper"},
+      {text:"Flexible. I'll trade when the right window opens — even if that's 3 AM.",cls:"ghost"}
+    ]
+  },
+  {
+    num:"QUERY 03 OF 03",
+    q:"What matters most to you in a trading system?",
+    opts:[
+      {text:"Catching the move early. I want to be first through the door.",cls:"breacher"},
+      {text:"Precision. I'd rather miss a trade than take a bad one.",cls:"sniper"},
+      {text:"Understanding the market's rhythm — when it moves, when it traps, when to sit out.",cls:"ghost"}
+    ]
+  }
+];
+
+var CLASS_DATA = {
+  sniper:{
+    label:"THE SNIPER",icon:"⊕",subtitle:"REVERSAL SPECIALIST",color:"#00f0ff",
+    desc:"You're patient. Calculated. You wait for the market to overextend, sweep liquidity, and reclaim — then you strike with surgical precision. One shot is all you need.",
+    loadout:[
+      {name:"NQ-LSM v3.2",tag:"Primary",id:"lsm"},
+      {name:"Aura Map",tag:"Support",id:"auramap"},
+      {name:"ZoneWars v3",tag:"Zones",id:"zonewars"},
+      {name:"Phase Dynamics v5",tag:"Timing",id:"phase"}
+    ]
+  },
+  breacher:{
+    label:"THE BREACHER",icon:"⚡",subtitle:"BREAKOUT SPECIALIST",color:"#ff00ff",
+    desc:"You're aggressive. First through the door. When structure breaks and momentum ignites, you're already in. Speed is your edge — but only when the system says GO.",
+    loadout:[
+      {name:"MIDAS TOUCH v2",tag:"Primary",id:"midas"},
+      {name:"London Break v1",tag:"Alt Session",id:"london"},
+      {name:"AURA-X NY MAP",tag:"Bias",id:"aurax"},
+      {name:"Phase Dynamics v5",tag:"Timing",id:"phase"}
+    ]
+  },
+  ghost:{
+    label:"THE GHOST",icon:"◎",subtitle:"SESSION SPECIALIST",color:"#00ff88",
+    desc:"You move in the dark. Asia session, London open, NY pre-market — you trade the transitions. While everyone sleeps, you're already positioned. The clock is your weapon.",
+    loadout:[
+      {name:"NEXUS v1.1",tag:"Primary",id:"nexus"},
+      {name:"AURA-X NY MAP",tag:"Session Map",id:"aurax"},
+      {name:"Liquidity Heist",tag:"Levels",id:"heist"},
+      {name:"Aura Map",tag:"Overlay",id:"auramap"}
+    ]
+  }
+};
+
+function OperatorProfile({systems,onOpenGuide}) {
+  var [screen,setScreen]=useState("name");
+  var [name,setName]=useState("");
+  var [scores,setScores]=useState({sniper:0,breacher:0,ghost:0});
+  var [step,setStep]=useState(0);
+  var [result,setResult]=useState(null);
+  var [scanPhase,setScanPhase]=useState(0);
+  var [showResult,setShowResult]=useState(false);
+  var [showDossier,setShowDossier]=useState(false);
+  var [particles,setParticles]=useState([]);
+
+  function shuffleArray(arr){var a=arr.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+
+  function goToAssessment(){
+    if(!name.trim())return;
+    setScreen("assessment");
+  }
+
+  function selectAnswer(cls){
+    var newScores=Object.assign({},scores);
+    newScores[cls]=(newScores[cls]||0)+1;
+    setScores(newScores);
+    if(step<QUIZ_QUESTIONS.length-1){
+      setTimeout(function(){setStep(step+1);},250);
+    } else {
+      // Determine result
+      var max=0;var res="sniper";
+      Object.keys(newScores).forEach(function(k){if(newScores[k]>max){max=newScores[k];res=k;}});
+      setResult(res);
+      setScreen("reveal");
+      // Scanning sequence
+      var phases=["ANALYZING RESPONSES...","CROSS-REFERENCING OPERATOR PROFILE...","MATCH FOUND.","CLASSIFYING..."];
+      phases.forEach(function(p,i){
+        setTimeout(function(){setScanPhase(i+1);},i*700);
+      });
+      // Show result after scan
+      setTimeout(function(){
+        setShowResult(true);
+        // Spawn particles
+        var pts=[];for(var i=0;i<30;i++){pts.push({id:i,x:50+Math.random()*0.1,y:50,tx:(Math.random()-0.5)*120,ty:(Math.random()-0.5)*120,size:Math.random()*4+1,delay:Math.random()*0.3});}
+        setParticles(pts);
+      },3200);
+    }
+  }
+
+  function openDossier(){setShowDossier(true);setScreen("dossier");window.scrollTo(0,0);}
+  function reset(){setScreen("name");setName("");setScores({sniper:0,breacher:0,ghost:0});setStep(0);setResult(null);setScanPhase(0);setShowResult(false);setShowDossier(false);setParticles([]);}
+
+  var cls=result?CLASS_DATA[result]:null;
+  var accentColor=cls?cls.color:"#00f0ff";
+
+  // ═══ SCREEN 1: NAME ENTRY ═══
+  if(screen==="name") return <div style={{minHeight:"80vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",padding:20,animation:"fadeIn .5s ease"}}>
+    <div style={{position:"fixed",width:400,height:400,borderRadius:"50%",filter:"blur(150px)",opacity:0.1,top:-150,left:-80,background:"#00f0ff",pointerEvents:"none"}}/>
+    <div style={{position:"fixed",width:400,height:400,borderRadius:"50%",filter:"blur(150px)",opacity:0.1,bottom:-150,right:-80,background:"#ff00ff",pointerEvents:"none"}}/>
+    <div style={{position:"relative",zIndex:1,maxWidth:400,width:"100%"}}>
+      <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:3,color:"#BF00FF60",marginBottom:16}}>// SECURE ACCESS PORTAL</div>
+      <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:32,fontWeight:800,color:"#BF00FF",letterSpacing:6,marginBottom:6}}>AURASZN™</div>
+      <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:"var(--tx2)",letterSpacing:2,marginBottom:40}}>Operator Dossier</div>
+      <div style={{textAlign:"left",marginBottom:6}}><span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",letterSpacing:1}}>Enter Your Operator Handle</span></div>
+      <input value={name} onChange={function(e){setName(e.target.value);}} onKeyDown={function(e){if(e.key==="Enter")goToAssessment();}} placeholder="Your name..." style={{width:"100%",background:"#0a0a14",border:"1px solid #1a1a2e",borderRadius:6,padding:"14px 16px",fontSize:16,fontFamily:"'JetBrains Mono',monospace",color:"#e8e8f0",textAlign:"center",letterSpacing:2,outline:"none",marginBottom:20}}/>
+      <div onClick={goToAssessment} style={{width:"100%",padding:"14px",borderRadius:6,background:name.trim()?"#BF00FF15":"transparent",border:"1px solid "+(name.trim()?"#BF00FF40":"#1a1a2e"),color:name.trim()?"#BF00FF":"#555",fontSize:12,fontFamily:"'Oxanium',sans-serif",fontWeight:700,letterSpacing:3,cursor:name.trim()?"pointer":"default",textAlign:"center",transition:"all .3s"}}>BEGIN ASSESSMENT ▸</div>
+    </div>
+  </div>;
+
+  // ═══ SCREEN 2: ASSESSMENT ═══
+  if(screen==="assessment"){
+    var q=QUIZ_QUESTIONS[step];
+    var progress=Math.round((step/QUIZ_QUESTIONS.length)*100);
+    var shuffled=shuffleArray(q.opts);
+    return <div style={{maxWidth:600,margin:"0 auto",padding:"40px 0",animation:"fadeIn .3s ease"}}>
+      <div style={{textAlign:"center",marginBottom:30}}>
+        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:18,fontWeight:700,color:"#fff",letterSpacing:2}}>OPERATOR ASSESSMENT</div>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:"var(--tx2)",marginTop:4}}>// 3 questions — answer with your gut</div>
+      </div>
+      <div style={{height:3,background:"#1a1a2e",borderRadius:2,marginBottom:30,overflow:"hidden"}}>
+        <div style={{width:progress+"%",height:"100%",background:"linear-gradient(90deg,#BF00FF,#00FFFF)",borderRadius:2,transition:"width .5s ease"}}/>
+      </div>
+      <div style={{animation:"fadeIn .3s ease"}} key={step}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#BF00FF60",letterSpacing:2,marginBottom:12}}>{q.num}</div>
+        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:18,fontWeight:600,color:"#e8e8f0",lineHeight:1.6,marginBottom:24}}>{q.q}</div>
+        <div style={{display:"grid",gap:10}}>
+          {shuffled.map(function(opt,i){
+            var letters=["A","B","C"];
+            return <div key={i} onClick={function(){selectAnswer(opt.cls);}} className="card" style={{padding:"16px 18px",cursor:"pointer",transition:"all .2s",borderLeft:"3px solid transparent"}}>
+              <div style={{display:"flex",alignItems:"flex-start",gap:14}}>
+                <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:"var(--tx2)",opacity:0.5,marginTop:2}}>[ {letters[i]} ]</div>
+                <div style={{fontSize:14,color:"var(--tx)",lineHeight:1.7}}>{opt.text}</div>
+              </div>
+            </div>;
+          })}
+        </div>
+      </div>
+    </div>;
+  }
+
+  // ═══ SCREEN 3: REVEAL ═══
+  if(screen==="reveal"){
+    var scanTexts=["","ANALYZING RESPONSES...","CROSS-REFERENCING OPERATOR PROFILE...","MATCH FOUND.","CLASSIFYING..."];
+    return <div style={{minHeight:"80vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",padding:20,position:"relative",overflow:"hidden"}}>
+      {/* Ambient glows */}
+      <div style={{position:"fixed",width:500,height:500,borderRadius:"50%",filter:"blur(150px)",opacity:showResult?0.15:0.08,top:-200,left:-100,background:accentColor,pointerEvents:"none",transition:"all 1s"}}/>
+      <div style={{position:"fixed",width:500,height:500,borderRadius:"50%",filter:"blur(150px)",opacity:showResult?0.15:0.08,bottom:-200,right:-100,background:accentColor,pointerEvents:"none",transition:"all 1s"}}/>
+
+      {/* Flash */}
+      {showResult&&<div style={{position:"fixed",inset:0,background:accentColor,opacity:0,animation:"flash .4s ease-out",pointerEvents:"none",zIndex:10}}/>}
+
+      {/* Particles */}
+      {particles.map(function(p){return <div key={p.id} style={{position:"fixed",left:p.x+"%",top:p.y+"%",width:p.size,height:p.size,borderRadius:"50%",background:accentColor,opacity:0,animation:"particleFly 1s ease-out "+p.delay+"s forwards",pointerEvents:"none","--tx":p.tx+"px","--ty":p.ty+"px"}}/>;})}
+
+      <style>{"@keyframes flash{0%{opacity:0.6}100%{opacity:0}}@keyframes particleFly{0%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(var(--tx),var(--ty))}}"}</style>
+
+      {/* Scanning text */}
+      {!showResult&&<div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:accentColor,letterSpacing:2,animation:"fadeIn .3s ease"}}>{scanTexts[scanPhase]||""}</div>}
+
+      {/* Result */}
+      {showResult&&<div style={{animation:"fadeIn .5s ease",position:"relative",zIndex:1}}>
+        <div style={{fontSize:64,marginBottom:16}}>{cls.icon}</div>
+        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:"clamp(26px,6vw,36px)",fontWeight:800,color:accentColor,letterSpacing:4,marginBottom:6}}>{cls.label}</div>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:accentColor+"80",letterSpacing:3,marginBottom:20}}>{cls.subtitle}</div>
+        <div style={{fontSize:14,color:"var(--tx)",lineHeight:1.8,maxWidth:480,margin:"0 auto",marginBottom:30}}>{cls.desc}</div>
+        <div onClick={openDossier} style={{display:"inline-block",padding:"14px 32px",borderRadius:6,background:accentColor+"15",border:"1px solid "+accentColor+"40",color:accentColor,fontSize:13,fontFamily:"'Oxanium',sans-serif",fontWeight:700,letterSpacing:3,cursor:"pointer",transition:"all .2s"}}>OPEN YOUR DOSSIER ▸</div>
+      </div>}
+    </div>;
+  }
+
+  // ═══ SCREEN 4: FULL DOSSIER ═══
+  if(screen==="dossier"&&cls){
+    var today=new Date();var dateStr=today.toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
+    var badgeColors={sniper:"#00f0ff",breacher:"#ff00ff",ghost:"#00ff88"};
+    return <div style={{animation:"fadeIn .5s ease"}}>
+      {/* Header */}
+      <div style={{textAlign:"center",padding:"30px 0 20px",borderBottom:"1px solid #1a1a2e",marginBottom:20}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#ff335580",letterSpacing:3,marginBottom:10}}>◈ CLASSIFIED — OPERATOR DOSSIER ◈</div>
+        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:20,fontWeight:700,color:"#ffd700",letterSpacing:2,marginBottom:8}}>AURASZN™ HQ — Operator File</div>
+        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:22,fontWeight:800,color:"#e8e8f0",letterSpacing:1,marginBottom:6}}>{name.toUpperCase()}</div>
+        <div style={{display:"inline-block",padding:"6px 16px",borderRadius:4,border:"1px solid "+accentColor+"40",background:accentColor+"10",fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:accentColor,letterSpacing:2}}>{cls.label} — {cls.subtitle}</div>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",marginTop:8}}>Activated: {dateStr}</div>
+      </div>
+
+      {/* Message from Aura */}
+      <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #ffd700"}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#ffd700",letterSpacing:2,marginBottom:10}}>// Message from Aura</div>
+        <div style={{fontSize:14,lineHeight:1.8,color:"var(--tx)"}}>
+          Welcome to the crew, <strong style={{color:"#fff"}}>{name}</strong>. You didn't just join a Discord — you joined a movement. This isn't about signals. This isn't about hype. This is about <strong style={{color:"#fff"}}>discipline, faith, and execution.</strong>
+          <br/><br/>
+          I built this because I believe trading should change your life — not drain it. You've got the tools. You've got the community. Now it's on you to show up, trust the process, and put in the work.
+          <br/><br/>
+          Believe in yourself. Bet on yourself. Stay dangerous.
+        </div>
+        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:12,color:"#ffd700",marginTop:12,fontWeight:600}}>— AURA™ ⚡</div>
+      </div>
+
+      {/* Operator Stats */}
+      <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #00f0ff"}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#00f0ff",letterSpacing:2,marginBottom:12}}>// Operator Stats</div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}}>
+          {[{label:"Trades",value:"0"},{label:"Combine",value:"PENDING"},{label:"Payout",value:"$0.00"}].map(function(s){
+            return <div key={s.label} style={{textAlign:"center",padding:"14px 10px",background:"#0a0a14",borderRadius:6,border:"1px solid #1a1a2e"}}>
+              <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:18,fontWeight:700,color:s.label==="Combine"?"var(--tx2)":"#e8e8f0"}}>{s.value}</div>
+              <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,color:"var(--tx2)",letterSpacing:1,marginTop:4}}>{s.label}</div>
+            </div>;
+          })}
+        </div>
+      </div>
+
+      {/* Your Loadout */}
+      <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid "+accentColor}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:accentColor,letterSpacing:2,marginBottom:12}}>// Your Operator Loadout — {cls.label}</div>
+        <div style={{display:"grid",gap:8}}>
+          {cls.loadout.map(function(item){
+            var sys=systems.find(function(s){return s.id===item.id;});
+            return <div key={item.name} onClick={function(){if(sys)onOpenGuide(item.id);}} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 14px",background:"#0a0a14",borderRadius:6,border:"1px solid #1a1a2e",cursor:sys?"pointer":"default",transition:"all .2s"}}>
+              <div style={{width:8,height:8,borderRadius:"50%",background:accentColor,boxShadow:"0 0 8px "+accentColor+"60",flexShrink:0}}/>
+              <div style={{flex:1,fontFamily:"'JetBrains Mono',monospace",fontSize:13,color:"#e8e8f0"}}>{item.name}</div>
+              <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",padding:"2px 8px",borderRadius:3,border:"1px solid #1a1a2e"}}>{item.tag}</div>
+              {sys&&<div style={{fontSize:10,color:accentColor}}>→</div>}
+            </div>;
+          })}
+        </div>
+      </div>
+
+      {/* Mission */}
+      <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #ff00ff"}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#ff00ff",letterSpacing:2,marginBottom:12}}>// Mission 1 — Get Operational (First 48 Hours)</div>
+        {[
+          {n:"1",t:"Read the rules & terms — Know the code before you operate."},
+          {n:"2",t:"Watch all setup videos — Chart setup, indicator install, backtest walkthrough."},
+          {n:"3",t:"Set up your TradingView chart — Install your operator loadout with correct settings."},
+          {n:"4",t:"Create your Topstep account — Get your combine funded."},
+          {n:"5",t:"Read The Prop Firm Blueprint — The mindset. The math. The strategy for passing combines fast."},
+          {n:"6",t:"Post your first chart screenshot — Show the crew you're locked in."}
+        ].map(function(m){
+          return <div key={m.n} style={{display:"flex",gap:12,marginBottom:10,alignItems:"flex-start"}}>
+            <div style={{width:24,height:24,borderRadius:4,background:"#ff00ff15",border:"1px solid #ff00ff30",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,color:"#ff00ff",fontFamily:"'Oxanium',sans-serif",flexShrink:0}}>{m.n}</div>
+            <div style={{fontSize:13,color:"var(--tx)",lineHeight:1.6}}>{m.t}</div>
+          </div>;
+        })}
+      </div>
+
+      {/* Morning Ritual */}
+      <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #00f0ff"}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#00f0ff",letterSpacing:2,marginBottom:12}}>// AuraSzn Morning Ritual — Before Every Session</div>
+        {[
+          {label:"Step 1 — Physical Reset (30 sec)",text:"Breathe deep: In for 4, hold for 4, out for 6. Repeat 3x. \"I am focused. I am present. I am in flow.\""},
+          {label:"Step 2 — Alignment (1 min)",text:"Surrender fear, doubt, ego, and greed. Ask for wisdom, patience, and purpose. Trade for impact, not hype."},
+          {label:"Step 3 — Trade Plan (1 min)",text:"What is my mission today? What setups am I waiting for? What invalidates the trade? Where do I take profit — without greed?"},
+          {label:"Confirmation",text:"✓ Mentally clear · ✓ Spiritually aligned · ✓ Emotionally neutral · ✓ Locked in · ✓ Ready to execute",green:true}
+        ].map(function(r){
+          return <div key={r.label} style={{marginBottom:12,padding:"10px 14px",background:"#0a0a14",borderRadius:6}}>
+            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#00f0ff",letterSpacing:1,marginBottom:4}}>{r.label}</div>
+            <div style={{fontSize:13,color:r.green?"#00ff88":"var(--tx)",lineHeight:1.6}}>{r.text}</div>
+          </div>;
+        })}
+      </div>
+
+      {/* Non-Negotiable Rules */}
+      <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #ffd700"}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#ffd700",letterSpacing:2,marginBottom:12}}>// AuraSzn's Non-Negotiable Rules</div>
+        {[
+          "Never spend more than 2 weeks on any single combine. Reset and go again.",
+          "On combines: risk higher. Use A+ signals. Hit the target. Get out.",
+          "On funded accounts: risk goes DOWN. 1–1.5% max. Protect the account.",
+          "Never violate drawdown rules on a funded account. Never. Not once.",
+          "Stack funded accounts using copy-trade. Same signal. Split risk. Scale income.",
+          "Trust the system. Do not override it. Do not add your 'gut feel' to a funded account.",
+          "Your first payout changes everything. Until then — it is not real. Stay focused.",
+          "Blow a combine? Good. $50 tuition. Reset. You now know exactly what to do."
+        ].map(function(r,i){
+          return <div key={i} style={{display:"flex",gap:12,marginBottom:8,alignItems:"flex-start"}}>
+            <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:11,fontWeight:700,color:"#ffd700",opacity:0.5,width:20,flexShrink:0,textAlign:"right"}}>{"0"+(i+1)}</div>
+            <div style={{fontSize:13,color:"var(--tx)",lineHeight:1.6}}>{r}</div>
+          </div>;
+        })}
+      </div>
+
+      {/* Quote */}
+      <div style={{textAlign:"center",padding:"30px 20px",marginBottom:14}}>
+        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:15,fontWeight:500,color:"#ffd700",lineHeight:1.7,fontStyle:"italic"}}>"It is not real money... until you make that first payout."</div>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",marginTop:8,letterSpacing:1}}>— AURASZN</div>
+      </div>
+
+      {/* Footer */}
+      <div style={{textAlign:"center",padding:"20px 0 10px",borderTop:"1px solid #1a1a2e"}}>
+        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:13,fontWeight:700,color:"#ffd700",letterSpacing:3,marginBottom:4}}>AURASZN™</div>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",letterSpacing:1,marginBottom:8}}>Trade like you've seen the future.</div>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,color:"#333",letterSpacing:1}}>This dossier is your operator file. Keep it. Reference it. Live it.</div>
+      </div>
+
+      {/* Retake */}
+      <div style={{textAlign:"center",marginTop:10,marginBottom:30}}>
+        <div onClick={reset} style={{display:"inline-block",padding:"10px 24px",borderRadius:6,cursor:"pointer",fontSize:11,fontFamily:"'JetBrains Mono',monospace",color:"var(--tx2)",border:"1px solid var(--brd)",letterSpacing:1}}>↻ RETAKE ASSESSMENT</div>
+      </div>
+    </div>;
+  }
+
+  return null;
+}
+
 // ═══ MAIN ═══
 export default function App(){
   var [booted,setBooted]=useState(false);
@@ -207,7 +530,7 @@ export default function App(){
           <span style={{fontSize:10,letterSpacing:2,color:"var(--tx2)",fontFamily:"'JetBrains Mono',monospace"}}>VAULT</span>
         </div>
         <div style={{display:"flex",gap:6}}>
-          {[{id:"home",label:"SYSTEMS"},{id:"loadouts",label:"LOADOUTS"},{id:"mindset",label:"MINDSET"}].map(function(n){
+          {[{id:"home",label:"SYSTEMS"},{id:"loadouts",label:"LOADOUTS"},{id:"profile",label:"PROFILE"},{id:"mindset",label:"MINDSET"}].map(function(n){
             return <div key={n.id} onClick={function(){setPage(n.id);}} style={{padding:"6px 14px",borderRadius:6,cursor:"pointer",fontSize:10,fontFamily:"'JetBrains Mono',monospace",letterSpacing:1.5,background:page===n.id?"#BF00FF18":"transparent",color:page===n.id?"#BF00FF":"var(--tx2)",border:"1px solid "+(page===n.id?"#BF00FF40":"transparent"),transition:"all .2s"}}>{n.label}</div>;
           })}
         </div>
@@ -285,6 +608,9 @@ export default function App(){
             })}
           </div>
         </div>}
+
+        {/* PROFILE — OPERATOR CLASSIFICATION */}
+        {page==="profile"&&<OperatorProfile systems={SYSTEMS} onOpenGuide={function(id){setActiveGuide(id);window.scrollTo(0,0);}}/>}
 
         {/* MINDSET */}
         {page==="mindset"&&<div>
