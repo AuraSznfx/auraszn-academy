@@ -76,6 +76,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Chakra Petch',sans-serif}
 input,textarea,select{background:var(--bg3);color:var(--tx);border:1px solid var(--brd);border-radius:6px;padding:10px 12px;font-family:inherit;font-size:13px;width:100%;outline:none}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:4px}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes boltPulse{0%,100%{opacity:1;filter:drop-shadow(0 0 4px #ffd700)}50%{opacity:0.5;filter:drop-shadow(0 0 12px #ffd700)}}
 .card{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:18px;position:relative;overflow:hidden}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:.4}
 .card:hover{border-color:#BF00FF30}
@@ -629,13 +630,15 @@ export default function App(){
 
       {/* Header */}
       <header style={{position:"sticky",top:0,zIndex:100,background:"#06060cee",borderBottom:"1px solid var(--brd)",padding:"12px 20px",display:"flex",justifyContent:"space-between",alignItems:"center",backdropFilter:"blur(12px)"}}>
-        <div onClick={function(){setPage("home");}} style={{cursor:"pointer",display:"flex",alignItems:"center",gap:10}}>
+        <div onClick={function(){setPage("home");}} style={{cursor:"pointer",display:"flex",alignItems:"center",gap:8}}>
           <img src="/aura-avatar.png" style={{width:30,height:30,borderRadius:"50%",border:"1.5px solid #BF00FF40",objectFit:"cover"}}/>
           <span style={{fontFamily:"'Oxanium',sans-serif",fontSize:18,fontWeight:800,letterSpacing:4,color:"#BF00FF"}}>AURASZN</span>
-          <span style={{fontSize:10,letterSpacing:2,color:"var(--tx2)",fontFamily:"'JetBrains Mono',monospace"}}>VAULT</span>
+          <span style={{fontSize:10,letterSpacing:2,color:"var(--tx2)",fontFamily:"'JetBrains Mono',monospace"}}>ACADEMY</span>
+          <span style={{fontSize:14,animation:"boltPulse 2s ease-in-out infinite"}}>⚡</span>
+          <span style={{fontSize:10,letterSpacing:2,color:"#ffffff90",fontFamily:"'JetBrains Mono',monospace"}}>VAULT</span>
         </div>
         <div style={{display:"flex",gap:6}}>
-          {[{id:"home",label:"SYSTEMS"},{id:"loadouts",label:"LOADOUTS"},{id:"profile",label:"PROFILE"},{id:"mindset",label:"MINDSET"}].map(function(n){
+          {[{id:"home",label:"AURABOT"},{id:"loadouts",label:"LOADOUTS"},{id:"profile",label:"PROFILE"},{id:"mindset",label:"MINDSET"}].map(function(n){
             return <div key={n.id} onClick={function(){setPage(n.id);}} style={{padding:"6px 14px",borderRadius:6,cursor:"pointer",fontSize:10,fontFamily:"'JetBrains Mono',monospace",letterSpacing:1.5,background:page===n.id?"#BF00FF18":"transparent",color:page===n.id?"#BF00FF":"var(--tx2)",border:"1px solid "+(page===n.id?"#BF00FF40":"transparent"),transition:"all .2s"}}>{n.label}</div>;
           })}
         </div>
@@ -730,10 +733,7 @@ export default function App(){
             {QUOTES.map(function(q,i){var colors=["#00FFFF","#BF00FF","#FFD700","#00FF88","#FF3366","#FF00FF","#FFEA00","#FF6B00"];var c=colors[i%colors.length];
               return <div key={i} className="card" style={{borderLeft:"3px solid "+c,padding:"20px 18px"}}>
                 <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:15,fontWeight:500,color:c,lineHeight:1.7}}>"{q}"</div>
-                <div style={{display:"flex",alignItems:"center",gap:8,marginTop:8}}>
-                  <img src="/aura-avatar.png" style={{width:22,height:22,borderRadius:"50%",border:"1px solid #BF00FF30",objectFit:"cover"}}/>
-                  <span style={{fontSize:10,color:"var(--tx2)",fontFamily:"'JetBrains Mono',monospace",letterSpacing:1}}>— AuraSzn</span>
-                </div>
+                <div style={{fontSize:10,color:"var(--tx2)",marginTop:8,fontFamily:"'JetBrains Mono',monospace",letterSpacing:1}}>— AuraSzn</div>
               </div>;
             })}
           </div>
