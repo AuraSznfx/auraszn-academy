@@ -444,10 +444,7 @@ function OperatorProfile({systems,onOpenGuide}) {
             Believe in yourself. Bet on yourself. Stay dangerous.
           </div>
         </div>
-        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:12,color:"#ffd700",marginTop:12,fontWeight:600,display:"flex",alignItems:"center",gap:10}}>
-          <img src="/aura-avatar.png" alt="" style={{width:36,height:36,borderRadius:"50%",border:"2px solid #BF00FF40",objectFit:"cover"}}/>
-          — AURA™ ⚡
-        </div>
+        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:12,color:"#ffd700",marginTop:12,fontWeight:600}}>— AURA™ ⚡</div>
       </div>
 
       {/* Operator Stats */}
