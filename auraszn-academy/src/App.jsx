@@ -80,13 +80,101 @@ input,textarea,select{background:var(--bg3);color:var(--tx);border:1px solid var
 .card:hover{border-color:#BF00FF30}
 `}</style>;}
 
+// ═══ ACCESS GATE ═══
+var ACCESS_CODE = "AURASZN2026";
+
+function LockScreen({onUnlock}) {
+  var [code,setCode]=useState("");
+  var [error,setError]=useState(false);
+  var [typing,setTyping]=useState("");
+  var [granted,setGranted]=useState(false);
+  var [scanLine,setScanLine]=useState(0);
+
+  useEffect(function(){
+    var iv=setInterval(function(){setScanLine(function(p){return p>100?0:p+0.5;});},30);
+    return function(){clearInterval(iv);};
+  },[]);
+
+  function handleSubmit(){
+    if(code.trim().toUpperCase()===ACCESS_CODE){
+      setGranted(true);
+      setTimeout(onUnlock,2200);
+    } else {
+      setError(true);
+      setCode("");
+      setTimeout(function(){setError(false);},1500);
+    }
+  }
+
+  function handleKey(e){if(e.key==="Enter")handleSubmit();}
+
+  if(granted) return <div style={{position:"fixed",inset:0,background:"#000",zIndex:9999,display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
+    <div style={{width:60,height:60,borderRadius:"50%",border:"2px solid #00FF88",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:20,animation:"fadeIn .3s ease"}}>
+      <span style={{color:"#00FF88",fontSize:28}}>✓</span>
+    </div>
+    <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:24,fontWeight:800,color:"#00FF88",letterSpacing:4,marginBottom:8}}>ACCESS GRANTED</div>
+    <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:"#00FF8860",letterSpacing:2}}>DECRYPTING CLASSIFIED ARCHIVES...</div>
+  </div>;
+
+  return <div style={{position:"fixed",inset:0,background:"#000",zIndex:9999,display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",fontFamily:"'JetBrains Mono',monospace"}}>
+    {/* Scan line effect */}
+    <div style={{position:"absolute",top:scanLine+"%",left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,#BF00FF20,transparent)",pointerEvents:"none"}}/>
+    {/* Grid */}
+    <div style={{position:"fixed",inset:0,pointerEvents:"none",opacity:0.015,backgroundImage:"linear-gradient(#BF00FF 1px,transparent 1px),linear-gradient(90deg,#BF00FF 1px,transparent 1px)",backgroundSize:"50px 50px"}}/>
+
+    <div style={{textAlign:"center",position:"relative",zIndex:1,maxWidth:400,width:"90%",padding:20}}>
+      {/* Lock icon */}
+      <div style={{width:80,height:80,borderRadius:"50%",border:"2px solid #BF00FF40",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 24px",position:"relative"}}>
+        <div style={{position:"absolute",inset:-4,borderRadius:"50%",border:"1px solid #BF00FF15",animation:"pulse 3s infinite"}}/>
+        <span style={{fontSize:32}}>🔒</span>
+      </div>
+
+      <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:"clamp(22px,5vw,30px)",fontWeight:800,color:"#BF00FF",letterSpacing:4,marginBottom:6}}>RESTRICTED</div>
+      <div style={{fontSize:11,color:"#6a6a80",letterSpacing:2,marginBottom:6}}>CLASSIFIED SYSTEMS ARCHIVE</div>
+      <div style={{fontSize:10,color:"#BF00FF40",letterSpacing:1.5,marginBottom:32}}>AUTHORIZED OPERATORS ONLY</div>
+
+      {/* Code input */}
+      <div style={{position:"relative",marginBottom:16}}>
+        <input
+          type="password"
+          value={code}
+          onChange={function(e){setCode(e.target.value);setError(false);}}
+          onKeyDown={handleKey}
+          placeholder="ENTER ACCESS CODE"
+          style={{
+            width:"100%",background:"#0a0a14",border:"1px solid "+(error?"#FF3366":"#BF00FF30"),borderRadius:8,
+            padding:"14px 18px",fontSize:14,fontFamily:"'JetBrains Mono',monospace",letterSpacing:3,
+            color:"#fff",textAlign:"center",outline:"none",transition:"border-color .3s"
+          }}
+        />
+        {error && <div style={{position:"absolute",top:"100%",left:0,right:0,textAlign:"center",marginTop:8}}>
+          <span style={{fontSize:11,color:"#FF3366",letterSpacing:1}}>⚠ ACCESS DENIED — INVALID CODE</span>
+        </div>}
+      </div>
+
+      <button onClick={handleSubmit} style={{
+        width:"100%",padding:"14px",borderRadius:8,border:"1px solid #BF00FF40",
+        background:"#BF00FF15",color:"#BF00FF",fontSize:13,fontFamily:"'Oxanium',sans-serif",
+        fontWeight:700,letterSpacing:3,cursor:"pointer",marginTop:error?20:8,transition:"all .2s"
+      }}>AUTHENTICATE</button>
+
+      <div style={{marginTop:30,fontSize:10,color:"#333",letterSpacing:1,lineHeight:1.8}}>
+        Access codes are distributed to verified<br/>AuraSzn members via Discord.
+      </div>
+      <div style={{marginTop:16,fontSize:10,color:"#BF00FF20",letterSpacing:2}}>AURASZN™ VAULT SECURITY</div>
+    </div>
+  </div>;
+}
+
 // ═══ MAIN ═══
 export default function App(){
   var [booted,setBooted]=useState(false);
+  var [unlocked,setUnlocked]=useState(false);
   var [page,setPage]=useState("home");
   var [activeGuide,setActiveGuide]=useState(null);
 
   if(!booted) return <><Styles/><Boot onDone={function(){setBooted(true);}}/></>;
+  if(!unlocked) return <><Styles/><LockScreen onUnlock={function(){setUnlocked(true);}}/></>;
 
   // If viewing a guide, render just that guide with a back button
   if(activeGuide){
