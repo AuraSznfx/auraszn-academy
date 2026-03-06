@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import NexusGuide from "./guides/NexusGuide";
+import TrendGlowGuide from "./guides/TrendGlowGuide";
+import GravityGuide from "./guides/GravityGuide";
 import MidasGuide from "./guides/MidasGuide";
 import LondonGuide from "./guides/LondonGuide";
 import ZoneWarsGuide from "./guides/ZoneWarsGuide";
@@ -27,6 +29,8 @@ var QUOTES = [
 
 var SYSTEMS = [
   { id:"nexus", name:"NEXUS v1.1", tier:"FLAGSHIP", tagline:"Unified Institutional Operating System", color:"#00FFFF", icon:"⚡", tf:"1m–15m", inst:"NQ/MNQ", desc:"The culmination of 12 systems unified into one engine. AIMLOCK + MIDAS + AURA-X + Phase Dynamics + ZoneWars + Smart AI Hologram. Every engine, one indicator.", component: NexusGuide },
+  { id:"trendglow", name:"TRENDGLOW⚡", tier:"UTILITY", tagline:"HTF Trend Bias Engine", color:"#00E5FF", icon:"⚡", tf:"45m–30m Lock", inst:"NQ/MNQ/Multi", desc:"One glowing line. One truth. Trend Magic engine locked to your session TF (45m/30m) — see the bias on any chart. Glow line, ribbon band, 3 candle color modes, HTF flip markers. Pairs with Gravity for the full stack.", component: TrendGlowGuide },
+  { id:"gravity", name:"AURA GRAVITY", tier:"UTILITY", tagline:"Auto S/R Zone Engine — HTF Locked", color:"#00FF6A", icon:"🧲", tf:"4H Lock", inst:"NQ/MNQ/Multi", desc:"Auto-detected support & resistance zones from 4H swing structure. Smart memory stores the freshest levels, selects the 2 closest above & below. Trade zone-to-zone with TrendGlow for direction.", component: GravityGuide },
   { id:"midas", name:"MIDAS TOUCH v2", tier:"SPECIALIZED", tagline:"NY Breakout Operating System", color:"#FFD700", icon:"👑", tf:"1m–5m", inst:"NQ/MNQ", desc:"Weighted confluence scoring, breakout velocity filter, ADR consumption gate, chop detection, fake-break invalidation, two-phase reclaim entry model.", component: MidasGuide },
   { id:"london", name:"LONDON BREAK v1", tier:"SPECIALIZED", tagline:"One Setup. Two Directions. No Noise.", color:"#00FF88", icon:"🌅", tf:"5m–15m", inst:"NQ/Forex", desc:"Detect London trend line with 3+ touches, wait for close-through after 9 AM ET, enter on pullback into the FVG. No setup? No trade.", component: LondonGuide },
   { id:"zonewars", name:"ZONEWARS v3", tier:"SPECIALIZED", tagline:"Institutional Sweep & Reclaim Engine", color:"#FF00FF", icon:"⚔️", tf:"1m–5m", inst:"NQ", desc:"ATR-dynamic zones, VWAP bands, MTF bias alignment, volume-confirmed reclaims, partial exit engine. The zone-based institutional approach.", component: ZoneWarsGuide },
@@ -39,6 +43,7 @@ var SYSTEMS = [
 var LOADOUTS = [
   { name:"THE FULL STACK", desc:"NEXUS by itself. Every engine unified. One indicator to rule them all.", systems:["nexus"], level:"Advanced" },
   { name:"THE NY SNIPER", desc:"AURA-X maps the session, MIDAS finds the breakout, Phase Dynamics times the entry.", systems:["midas","phase"], level:"Intermediate" },
+  { name:"THE ZONE-TO-ZONE", desc:"TrendGlow locks the 45m bias. Gravity locks 4H zones. Drop to 15m-5m and trade zone-to-zone. The secret sauce.", systems:["trendglow","gravity"], level:"All Levels" },
   { name:"THE LONDON PLAY", desc:"London Break for the setup, AURA MAP for clean visuals. One trade per day.", systems:["london","auramap"], level:"Beginner" },
   { name:"THE ZONE TRADER", desc:"ZoneWars handles sweeps and reclaims. The institutional approach.", systems:["zonewars"], level:"Intermediate" },
   { name:"THE LIQUIDITY HUNTER", desc:"Heist Engine maps the pools, LSM executes mechanically at first-box levels.", systems:["heist","lsm"], level:"Intermediate" },
@@ -229,8 +234,8 @@ var CLASS_DATA = {
     loadout:[
       {name:"MIDAS TOUCH v2",tag:"Primary",id:"midas"},
       {name:"London Break v1",tag:"Alt Session",id:"london"},
-      {name:"AURA-X NY MAP",tag:"Bias",id:"aurax"},
-      {name:"Phase Dynamics v5",tag:"Timing",id:"phase"}
+      {name:"TrendGlow⚡",tag:"Bias",id:"trendglow"},
+      {name:"Aura Gravity",tag:"Zones",id:"gravity"}
     ]
   },
   ghost:{
@@ -238,8 +243,8 @@ var CLASS_DATA = {
     desc:"You move in the dark. Asia session, London open, NY pre-market — you trade the transitions. While everyone sleeps, you're already positioned. The clock is your weapon.",
     loadout:[
       {name:"NEXUS v1.1",tag:"Primary",id:"nexus"},
-      {name:"AURA-X NY MAP",tag:"Session Map",id:"aurax"},
-      {name:"Liquidity Heist",tag:"Levels",id:"heist"},
+      {name:"TrendGlow⚡",tag:"Bias",id:"trendglow"},
+      {name:"Aura Gravity",tag:"Zones",id:"gravity"},
       {name:"Aura Map",tag:"Overlay",id:"auramap"}
     ]
   }
@@ -623,10 +628,10 @@ export default function App(){
           </div>
 
           {/* Systems by tier */}
-          {["FLAGSHIP","SPECIALIZED","SUPPORT"].map(function(tier){
+          {["FLAGSHIP","UTILITY","SPECIALIZED","SUPPORT"].map(function(tier){
             var ts=SYSTEMS.filter(function(s){return s.tier===tier;});
-            var labels={FLAGSHIP:"THE FLAGSHIP",SPECIALIZED:"SPECIALIZED WEAPONS",SUPPORT:"SUPPORT LAYERS"};
-            var descs={FLAGSHIP:"The unified system. Everything in one.",SPECIALIZED:"Purpose-built engines for specific approaches.",SUPPORT:"Stack these with anything for added intelligence."};
+            var labels={FLAGSHIP:"THE FLAGSHIP",UTILITY:"THE HTF LOCK DUO",SPECIALIZED:"SPECIALIZED WEAPONS",SUPPORT:"SUPPORT LAYERS"};
+            var descs={FLAGSHIP:"The unified system. Everything in one.",UTILITY:"Direction + Levels. Lock your HTF, trade any timeframe. The secret sauce.",SPECIALIZED:"Purpose-built engines for specific approaches.",SUPPORT:"Stack these with anything for added intelligence."};
             return <div key={tier} style={{marginBottom:32}}>
               <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:2.5,color:"#BF00FF",marginBottom:4,display:"flex",alignItems:"center",gap:8}}>
                 <span style={{width:16,height:1,background:"#BF00FF",display:"inline-block"}}/>{labels[tier]}
