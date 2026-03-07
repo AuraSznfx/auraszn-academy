@@ -73,16 +73,19 @@ const Card = ({ children, color = BRD, borderLeft, style = {} }) => (
 );
 
 // ═══ MAIN COMPONENT ═══
-export default function MindsetLab() {
+export default function MindsetLab({ vault, onUpdateVault }) {
+  const todayStr = new Date().toDateString();
+  const checkInSaved = vault && vault.checkInDate === todayStr && vault.checkInToday;
+
   const [section, setSection] = useState("hub");
-  const [checkInDone, setCheckInDone] = useState(false);
-  const [selectedMood, setSelectedMood] = useState(null);
+  const [checkInDone, setCheckInDone] = useState(!!checkInSaved);
+  const [selectedMood, setSelectedMood] = useState(checkInSaved || null);
   const [leakIndex, setLeakIndex] = useState(null);
-  const [leaksFixed, setLeaksFixed] = useState([]);
+  const [leaksFixed, setLeaksFixed] = useState(vault ? (vault.leaksFixed || []) : []);
   const [scarIndex, setScarIndex] = useState(0);
-  const [scarRevealed, setScarRevealed] = useState([]);
-  const [oathStep, setOathStep] = useState(0);
-  const [oathComplete, setOathComplete] = useState(false);
+  const [scarRevealed, setScarRevealed] = useState(vault ? (vault.scarsRevealed || []) : []);
+  const [oathStep, setOathStep] = useState(vault ? (vault.oathStep || 0) : 0);
+  const [oathComplete, setOathComplete] = useState(vault ? !!vault.oathComplete : false);
   const [hourglass, setHourglass] = useState("waiting");
   const [hourglassScore, setHourglassScore] = useState(0);
   const [revenge, setRevenge] = useState("choice");
@@ -90,6 +93,11 @@ export default function MindsetLab() {
   const [breathPhase, setBreathPhase] = useState(0);
   const [breathSync, setBreathSync] = useState(0);
   const breathRef = useRef(null);
+
+  // Persist helper
+  function persist(updates) {
+    if (onUpdateVault) onUpdateVault(Object.assign({}, vault, updates));
+  }
 
   // Hourglass timer
   useEffect(() => {
@@ -200,7 +208,7 @@ export default function MindsetLab() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
               {MOODS.map(m => (
                 <Card key={m.id} style={{ cursor: "pointer", textAlign: "center", padding: "18px 12px", transition: "all .2s" }}>
-                  <div onClick={() => { setSelectedMood(m.id); setCheckInDone(true); }}>
+                  <div onClick={() => { setSelectedMood(m.id); setCheckInDone(true); persist({ checkInToday: m.id, checkInDate: new Date().toDateString() }); }}>
                     <div style={{ fontSize: 28, marginBottom: 6 }}>{m.icon}</div>
                     <div style={{ fontSize: 13, color: m.color, fontWeight: 700, fontFamily: "'Oxanium',sans-serif" }}>{m.label}</div>
                   </div>
@@ -458,7 +466,7 @@ export default function MindsetLab() {
                 <div style={{ marginTop: 10, padding: "10px 12px", borderRadius: 6, background: `${GREEN}06`, border: `1px solid ${GREEN}18`, animation: "msFadeIn .3s ease" }}>
                   <div style={{ fontSize: 10, color: GREEN, fontFamily: "'JetBrains Mono',monospace", letterSpacing: 1, marginBottom: 4 }}>REFRAME:</div>
                   <div style={{ fontSize: 12, color: "#88cc88", lineHeight: 1.6 }}>{leak.fix}</div>
-                  <div onClick={(e) => { e.stopPropagation(); setLeaksFixed(prev => [...prev, i]); setLeakIndex(null); }} style={{ display: "inline-block", marginTop: 8, padding: "6px 16px", borderRadius: 4, cursor: "pointer", fontSize: 10, fontFamily: "'JetBrains Mono',monospace", color: GREEN, border: `1px solid ${GREEN}40`, background: `${GREEN}10` }}>SEAL LEAK ✓</div>
+                  <div onClick={(e) => { e.stopPropagation(); var nf = [...leaksFixed, i]; setLeaksFixed(nf); setLeakIndex(null); persist({ leaksFixed: nf }); }} style={{ display: "inline-block", marginTop: 8, padding: "6px 16px", borderRadius: 4, cursor: "pointer", fontSize: 10, fontFamily: "'JetBrains Mono',monospace", color: GREEN, border: `1px solid ${GREEN}40`, background: `${GREEN}10` }}>SEAL LEAK ✓</div>
                 </div>
               )}
             </div>
@@ -486,7 +494,7 @@ export default function MindsetLab() {
           const revealed = scarRevealed.includes(i);
           return (
             <Card key={i} borderLeft={revealed ? GREEN : scar.color} style={{ cursor: "pointer", transition: "all .5s" }}>
-              <div onClick={() => { if (!revealed) setScarRevealed(prev => [...prev, i]); }}>
+              <div onClick={() => { if (!revealed) { var ns = [...scarRevealed, i]; setScarRevealed(ns); persist({ scarsRevealed: ns }); } }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: revealed ? 10 : 0 }}>
                   <div style={{ width: 28, height: 28, borderRadius: 4, background: revealed ? `${GREEN}15` : `${scar.color}15`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0, transition: "all .5s" }}>{revealed ? "💡" : "💔"}</div>
                   <div style={{ fontSize: 13, color: revealed ? TX2 : scar.color, lineHeight: 1.5, textDecoration: revealed ? "line-through" : "none", opacity: revealed ? 0.5 : 1, transition: "all .5s" }}>{scar.loss}</div>
@@ -529,7 +537,7 @@ export default function MindsetLab() {
             <div style={{ fontSize: 16, color: TX, lineHeight: 1.8, fontFamily: "'Oxanium',sans-serif", fontWeight: 500, maxWidth: 420, margin: "0 auto 20px" }}>
               "{OATH[oathStep]}"
             </div>
-            <div onClick={() => { if (oathStep < OATH.length - 1) setOathStep(oathStep + 1); else setOathComplete(true); }} style={{ display: "inline-block", padding: "14px 32px", borderRadius: 8, cursor: "pointer", fontSize: 13, fontFamily: "'Oxanium',sans-serif", fontWeight: 700, letterSpacing: 3, background: `${AC}15`, color: AC, border: `1px solid ${AC}40`, transition: "all .2s" }}>
+            <div onClick={() => { if (oathStep < OATH.length - 1) { var ns = oathStep + 1; setOathStep(ns); persist({ oathStep: ns }); } else { setOathComplete(true); persist({ oathComplete: true, oathStep: OATH.length }); } }} style={{ display: "inline-block", padding: "14px 32px", borderRadius: 8, cursor: "pointer", fontSize: 13, fontFamily: "'Oxanium',sans-serif", fontWeight: 700, letterSpacing: 3, background: `${AC}15`, color: AC, border: `1px solid ${AC}40`, transition: "all .2s" }}>
               CONFIRM ✓
             </div>
           </Card>
