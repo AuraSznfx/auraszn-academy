@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import NexusGuide from "./guides/NexusGuide";
 import TrendGlowGuide from "./guides/TrendGlowGuide";
 import GravityGuide from "./guides/GravityGuide";
@@ -10,6 +10,12 @@ import PhaseGuide from "./guides/PhaseGuide";
 import AuraMapGuide from "./guides/AuraMapGuide";
 import LSMGuide from "./guides/LSMGuide";
 import MindsetLab from "./guides/MindsetLab";
+
+// ═══ PERSISTENCE HELPER ═══
+var STORAGE_KEY = "auraszn_vault";
+function loadVault() { try { var d = localStorage.getItem(STORAGE_KEY); return d ? JSON.parse(d) : null; } catch(e) { return null; } }
+function saveVault(data) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {} }
+function getDefaultVault(name, result) { return { operator: name||"", classification: result||null, dossierComplete: false, oathComplete: false, oathStep: 0, leaksFixed: [], scarsRevealed: [], checkInToday: null, checkInDate: null, createdAt: new Date().toISOString() }; }
 
 var QUOTES = [
   "You either drift or you design.",
@@ -279,17 +285,20 @@ var CLASS_DATA = {
   }
 };
 
-function OperatorProfile({systems,onOpenGuide}) {
-  var [screen,setScreen]=useState("name");
-  var [name,setName]=useState("");
+function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
+  var saved = vault && vault.operator && vault.classification;
+  var [screen,setScreen]=useState(saved ? "dossier" : "name");
+  var [name,setName]=useState(vault ? vault.operator : "");
   var [scores,setScores]=useState({sniper:0,breacher:0,ghost:0});
   var [step,setStep]=useState(0);
-  var [result,setResult]=useState(null);
+  var [result,setResult]=useState(vault ? vault.classification : null);
   var [scanPhase,setScanPhase]=useState(0);
   var [showResult,setShowResult]=useState(false);
   var [showDossier,setShowDossier]=useState(false);
   var [particles,setParticles]=useState([]);
   var canvasRef=useRef(null);
+
+  useEffect(function(){ if(saved && screen==="dossier") generateCard(vault.classification); },[screen]);
 
   function shuffleArray(arr){var a=arr.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
 
@@ -308,6 +317,9 @@ function OperatorProfile({systems,onOpenGuide}) {
       var max=0;var res="sniper";
       Object.keys(newScores).forEach(function(k){if(newScores[k]>max){max=newScores[k];res=k;}});
       setResult(res);
+      // Save to vault
+      var newVault = Object.assign({}, vault || getDefaultVault(name.trim(), res), { operator: name.trim(), classification: res, dossierComplete: true });
+      onUpdateVault(newVault);
       setScreen("reveal");
       var phases=["ANALYZING RESPONSES...","CROSS-REFERENCING OPERATOR PROFILE...","MATCH FOUND.","CLASSIFYING..."];
       phases.forEach(function(p,i){
@@ -321,8 +333,8 @@ function OperatorProfile({systems,onOpenGuide}) {
     }
   }
 
-  function openDossier(){setShowDossier(true);setScreen("dossier");window.scrollTo(0,0);generateCard(result);}
-  function reset(){setScreen("name");setName("");setScores({sniper:0,breacher:0,ghost:0});setStep(0);setResult(null);setScanPhase(0);setShowResult(false);setShowDossier(false);setParticles([]);}
+  function openDossier(){setShowDossier(true);setScreen("dossier");window.scrollTo(0,0);generateCard(result||vault.classification);}
+  function reset(){setScreen("name");setName("");setScores({sniper:0,breacher:0,ghost:0});setStep(0);setResult(null);setScanPhase(0);setShowResult(false);setShowDossier(false);setParticles([]);onUpdateVault(getDefaultVault("",null));}
 
   function generateCard(res){
     setTimeout(function(){
@@ -596,6 +608,15 @@ export default function App(){
   var [unlocked,setUnlocked]=useState(false);
   var [page,setPage]=useState("home");
   var [activeGuide,setActiveGuide]=useState(null);
+  var [vault,setVault]=useState(function(){ return loadVault() || getDefaultVault("",null); });
+
+  var updateVault = useCallback(function(newData){
+    var merged = Object.assign({}, vault, newData);
+    setVault(merged);
+    saveVault(merged);
+  },[vault]);
+
+  var operatorName = vault.operator || "";
 
   if(!booted) return <><Styles/><Boot onDone={function(){setBooted(true);}}/></>;
   if(!unlocked) return <><Styles/><LockScreen onUnlock={function(){setUnlocked(true);}}/></>;
@@ -632,7 +653,8 @@ export default function App(){
           <span style={{fontSize:10,letterSpacing:2,color:"var(--tx2)",fontFamily:"'JetBrains Mono',monospace"}}>ACADEMY VAULT</span>
           <span style={{fontSize:14,animation:"boltPulse 2s ease-in-out infinite"}}>⚡</span>
         </div>
-        <div style={{display:"flex",gap:6}}>
+        <div style={{display:"flex",gap:6,alignItems:"center"}}>
+          {operatorName && <span style={{fontSize:10,color:"#00FF88",fontFamily:"'JetBrains Mono',monospace",marginRight:6}}>⚡ {operatorName.toUpperCase()}</span>}
           {[{id:"home",label:"AURABOT"},{id:"loadouts",label:"LOADOUTS"},{id:"momentum",label:"MOMENTUM"},{id:"profile",label:"PROFILE"},{id:"mindset",label:"MINDSET"}].map(function(n){
             return <div key={n.id} onClick={function(){setPage(n.id);}} style={{padding:"6px 14px",borderRadius:6,cursor:"pointer",fontSize:10,fontFamily:"'JetBrains Mono',monospace",letterSpacing:1.5,background:page===n.id?"#BF00FF18":"transparent",color:page===n.id?"#BF00FF":"var(--tx2)",border:"1px solid "+(page===n.id?"#BF00FF40":"transparent"),transition:"all .2s"}}>{n.label}</div>;
           })}
@@ -643,6 +665,7 @@ export default function App(){
 
         {/* HOME */}
         {page==="home"&&<div>
+          {operatorName && <div style={{textAlign:"center",padding:"12px 0 0"}}><div style={{fontSize:12,color:"#00FF88",fontFamily:"'JetBrains Mono',monospace"}}>Welcome back, <strong>{operatorName}</strong> ⚡</div></div>}
           <div style={{textAlign:"center",padding:"50px 0 20px",position:"relative"}}>
             <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:300,height:300,background:"radial-gradient(circle,#BF00FF,transparent 70%)",opacity:0.06,borderRadius:"50%"}}/>
             <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:3,color:"#BF00FF80",marginBottom:8}}>⚡ CLASSIFIED SYSTEMS ARCHIVE</div>
@@ -756,13 +779,12 @@ export default function App(){
         </div>}
 
         {/* PROFILE */}
-        {page==="profile"&&<OperatorProfile systems={SYSTEMS} onOpenGuide={function(id){setActiveGuide(id);window.scrollTo(0,0);}}/>}
+        {page==="profile"&&<OperatorProfile systems={SYSTEMS} onOpenGuide={function(id){setActiveGuide(id);window.scrollTo(0,0);}} vault={vault} onUpdateVault={updateVault}/>}
 
         {/* MINDSET */}
-        {page==="mindset"&&<MindsetLab/>}
+        {page==="mindset"&&<MindsetLab vault={vault} onUpdateVault={updateVault}/>}
 
       </div>
     </div>
   </>;
 }
-
