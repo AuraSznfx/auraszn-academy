@@ -83,6 +83,8 @@ input,textarea,select{background:var(--bg3);color:var(--tx);border:1px solid var
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:4px}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes boltPulse{0%,100%{opacity:1;filter:drop-shadow(0 0 4px #ffd700)}50%{opacity:0.5;filter:drop-shadow(0 0 12px #ffd700)}}
+@keyframes candleFloat{0%{opacity:0;transform:translateY(20px)}20%{opacity:1}80%{opacity:1}100%{opacity:0;transform:translateY(-60px)}}
+@keyframes candlePulse{0%,100%{opacity:0.03}50%{opacity:0.06}}
 .card{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:18px;position:relative;overflow:hidden}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:.4}
 .card:hover{border-color:#BF00FF30}
@@ -100,6 +102,32 @@ input,textarea,select{background:var(--bg3);color:var(--tx);border:1px solid var
   header>div:last-child>div{padding:10px 6px!important;font-size:9px!important;letter-spacing:0.5px!important}
 }
 `}</style>;}
+
+// ═══ CANDLE BACKGROUND ═══
+function CandleBackground() {
+  var candles = [];
+  for (var i = 0; i < 24; i++) {
+    var isBull = Math.random() > 0.45;
+    var height = 20 + Math.random() * 50;
+    var wickTop = 4 + Math.random() * 14;
+    var wickBot = 4 + Math.random() * 14;
+    var left = 2 + (i / 24) * 96;
+    var delay = Math.random() * 12;
+    var dur = 8 + Math.random() * 6;
+    var opacity = 0.02 + Math.random() * 0.03;
+    candles.push({id:i, isBull:isBull, height:height, wickTop:wickTop, wickBot:wickBot, left:left, delay:delay, dur:dur, opacity:opacity});
+  }
+  return <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:0,overflow:"hidden"}}>
+    {candles.map(function(c) {
+      var color = c.isBull ? "#BF00FF" : "#BF00FF";
+      return <div key={c.id} style={{position:"absolute",left:c.left+"%",bottom:"-10%",display:"flex",flexDirection:"column",alignItems:"center",animation:"candleFloat "+c.dur+"s ease-in-out "+c.delay+"s infinite",opacity:c.opacity}}>
+        <div style={{width:1,height:c.wickTop,background:color,borderRadius:1}}/>
+        <div style={{width:5+Math.random()*4,height:c.height,background:c.isBull?color:color+"60",borderRadius:1,border:"1px solid "+color+"40"}}/>
+        <div style={{width:1,height:c.wickBot,background:color,borderRadius:1}}/>
+      </div>;
+    })}
+  </div>;
+}
 
 // ═══ ACCESS GATE ═══
 var ACCESS_CODE = "AURASZN2026";
@@ -593,6 +621,7 @@ export default function App(){
 
   return <><Styles/>
     <div style={{minHeight:"100vh",background:"var(--bg)",paddingBottom:40}}>
+      <CandleBackground/>
       <div style={{position:"fixed",inset:0,pointerEvents:"none",opacity:0.012,backgroundImage:"linear-gradient(var(--ac) 1px,transparent 1px),linear-gradient(90deg,var(--ac) 1px,transparent 1px)",backgroundSize:"60px 60px"}}/>
 
       {/* Header */}
@@ -604,7 +633,7 @@ export default function App(){
           <span style={{fontSize:14,animation:"boltPulse 2s ease-in-out infinite"}}>⚡</span>
         </div>
         <div style={{display:"flex",gap:6}}>
-          {[{id:"home",label:"AURABOT"},{id:"loadouts",label:"LOADOUTS"},{id:"profile",label:"PROFILE"},{id:"mindset",label:"MINDSET"}].map(function(n){
+          {[{id:"home",label:"AURABOT"},{id:"loadouts",label:"LOADOUTS"},{id:"momentum",label:"MOMENTUM"},{id:"profile",label:"PROFILE"},{id:"mindset",label:"MINDSET"}].map(function(n){
             return <div key={n.id} onClick={function(){setPage(n.id);}} style={{padding:"6px 14px",borderRadius:6,cursor:"pointer",fontSize:10,fontFamily:"'JetBrains Mono',monospace",letterSpacing:1.5,background:page===n.id?"#BF00FF18":"transparent",color:page===n.id?"#BF00FF":"var(--tx2)",border:"1px solid "+(page===n.id?"#BF00FF40":"transparent"),transition:"all .2s"}}>{n.label}</div>;
           })}
         </div>
@@ -681,6 +710,18 @@ export default function App(){
                 </div>
               </div>;
             })}
+          </div>
+        </div>}
+
+        {/* MOMENTUM OS */}
+        {page==="momentum"&&<div>
+          <div style={{textAlign:"center",padding:"40px 0 20px"}}>
+            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:3,color:"#00FFFF80",marginBottom:8}}>DAILY OPERATIONS SYSTEM</div>
+            <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:"clamp(24px,5vw,32px)",fontWeight:800,color:"#fff"}}>Momentum <span style={{color:"#00FFFF"}}>OS</span></div>
+            <div style={{fontSize:13,color:"var(--tx2)",marginTop:10,lineHeight:1.7,maxWidth:500,margin:"10px auto 0"}}>Your daily planner, trade journal, and accountability system. All in one.</div>
+          </div>
+          <div style={{borderRadius:12,overflow:"hidden",border:"1px solid var(--brd)",background:"var(--bg2)",boxShadow:"0 0 40px rgba(0,255,255,0.05)"}}>
+            <iframe src="https://auraszn-momentum-os.vercel.app" style={{width:"100%",height:"calc(100vh - 180px)",minHeight:600,border:"none",borderRadius:12,background:"#06060c"}} title="Momentum OS" allow="clipboard-write"/>
           </div>
         </div>}
 
