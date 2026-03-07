@@ -715,13 +715,43 @@ export default function App(){
 
         {/* MOMENTUM OS */}
         {page==="momentum"&&<div>
-          <div style={{textAlign:"center",padding:"40px 0 20px"}}>
+          <div style={{textAlign:"center",padding:"50px 0 30px",position:"relative"}}>
+            <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:300,height:300,background:"radial-gradient(circle,#00FFFF,transparent 70%)",opacity:0.04,borderRadius:"50%"}}/>
             <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:3,color:"#00FFFF80",marginBottom:8}}>DAILY OPERATIONS SYSTEM</div>
-            <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:"clamp(24px,5vw,32px)",fontWeight:800,color:"#fff"}}>Momentum <span style={{color:"#00FFFF"}}>OS</span></div>
-            <div style={{fontSize:13,color:"var(--tx2)",marginTop:10,lineHeight:1.7,maxWidth:500,margin:"10px auto 0"}}>Your daily planner, trade journal, and accountability system. All in one.</div>
+            <img src="/aurabot-logo.png" style={{width:70,height:70,borderRadius:"50%",border:"2px solid #00FFFF30",objectFit:"cover",margin:"0 auto 14px",display:"block",boxShadow:"0 0 30px #00FFFF15"}}/>
+            <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:"clamp(26px,5vw,34px)",fontWeight:800,color:"#fff"}}>Momentum <span style={{color:"#00FFFF"}}>OS</span></div>
+            <div style={{fontSize:14,color:"var(--tx2)",marginTop:12,maxWidth:480,margin:"12px auto 0",lineHeight:1.7}}>Your daily planner, trade journal, hourly tracker, and accountability system. All in one.</div>
           </div>
-          <div style={{borderRadius:12,overflow:"hidden",border:"1px solid var(--brd)",background:"var(--bg2)",boxShadow:"0 0 40px rgba(0,255,255,0.05)"}}>
-            <iframe src="https://auraszn-momentum-os.vercel.app" style={{width:"100%",height:"calc(100vh - 180px)",minHeight:600,border:"none",borderRadius:12,background:"#06060c"}} title="Momentum OS" allow="clipboard-write"/>
+
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:20}}>
+            {[{icon:"📋",label:"Daily Planner",desc:"Set your mission, power moves, and hourly blocks",color:"#00FFFF"},{icon:"📊",label:"Trade Journal",desc:"Log every trade with P&L, setup type, and notes",color:"#00FF88"},{icon:"🧠",label:"Life Journals",desc:"Trade, life, spiritual, and business reflections",color:"#BF00FF"}].map(function(f,i){
+              return <div key={i} className="card" style={{padding:16,textAlign:"center"}}>
+                <div style={{fontSize:24,marginBottom:8}}>{f.icon}</div>
+                <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:12,fontWeight:700,color:f.color,letterSpacing:0.5}}>{f.label}</div>
+                <div style={{fontSize:10,color:"var(--tx2)",marginTop:4,lineHeight:1.5}}>{f.desc}</div>
+              </div>;
+            })}
+          </div>
+
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:20}}>
+            {[{icon:"📅",label:"90-Day Plan"},{icon:"📈",label:"Stats"},{icon:"🎯",label:"Intel"},{icon:"📖",label:"Guide"}].map(function(f,i){
+              return <div key={i} className="card" style={{padding:12,textAlign:"center"}}>
+                <div style={{fontSize:18,marginBottom:4}}>{f.icon}</div>
+                <div style={{fontSize:9,color:"var(--tx2)",fontFamily:"'JetBrains Mono',monospace",letterSpacing:0.5}}>{f.label}</div>
+              </div>;
+            })}
+          </div>
+
+          <a href="https://auraszn-momentum-os.vercel.app" target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"block"}}>
+            <div className="card" style={{padding:20,textAlign:"center",cursor:"pointer",borderLeft:"3px solid #00FFFF",transition:"all .2s"}}>
+              <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:18,fontWeight:800,color:"#00FFFF",letterSpacing:2,marginBottom:6}}>⚡ LAUNCH MOMENTUM OS</div>
+              <div style={{fontSize:12,color:"var(--tx2)"}}>Opens in a new tab — save it as an app on your phone for daily use</div>
+              <div style={{marginTop:14,display:"inline-block",padding:"12px 32px",borderRadius:8,background:"#00FFFF12",border:"1px solid #00FFFF40",color:"#00FFFF",fontSize:13,fontFamily:"'Oxanium',sans-serif",fontWeight:700,letterSpacing:3}}>OPEN APP →</div>
+            </div>
+          </a>
+
+          <div style={{textAlign:"center",marginTop:20,padding:"16px 20px",borderTop:"1px solid var(--brd)"}}>
+            <div style={{fontSize:11,color:"var(--tx2)",lineHeight:1.7}}>💡 <strong style={{color:"#fff"}}>Pro tip:</strong> On your phone, open Momentum OS in Safari/Chrome, tap <strong style={{color:"#00FFFF"}}>"Add to Home Screen"</strong> — it becomes a standalone app. Use it every morning before your session.</div>
           </div>
         </div>}
 
@@ -735,3 +765,4 @@ export default function App(){
     </div>
   </>;
 }
+
