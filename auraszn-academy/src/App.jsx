@@ -9,6 +9,7 @@ import HeistGuide from "./guides/HeistGuide";
 import PhaseGuide from "./guides/PhaseGuide";
 import AuraMapGuide from "./guides/AuraMapGuide";
 import LSMGuide from "./guides/LSMGuide";
+import MindsetLab from "./guides/MindsetLab";
 
 var QUOTES = [
   "You either drift or you design.",
@@ -687,26 +688,7 @@ export default function App(){
         {page==="profile"&&<OperatorProfile systems={SYSTEMS} onOpenGuide={function(id){setActiveGuide(id);window.scrollTo(0,0);}}/>}
 
         {/* MINDSET */}
-        {page==="mindset"&&<div>
-          <div style={{textAlign:"center",padding:"40px 0 30px"}}>
-            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:3,color:"#BF00FF80",marginBottom:8}}>MENTAL MODELS</div>
-            <img src="/aura-fire.png" style={{width:80,height:80,borderRadius:"50%",border:"2px solid #BF00FF40",objectFit:"cover",margin:"0 auto 14px",display:"block",boxShadow:"0 0 30px #BF00FF20"}}/>
-            <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:"clamp(24px,5vw,32px)",fontWeight:800,color:"#fff"}}>The <span style={{color:"#BF00FF"}}>Operator</span> Mindset</div>
-            <div style={{fontSize:13,color:"var(--tx2)",marginTop:10,lineHeight:1.7,maxWidth:500,margin:"10px auto 0"}}>Tools don't make the trader. Mindset does. These are the mental models that separate the funded from the blown.</div>
-          </div>
-          <div style={{display:"grid",gap:12}}>
-            {QUOTES.map(function(q,i){var colors=["#00FFFF","#BF00FF","#FFD700","#00FF88","#FF3366","#FF00FF","#FFEA00","#FF6B00"];var c=colors[i%colors.length];
-              return <div key={i} className="card" style={{borderLeft:"3px solid "+c,padding:"20px 18px"}}>
-                <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:15,fontWeight:500,color:c,lineHeight:1.7}}>"{q}"</div>
-                <div style={{fontSize:10,color:"var(--tx2)",marginTop:8,fontFamily:"'JetBrains Mono',monospace",letterSpacing:1}}>— AuraSzn</div>
-              </div>;
-            })}
-          </div>
-          <div style={{textAlign:"center",marginTop:40,padding:"24px 0"}}>
-            <img src="/aurabot-logo.png" style={{width:44,height:44,borderRadius:"50%",objectFit:"cover",margin:"0 auto 10px",display:"block",opacity:0.7}}/>
-            <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:11,color:"#BF00FF",letterSpacing:3}}>BUILT BY AURASZN. FOR THE 1%.</div>
-          </div>
-        </div>}
+        {page==="mindset"&&<MindsetLab/>}
 
       </div>
     </div>
