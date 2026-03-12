@@ -10,6 +10,7 @@ import PhaseGuide from "./guides/PhaseGuide";
 import AuraMapGuide from "./guides/AuraMapGuide";
 import LSMGuide from "./guides/LSMGuide";
 import MindsetLab from "./guides/MindsetLab";
+import IndicatorSettings from "./IndicatorSettings";
 
 // ═══ PERSISTENCE HELPER ═══
 var STORAGE_KEY = "auraszn_vault";
@@ -172,13 +173,10 @@ function LockScreen({onUnlock}) {
   </div>;
 
   return <div style={{position:"fixed",inset:0,background:"#000",zIndex:9999,display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",fontFamily:"'JetBrains Mono',monospace"}}>
-    {/* Scan line effect */}
     <div style={{position:"absolute",top:scanLine+"%",left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,#BF00FF20,transparent)",pointerEvents:"none"}}/>
-    {/* Grid */}
     <div style={{position:"fixed",inset:0,pointerEvents:"none",opacity:0.015,backgroundImage:"linear-gradient(#BF00FF 1px,transparent 1px),linear-gradient(90deg,#BF00FF 1px,transparent 1px)",backgroundSize:"50px 50px"}}/>
 
     <div style={{textAlign:"center",position:"relative",zIndex:1,maxWidth:400,width:"90%",padding:20}}>
-      {/* Lock icon */}
       <div style={{width:80,height:80,borderRadius:"50%",border:"2px solid #BF00FF40",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 24px",position:"relative"}}>
         <div style={{position:"absolute",inset:-4,borderRadius:"50%",border:"1px solid #BF00FF15",animation:"pulse 3s infinite"}}/>
         <span style={{fontSize:32}}>🔒</span>
@@ -188,7 +186,6 @@ function LockScreen({onUnlock}) {
       <div style={{fontSize:11,color:"#6a6a80",letterSpacing:2,marginBottom:6}}>CLASSIFIED SYSTEMS ARCHIVE</div>
       <div style={{fontSize:10,color:"#BF00FF40",letterSpacing:1.5,marginBottom:32}}>AUTHORIZED OPERATORS ONLY</div>
 
-      {/* Code input */}
       <div style={{position:"relative",marginBottom:16}}>
         <input
           type="password"
@@ -317,7 +314,6 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
       var max=0;var res="sniper";
       Object.keys(newScores).forEach(function(k){if(newScores[k]>max){max=newScores[k];res=k;}});
       setResult(res);
-      // Save to vault
       var newVault = Object.assign({}, vault || getDefaultVault(name.trim(), res), { operator: name.trim(), classification: res, dossierComplete: true });
       onUpdateVault(newVault);
       setScreen("reveal");
@@ -655,7 +651,7 @@ export default function App(){
         </div>
         <div style={{display:"flex",gap:6,alignItems:"center"}}>
           {operatorName && <span style={{fontSize:10,color:"#00FF88",fontFamily:"'JetBrains Mono',monospace",marginRight:6}}>⚡ {operatorName.toUpperCase()}</span>}
-          {[{id:"home",label:"AURABOT"},{id:"loadouts",label:"LOADOUTS"},{id:"momentum",label:"MOMENTUM"},{id:"profile",label:"PROFILE"},{id:"mindset",label:"MINDSET"}].map(function(n){
+          {[{id:"profile",label:"PROFILE"},{id:"home",label:"AURABOT"},{id:"loadouts",label:"LOADOUTS"},{id:"settings",label:"SETTINGS"},{id:"mindset",label:"MINDSET"},{id:"momentum",label:"MOMENTUM"}].map(function(n){
             return <div key={n.id} onClick={function(){setPage(n.id);}} style={{padding:"6px 14px",borderRadius:6,cursor:"pointer",fontSize:10,fontFamily:"'JetBrains Mono',monospace",letterSpacing:1.5,background:page===n.id?"#BF00FF18":"transparent",color:page===n.id?"#BF00FF":"var(--tx2)",border:"1px solid "+(page===n.id?"#BF00FF40":"transparent"),transition:"all .2s"}}>{n.label}</div>;
           })}
         </div>
@@ -783,6 +779,9 @@ export default function App(){
 
         {/* MINDSET */}
         {page==="mindset"&&<MindsetLab vault={vault} onUpdateVault={updateVault}/>}
+
+        {/* SETTINGS */}
+        {page==="settings"&&<IndicatorSettings/>}
 
       </div>
     </div>
