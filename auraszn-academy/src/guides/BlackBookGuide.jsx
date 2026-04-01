@@ -44,7 +44,7 @@ var SECTIONS = [
       { type: "text", content: "Below your Entry Line, you'll see two tagged levels: **Extreme Buys Lvl 1** and **Extreme Buys Lvl 2**. Above it, **Extreme Sells Lvl 1** and **Lvl 2**." },
       { type: "text", content: "These are the deep institutional levels where smart money actually fills orders. Lvl 1 is the first discount zone. Lvl 2 is the deep discount — the \"they're never going to give us this price again\" level." },
       { type: "callout", color: "#FFD700", label: "THE KEY", content: "Don't just blindly buy at extreme levels. Look for a W forming at or near an extreme buy level, or an M forming at or near an extreme sell level. When the pattern lines up with the zone — that's the sniper entry. That's confluence." },
-      { type: "text", content: "The Fib levels are **self-validating** — the indicator tracks which levels price actually reacted to over the last 10 sessions. Weak levels fade away. Proven levels get brighter and thicker. Every line on your chart has earned its place." }
+      { type: "text", content: "The institutional levels are **self-validating** — the indicator tracks which levels price actually reacted to over the last 10 sessions. Weak levels fade away. Proven levels get brighter and thicker. Every line on your chart has earned its place." }
     ]
   },
   {
@@ -116,7 +116,7 @@ var SETTINGS_GROUPS = [
   {
     label: "Auraszn's Institutional Playbook", color: "#FFD700",
     settings: [
-      "Master toggle — show/hide all Fib levels + bias signals",
+      "Master toggle — show/hide all institutional levels + bias signals",
       "Level Extend (bars), Line Width",
       "Show Price at Entry Line, Show Extreme Level Tags",
       "Lookback Sessions, Min Hit Rate %, Touch Tolerance",
@@ -205,7 +205,7 @@ export default function BlackBookGuide() {
       </div>
       <div style={{ fontSize: 14, color: "#6a6a80", marginTop: 8 }}>The Institutional Playbook</div>
       <div style={{ fontSize: 13, color: "#c0c0d0", marginTop: 16, maxWidth: 500, margin: "16px auto 0", lineHeight: 1.7 }}>
-        Your overnight cheat sheet for the NY session. Asian Range maps the battlefield. Fibs mark the levels. M's and W's confirm the move. Here's how to read it.
+        Your overnight cheat sheet for the NY session. Asian Range maps the battlefield. Institutional levels mark the zones. M's and W's confirm the move. Here's how to read it.
       </div>
     </div>
 
