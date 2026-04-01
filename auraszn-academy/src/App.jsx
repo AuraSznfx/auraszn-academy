@@ -11,6 +11,7 @@ import AuraMapGuide from "./guides/AuraMapGuide";
 import LSMGuide from "./guides/LSMGuide";
 import MindsetLab from "./guides/MindsetLab";
 import CyberStructureGuide from "./guides/CyberStructureGuide";
+import BlackBookGuide from "./guides/BlackBookGuide";
 import IndicatorSettings from "./IndicatorSettings";
 
 // ═══ PERSISTENCE HELPER ═══
@@ -39,6 +40,7 @@ var QUOTES = [
 var SYSTEMS = [
   { id:"nexus", name:"NEXUS v1.1", tier:"FLAGSHIP", tagline:"Unified Institutional Operating System", color:"#00FFFF", icon:"⚡", tf:"1m–15m", inst:"NQ/MNQ", desc:"The culmination of 12 systems unified into one engine. AIMLOCK + MIDAS + AURA-X + Phase Dynamics + ZoneWars + Smart AI Hologram. Every engine, one indicator.", component: NexusGuide },
   { id:"cyberstructure", name:"CYBERSTRUCTURE V3", tier:"FLAGSHIP", tagline:"AI-Powered Channel Intelligence", color:"#BF00FF", icon:"◈", tf:"All TFs", inst:"NQ/MNQ/Multi", desc:"Smart channel fitting, breakout confirmation, fakeout filtering, split coloring, HTF lock, Aura Magnet Lock, AI Smart Entry Assist. 10 cyberpunk themes. Pure structure.", component: CyberStructureGuide },
+  { id:"blackbook", name:"BLACK BOOK v2", tier:"FLAGSHIP", tagline:"The Institutional Playbook", color:"#FFD700", icon:"📓", tf:"15m", inst:"NQ/MNQ", desc:"Auraszn's institutional playbook. Asian Range mapping, self-validating Fib levels, FU candle detection, M/W divergence engine, live bias compass with flip detection, and extreme buy/sell zones. The overnight cheat sheet for your NY session.", component: BlackBookGuide },
   { id:"trendglow", name:"TRENDGLOW⚡", tier:"UTILITY", tagline:"HTF Trend Bias Engine", color:"#00E5FF", icon:"⚡", tf:"45m–30m Lock", inst:"NQ/MNQ/Multi", desc:"One glowing line. One truth. Trend Magic engine locked to your session TF (45m/30m) — see the bias on any chart. Glow line, ribbon band, 3 candle color modes, HTF flip markers. Pairs with Gravity for the full stack.", component: TrendGlowGuide },
   { id:"gravity", name:"AURA GRAVITY", tier:"UTILITY", tagline:"Auto S/R Zone Engine — HTF Locked", color:"#00FF6A", icon:"🧲", tf:"4H Lock", inst:"NQ/MNQ/Multi", desc:"Auto-detected support & resistance zones from 4H swing structure. Smart memory stores the freshest levels, selects the 2 closest above & below. Trade zone-to-zone with TrendGlow for direction.", component: GravityGuide },
   { id:"midas", name:"MIDAS TOUCH v2", tier:"SPECIALIZED", tagline:"NY Breakout Operating System", color:"#FFD700", icon:"👑", tf:"1m–5m", inst:"NQ/MNQ", desc:"Weighted confluence scoring, breakout velocity filter, ADR consumption gate, chop detection, fake-break invalidation, two-phase reclaim entry model.", component: MidasGuide },
@@ -52,6 +54,7 @@ var SYSTEMS = [
 
 var LOADOUTS = [
   { name:"THE FULL STACK", desc:"NEXUS by itself. Every engine unified. One indicator to rule them all.", systems:["nexus"], level:"Advanced" },
+  { name:"THE BLACK BOOK", desc:"BLACK BOOK maps the overnight institutional footprint. CYBERSTRUCTURE channels price into it. The complete pre-session playbook.", systems:["blackbook","cyberstructure"], level:"All Levels" },
   { name:"THE NY SNIPER", desc:"AURA-X maps the session, MIDAS finds the breakout, Phase Dynamics times the entry.", systems:["midas","phase"], level:"Intermediate" },
   { name:"THE ZONE-TO-ZONE", desc:"TrendGlow locks the 45m bias. Gravity locks 4H zones. Drop to 15m-5m and trade zone-to-zone. The secret sauce.", systems:["trendglow","gravity"], level:"All Levels" },
   { name:"THE LONDON PLAY", desc:"London Break for the setup, AURA MAP for clean visuals. One trade per day.", systems:["london","auramap"], level:"Beginner" },
@@ -97,7 +100,6 @@ input,textarea,select{background:var(--bg3);color:var(--tx);border:1px solid var
 .card{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:18px;position:relative;overflow:hidden}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:.4}
 .card:hover{border-color:#BF00FF30}
-/* MOBILE RESPONSIVE */
 @media(max-width:768px){
   body{overflow-x:hidden!important}
   header{padding:10px 14px!important;flex-direction:column!important;gap:8px!important}
@@ -643,7 +645,6 @@ export default function App(){
       <CandleBackground/>
       <div style={{position:"fixed",inset:0,pointerEvents:"none",opacity:0.012,backgroundImage:"linear-gradient(var(--ac) 1px,transparent 1px),linear-gradient(90deg,var(--ac) 1px,transparent 1px)",backgroundSize:"60px 60px"}}/>
 
-      {/* Header */}
       <header style={{position:"sticky",top:0,zIndex:100,background:"#06060cee",borderBottom:"1px solid var(--brd)",padding:"12px 20px",display:"flex",justifyContent:"space-between",alignItems:"center",backdropFilter:"blur(12px)"}}>
         <div onClick={function(){setPage("home");}} style={{cursor:"pointer",display:"flex",alignItems:"center",gap:8}}>
           <img src="/aura-avatar.png" style={{width:30,height:30,borderRadius:"50%",border:"1.5px solid #BF00FF40",objectFit:"cover"}}/>
@@ -661,7 +662,6 @@ export default function App(){
 
       <div style={{maxWidth:800,margin:"0 auto",padding:"0 20px"}}>
 
-        {/* HOME */}
         {page==="home"&&<div>
           {operatorName && <div style={{textAlign:"center",padding:"12px 0 0"}}><div style={{fontSize:12,color:"#00FF88",fontFamily:"'JetBrains Mono',monospace"}}>Welcome back, <strong>{operatorName}</strong> ⚡</div></div>}
           <div style={{textAlign:"center",padding:"50px 0 20px",position:"relative"}}>
@@ -672,13 +672,11 @@ export default function App(){
             <div style={{fontSize:14,color:"var(--tx2)",marginTop:12,maxWidth:500,margin:"12px auto 0",lineHeight:1.7}}>Every system AuraSzn has built. Tap any weapon to open its full classified guide.</div>
           </div>
 
-          {/* Quote */}
           <div style={{textAlign:"center",padding:"16px 20px",margin:"10px 0 30px",borderTop:"1px solid var(--brd)",borderBottom:"1px solid var(--brd)"}}>
             <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:13,color:"#BF00FF",fontWeight:500,fontStyle:"italic"}}>"{QUOTES[Math.floor(Math.random()*QUOTES.length)]}"</div>
             <div style={{fontSize:10,color:"var(--tx2)",marginTop:4,fontFamily:"'JetBrains Mono',monospace"}}>— AuraSzn</div>
           </div>
 
-          {/* Systems by tier */}
           {["FLAGSHIP","UTILITY","SPECIALIZED","SUPPORT"].map(function(tier){
             var ts=SYSTEMS.filter(function(s){return s.tier===tier;});
             var labels={FLAGSHIP:"THE FLAGSHIP",UTILITY:"THE HTF LOCK DUO",SPECIALIZED:"SPECIALIZED WEAPONS",SUPPORT:"SUPPORT LAYERS"};
@@ -710,7 +708,6 @@ export default function App(){
           })}
         </div>}
 
-        {/* LOADOUTS */}
         {page==="loadouts"&&<div>
           <div style={{textAlign:"center",padding:"40px 0 30px"}}>
             <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:3,color:"#BF00FF80",marginBottom:8}}>RECOMMENDED CONFIGURATIONS</div>
@@ -734,7 +731,6 @@ export default function App(){
           </div>
         </div>}
 
-        {/* MOMENTUM OS */}
         {page==="momentum"&&<div>
           <div style={{textAlign:"center",padding:"50px 0 30px",position:"relative"}}>
             <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:300,height:300,background:"radial-gradient(circle,#00FFFF,transparent 70%)",opacity:0.04,borderRadius:"50%"}}/>
@@ -776,16 +772,12 @@ export default function App(){
           </div>
         </div>}
 
-        {/* PROFILE */}
         {page==="profile"&&<OperatorProfile systems={SYSTEMS} onOpenGuide={function(id){setActiveGuide(id);window.scrollTo(0,0);}} vault={vault} onUpdateVault={updateVault}/>}
-
-        {/* MINDSET */}
         {page==="mindset"&&<MindsetLab vault={vault} onUpdateVault={updateVault}/>}
-
-        {/* SETTINGS */}
         {page==="settings"&&<IndicatorSettings/>}
 
       </div>
     </div>
   </>;
 }
+
