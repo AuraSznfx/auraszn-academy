@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURΔBØT™ BLACK BOOK — How It Works</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600;700&display=swap');
+
+:root {
+  --bg: #0a0a0f;
+  --card: #111118;
+  --border: #1a1a2e;
+  --cyan: #00E676;
+  --red: #FF1744;
+  --gold: #FFD700;
+  --white: #f0f0f5;
+  --muted: #6a6a8a;
+  --glow-cyan: 0 0 30px rgba(0, 230, 118, 0.3);
+  --glow-red: 0 0 30px rgba(255, 23, 68, 0.3);
+  --glow-gold: 0 0 30px rgba(255, 215, 0, 0.3);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 60px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 30% 50%, rgba(0, 230, 118, 0.04) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 50%, rgba(255, 23, 68, 0.03) 0%, transparent 50%);
+  animation: drift 20s ease-in-out infinite;
+}
+
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-3%, 2%); }
+}
+
+.brand {
+  font-family: 'Orbitron', monospace;
+  font-weight: 900;
+  font-size: clamp(28px, 5vw, 52px);
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, var(--cyan), var(--gold), var(--red));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 1;
+  animation: fadeIn 1s ease-out;
+}
+
+.subtitle {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(12px, 2vw, 16px);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 1;
+  animation: fadeIn 1.5s ease-out;
+}
+
+.tagline {
+  font-size: clamp(18px, 3vw, 28px);
+  font-weight: 600;
+  color: var(--white);
+  max-width: 600px;
+  position: relative;
+  z-index: 1;
+  animation: fadeIn 2s ease-out;
+  margin-bottom: 12px;
+}
+
+.tagline-sub {
+  font-size: clamp(14px, 2vw, 18px);
+  color: var(--muted);
+  max-width: 500px;
+  position: relative;
+  z-index: 1;
+  animation: fadeIn 2.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 40px;
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+/* ─── Content Sections ─── */
+
+.content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 24px 120px;
+}
+
+.section {
+  margin-bottom: 100px;
+  animation: fadeUp 0.8s ease-out;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section-number {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  letter-spacing: 4px;
+  color: var(--gold);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.section h2 {
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  font-size: clamp(20px, 3.5vw, 32px);
+  margin-bottom: 24px;
+  line-height: 1.3;
+}
+
+.section p {
+  font-size: 17px;
+  color: #c0c0d0;
+  margin-bottom: 20px;
+}
+
+.section p strong {
+  color: var(--white);
+  font-weight: 600;
+}
+
+.highlight-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 32px;
+  margin: 28px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.highlight-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+}
+
+.highlight-box.cyan::before { background: var(--cyan); box-shadow: var(--glow-cyan); }
+.highlight-box.red::before { background: var(--red); box-shadow: var(--glow-red); }
+.highlight-box.gold::before { background: var(--gold); box-shadow: var(--glow-gold); }
+
+.highlight-box .label {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.highlight-box.cyan .label { color: var(--cyan); }
+.highlight-box.red .label { color: var(--red); }
+.highlight-box.gold .label { color: var(--gold); }
+
+.highlight-box p {
+  font-size: 16px;
+  color: #b0b0c0;
+  margin-bottom: 0;
+}
+
+.emoji-rule {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+/* ─── The Rules ─── */
+
+.rule-grid {
+  display: grid;
+  gap: 20px;
+  margin-top: 28px;
+}
+
+.rule {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px 28px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.rule-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.rule-text {
+  font-size: 16px;
+  color: #b0b0c0;
+}
+
+.rule-text strong {
+  color: var(--white);
+  font-weight: 600;
+}
+
+/* ─── Footer ─── */
+
+.footer {
+  text-align: center;
+  padding: 60px 24px 80px;
+  border-top: 1px solid var(--border);
+}
+
+.footer .brand-small {
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 3px;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+.footer p {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 600px) {
+  .highlight-box { padding: 20px 22px; }
+  .rule { padding: 18px 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="brand">AURΔBØT™ BLACK BOOK</div>
+  <div class="subtitle">The Institutional Playbook</div>
+  <div class="tagline">Your overnight cheat sheet for the NY session.</div>
+  <div class="tagline-sub">Here's how to read it — like you're five.</div>
+  <div class="scroll-hint">↓ SCROLL ↓</div>
+</div>
+
+<div class="content">
+
+  <!-- STEP 1: THE BOX -->
+  <div class="section">
+    <div class="section-number">Step 01</div>
+    <h2>The Box Is Your Battlefield</h2>
+    <p>Every night while you're sleeping, big money sets a range. That's your <strong>Asian Range box</strong> — the green and red zone on your chart.</p>
+    <p>Think of it like a fence. The top of the fence is where sellers live. The bottom is where buyers live. The dashed line in the middle? That's no man's land.</p>
+
+    <div class="highlight-box cyan">
+      <div class="label">The Simple Version</div>
+      <p>Banks set the range overnight. NY comes in and picks a side. Your job is to figure out which side — <strong>before</strong> they do it.</p>
+    </div>
+  </div>
+
+  <!-- STEP 2: THE ENTRY LINE -->
+  <div class="section">
+    <div class="section-number">Step 02</div>
+    <h2>The Gold Line Is Everything</h2>
+    <p>That yellow line labeled <strong>"Entry Line"</strong> with the price next to it? That's your 50% level. It's the midpoint of where institutions moved price from.</p>
+    <p>When price comes back to this line and reacts — that's your entry. Not before. Not after. <strong>On the reaction.</strong></p>
+
+    <div class="highlight-box gold">
+      <div class="label">How To Use It</div>
+      <p>Wait for price to touch or get close to the gold Entry Line. Watch what the candles do there. If they reject it? That's your trade. If they blow through it? The bias might be flipping.</p>
+    </div>
+  </div>
+
+  <!-- STEP 3: M's AND W's -->
+  <div class="section">
+    <div class="section-number">Step 03</div>
+    <h2>M's Are Sells. W's Are Buys.</h2>
+    <p>The indicator looks for <strong>double tops (M shapes)</strong> and <strong>double bottoms (W shapes)</strong> on your chart. But not just any M or W — it checks if the momentum underneath is actually weakening. That's called divergence.</p>
+    <p>Here's the cheat code:</p>
+
+    <div class="highlight-box red">
+      <div class="label">M Above Asian Range = Sell</div>
+      <p>If you see an <strong>◈ M ▼</strong> label forming ABOVE the Asian Range box — that's a high-confluence sell. Banks swept the overnight high, made a double top, and momentum is dying. They're about to dump it.</p>
+    </div>
+
+    <div class="highlight-box cyan">
+      <div class="label">W Below Asian Range = Buy</div>
+      <p>If you see a <strong>◈ W ▲</strong> label forming BELOW the Asian Range box — that's a high-confluence buy. Banks swept the overnight low, made a double bottom, and momentum is building. They're loading up.</p>
+    </div>
+
+    <p>The ◈ symbol means it formed outside the Asian Range — that's the <strong>A+ setup</strong>. A regular M or W without the ◈ is still valid, just lower conviction.</p>
+  </div>
+
+  <!-- STEP 4: EXTREME ZONES -->
+  <div class="section">
+    <div class="section-number">Step 04</div>
+    <h2>Extreme Zones = Sniper Entries</h2>
+    <p>Below your Entry Line, you'll see two tagged levels: <strong>Extreme Buys Lvl 1</strong> and <strong>Extreme Buys Lvl 2</strong>. Above it, <strong>Extreme Sells Lvl 1</strong> and <strong>Lvl 2</strong>.</p>
+    <p>These are the deep institutional levels where smart money actually fills orders. Lvl 1 is the first discount zone. Lvl 2 is the deep discount — the "they're never going to give us this price again" level.</p>
+
+    <div class="highlight-box gold">
+      <div class="label">The Key</div>
+      <p>Don't just blindly buy at extreme levels. Look for a <strong>W forming at or near an extreme buy level</strong>, or an <strong>M forming at or near an extreme sell level</strong>. When the pattern lines up with the zone — that's the sniper entry. That's confluence.</p>
+    </div>
+  </div>
+
+  <!-- STEP 5: BIAS -->
+  <div class="section">
+    <div class="section-number">Step 05</div>
+    <h2>The Bias Tells You Who's Winning</h2>
+    <p>Before the NY session opens, the indicator reads how price behaved relative to the Entry Line. If most candles closed above it — <strong>▲ STRONG BUYS</strong>. Below it — <strong>▼ STRONG SELLS</strong>.</p>
+    <p>That's your starting bias. But it's not set in stone.</p>
+
+    <div class="highlight-box red">
+      <div class="label">Live Bias Flip</div>
+      <p>If price prints 3 consecutive closes on the opposite side of the Entry Line during your session, the bias flips live. You'll see <strong>"◈ BIAS FLIPPED ▼ SELLS"</strong> — that means the market changed its mind. Respect it.</p>
+    </div>
+  </div>
+
+  <!-- STEP 6: ASIAN RANGE BREAKOUT -->
+  <div class="section">
+    <div class="section-number">Step 06</div>
+    <h2>The Box Changes Color For A Reason</h2>
+    <p>When price fully closes outside the Asian Range box, the broken side changes color. If it breaks above — the top half turns green. Below — the bottom half turns red.</p>
+    <p>This tells you: <strong>which side got swept</strong>. If the top turned green and price is holding above the range — buyers are in control. If it breaks back inside, the colors reset. The market is still deciding.</p>
+  </div>
+
+  <!-- STEP 7: PUTTING IT ALL TOGETHER -->
+  <div class="section">
+    <div class="section-number">Step 07</div>
+    <h2>The A+ Trade</h2>
+    <p>Here's what a perfect BLACK BOOK setup looks like:</p>
+
+    <div class="rule-grid">
+      <div class="rule">
+        <div class="rule-icon">🌙</div>
+        <div class="rule-text"><strong>Overnight:</strong> Asian Range builds. You see the box form with the dashed midline.</div>
+      </div>
+      <div class="rule">
+        <div class="rule-icon">📊</div>
+        <div class="rule-text"><strong>Pre-session:</strong> Bias reads ▲ STRONG BUYS — most candles closed above the Entry Line heading into NY.</div>
+      </div>
+      <div class="rule">
+        <div class="rule-icon">🎯</div>
+        <div class="rule-text"><strong>NY opens:</strong> Price dips below the Asian Range, hits your Extreme Buys Lvl 1, and prints a ◈ W ▲ divergence pattern.</div>
+      </div>
+      <div class="rule">
+        <div class="rule-icon">💰</div>
+        <div class="rule-text"><strong>Entry:</strong> Price bounces back to the gold Entry Line. You enter on the reaction. SL below Extreme Buys Lvl 2. TP at Asian Range high or above.</div>
+      </div>
+    </div>
+
+    <div class="highlight-box gold" style="margin-top: 32px;">
+      <div class="label">That's The Playbook</div>
+      <p>Asian Range sets the field. Entry Line is your trigger. Extreme zones are your sniper spots. M's and W's confirm the move. Bias tells you the direction. Everything else is noise.</p>
+    </div>
+  </div>
+
+  <!-- GOD DID -->
+  <div class="section" style="text-align: center;">
+    <div class="section-number">Remember</div>
+    <h2 style="font-size: clamp(32px, 6vw, 56px); background: linear-gradient(135deg, var(--gold), var(--white)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">GOD DID</h2>
+    <p style="color: var(--muted); margin-top: 16px;">Trade like you've seen the future.</p>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="brand-small">AURΔBØT™</div>
+  <p>BLACK BOOK — The Institutional Playbook</p>
+  <p style="margin-top: 8px;">© Auraszn — All Rights Reserved</p>
+</div>
+
+</body>
+</html>
