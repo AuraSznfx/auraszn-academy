@@ -1,957 +1,661 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import NexusGuide from "./guides/NexusGuide";
-import TrendGlowGuide from "./guides/TrendGlowGuide";
-import GravityGuide from "./guides/GravityGuide";
-import MidasGuide from "./guides/MidasGuide";
-import LondonGuide from "./guides/LondonGuide";
-import ZoneWarsGuide from "./guides/ZoneWarsGuide";
-import HeistGuide from "./guides/HeistGuide";
-import PhaseGuide from "./guides/PhaseGuide";
-import AuraMapGuide from "./guides/AuraMapGuide";
-import LSMGuide from "./guides/LSMGuide";
-import MindsetLab from "./guides/MindsetLab";
-import CyberStructureGuide from "./guides/CyberStructureGuide";
-import BlackBookGuide from "./guides/BlackBookGuide";
-import IndicatorSettings from "./IndicatorSettings";
+import { useState, useEffect } from "react";
 
-// ═══ PERSISTENCE HELPER ═══
-var STORAGE_KEY = "auraszn_vault";
-function loadVault() { try { var d = localStorage.getItem(STORAGE_KEY); return d ? JSON.parse(d) : null; } catch(e) { return null; } }
-function saveVault(data) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {} }
-function getDefaultVault(name, result) { return { operator: name||"", classification: result||null, dossierComplete: false, oathComplete: false, oathStep: 0, leaksFixed: [], scarsRevealed: [], checkInToday: null, checkInDate: null, createdAt: new Date().toISOString() }; }
+const C = "#00FFFF", M = "#FF00AA", G = "#00FF6A", R = "#FF3B5C", Y = "#FFD700", N = "#00E5FF", BG = "#0a0a0f", B2 = "#12121f", B3 = "#1a1a2e", D = "#555577", W = "#E8E8F0";
 
-var QUOTES = [
-  "You either drift or you design.",
-  "The chart doesn't lie. Your ego does.",
-  "Discipline is the shortcut manifestation responds to.",
-  "The combine is not where you trade. It is a TOLL you pay to access real capital.",
-  "Your stop loss was the target. Now you know.",
-  "Consistency beats intensity every single time.",
-  "God rewards structure.",
-  "Momentum compounds. Protect it.",
-  "One setup. Two directions. No noise.",
-  "Hard decisions today. Easy life tomorrow.",
-  "The boring middle is where champions are built.",
-  "The market isn't random — it's structured.",
-  "Most traders lose because they can't see what's coming.",
-  "Trade like you've seen the future.",
-  "Where faith meets fire.",
+const stages = [
+  { n: 1, name: "LIQUIDITY SWEEP", i: "💧", c: C, d: "Asia or London high/low gets violated with a rejection wick. Smart money grabbed liquidity — the trap is set.", ex: "Price pushes above Asia high by 3pts, prints long upper wick, closes back below. Retail longs trapped." },
+  { n: 2, name: "SMT DIVERGENCE", i: "🔀", c: M, d: "NQ makes a higher high but ES doesn't confirm. Indices disagreeing = institutional divergence signal.", ex: "NQ prints 24,950 (new high) but ES only 5,580 (lower high). Smart money distributing." },
+  { n: 3, name: "STRUCTURE SHIFT", i: "💥", c: R, d: "Price breaks swing low (shorts) or swing high (longs). Market structure has officially changed direction.", ex: "After sweep at 24,950, price breaks below 24,920 swing low. Bears now in control." },
+  { n: 4, name: "DISPLACEMENT", i: "🚀", c: G, d: "Monster candle: body ≥80%, wick ≤30%, size ≥1.5× ATR. This is the institutional confirmation candle.", ex: "15-point red candle with almost no wicks slams through 24,920-24,905. Displacement." },
+  { n: 5, name: "RETRACE → BOX", i: "📦", c: Y, d: "Price pulls back into the HTF liquidity box where displacement originated. This is the entry zone.", ex: "Price bounces from 24,905 back up to 24,918, right into 15m supply zone at 24,915-24,922." },
+  { n: 6, name: "ARMED 🔫", i: "🎯", c: "#00FF00", d: "All conditions met. Score ≥ threshold. Kill zone active. Energy phase ready. System fires the signal.", ex: "Score 10/8, 9:42am Kill Zone Phase 1, Energy ARMED → SHORT at 24,918." },
 ];
 
-var SYSTEMS = [
-  {
-    id: "nexus",
-    name: "HOLOGRAM CANDLES",
-    tier: "FLAGSHIP",
-    tagline: "See the candle before it prints.",
-    color: "#00FFFF",
-    icon: "⚡",
-    tf: "1m–15m",
-    inst: "NQ/MNQ",
-    desc: "The first and only system that projects future candles forward on your chart. While everyone else reacts — you're already positioned. Every engine AURΔBØT™ has ever built, unified into one indicator.",
-    component: NexusGuide
-  },
-  {
-    id: "cyberstructure",
-    name: "CYBERSTRUCTURE V3",
-    tier: "CORE",
-    tagline: "Smart channels that think for you.",
-    color: "#BF00FF",
-    icon: "◈",
-    tf: "All TFs",
-    inst: "NQ/MNQ/Multi",
-    desc: "Draws the channels. Detects the breakout. Filters the fakeouts. Locks to the higher timeframe so you never lose the big picture. 10 cyberpunk themes. Pure structure, zero guesswork.",
-    component: CyberStructureGuide
-  },
-  {
-    id: "blackbook",
-    name: "BLACK BOOK",
-    tier: "CLASSIFIED",
-    tagline: "Aura's personal playbook — 6 years in the making.",
-    color: "#FFD700",
-    icon: "📓",
-    tf: "15m",
-    inst: "NQ/MNQ",
-    desc: "The overnight cheat sheet for your NY session. Maps what happened while you slept, marks the levels that matter, detects the traps before they spring, and tells you which direction to trade — before the market opens.",
-    component: BlackBookGuide
-  },
-  {
-    id: "trendglow",
-    name: "TRENDGLOW",
-    tier: "CORE",
-    tagline: "One glowing line. One truth.",
-    color: "#00E5FF",
-    icon: "⚡",
-    tf: "45m–30m Lock",
-    inst: "NQ/MNQ/Multi",
-    desc: "Locks onto the higher timeframe trend and shows it on any chart you're trading. One line tells you the direction. The glow tells you the strength. Stop fighting the trend — see it.",
-    component: TrendGlowGuide
-  },
-  {
-    id: "gravity",
-    name: "AURA GRAVITY",
-    tier: "CORE",
-    tagline: "The zones price always comes back to.",
-    color: "#00FF6A",
-    icon: "🧲",
-    tf: "4H Lock",
-    inst: "NQ/MNQ/Multi",
-    desc: "Automatically detects support and resistance zones from the 4-hour chart. Finds the freshest levels, picks the 2 closest above and 2 below. Pair with TrendGlow and you always know where price is going — and where it'll bounce.",
-    component: GravityGuide
-  },
-  {
-    id: "midas",
-    name: "MIDAS TOUCH v2",
-    tier: "SPECIALIZED",
-    tagline: "The NY session breakout hunter.",
-    color: "#FFD700",
-    icon: "👑",
-    tf: "1m–5m",
-    inst: "NQ/MNQ",
-    desc: "Scores every breakout. Filters the fakes. Tells you when the move is real and when it's a trap. Built specifically for the New York open — the most profitable (and most dangerous) hour of the day.",
-    component: MidasGuide
-  },
-  {
-    id: "london",
-    name: "LONDON BREAK v1",
-    tier: "SPECIALIZED",
-    tagline: "One setup. Two directions. No noise.",
-    color: "#00FF88",
-    icon: "🌅",
-    tf: "5m–15m",
-    inst: "NQ/Forex",
-    desc: "Find the London trend line. Wait for the break after 9 AM. Enter on the pullback. One clean trade per day. No setup? No trade. This is how you keep things simple.",
-    component: LondonGuide
-  },
-  {
-    id: "zonewars",
-    name: "ZONEWARS v3",
-    tier: "SPECIALIZED",
-    tagline: "Catch the sweep. Ride the reclaim.",
-    color: "#FF00FF",
-    icon: "⚔️",
-    tf: "1m–5m",
-    inst: "NQ",
-    desc: "The market sweeps a level, traps everyone — then reverses. This system detects that pattern in real time. It finds the zones, confirms the trap, and gives you the entry after the fake move is over.",
-    component: ZoneWarsGuide
-  },
-  {
-    id: "heist",
-    name: "LIQUIDITY HEIST",
-    tier: "SPECIALIZED",
-    tagline: "See where the stops are hiding.",
-    color: "#FF3366",
-    icon: "🔓",
-    tf: "1m–15m",
-    inst: "Multi-Asset",
-    desc: "Maps every pool of stop losses sitting in the market. Shows you where price is being pulled — and where the trap is waiting. 8 visual themes so you see it your way.",
-    component: HeistGuide
-  },
-  {
-    id: "phase",
-    name: "PHASE DYNAMICS v5",
-    tier: "SUPPORT",
-    tagline: "Know when the move is coming — before it moves.",
-    color: "#FFEA00",
-    icon: "⚡",
-    tf: "1m–15m",
-    inst: "Multi-Asset",
-    desc: "Measures energy and pressure building in the market using time and session data. When pressure peaks — the move is about to hit. Stop guessing when. Start seeing when.",
-    component: PhaseGuide
-  },
-  {
-    id: "auramap",
-    name: "AURA MAP",
-    tier: "SUPPORT",
-    tagline: "Your chart, cleaned up and locked in.",
-    color: "#00FF88",
-    icon: "📡",
-    tf: "All",
-    inst: "Multi-Asset",
-    desc: "A clean visual overlay that marks your session times, key levels, and reference points. Syncs with every other AURΔBØT™ tool. Makes your chart look like a cockpit, not a mess.",
-    component: AuraMapGuide
-  },
-  {
-    id: "lsm",
-    name: "NQ LSM v3.2",
-    tier: "SUPPORT",
-    tagline: "Mechanical entries. No decisions required.",
-    color: "#FF6B00",
-    icon: "🔧",
-    tf: "1m",
-    inst: "NQ",
-    desc: "After the 9:30 open, it draws the box. You enter at the edges. Stop loss is set automatically. Take profit at 1R, 2R, 3R. Completely mechanical — no thinking, no emotions, no second-guessing.",
-    component: LSMGuide
-  },
+const modes = [
+  { name: "GHOST", sc: 3, f: "None", i: "👻", d: "Everything fires. No filters. Raw signals for backtesting or trusting your own eyes.", c: "#8888AA" },
+  { name: "SOFT", sc: 5, f: "Basic", i: "🌙", d: "Light filtering. No SMT or chop required. Good for learning the system and seeing patterns.", c: "#66AAFF" },
+  { name: "BALANCED", sc: 8, f: "SMT+Chop+ADR", i: "⚖️", d: "The sweet spot. Requires confluence without missing good setups. START HERE.", c: C },
+  { name: "HARD", sc: 10, f: "All+Bias", i: "🔒", d: "Institutional grade. Requires bias alignment + full confluence. Fewer signals, higher win rate.", c: Y },
+  { name: "SNIPER", sc: 12, f: "Maximum", i: "🎯", d: "A+ setups only. You might get 1-2 signals per day. But they're surgical precision.", c: R },
 ];
 
-var LOADOUTS = [
-  {
-    name: "THE FULL STACK",
-    desc: "Hologram Candles by itself. Every engine unified into one indicator. If you only run one thing — run this.",
-    systems: ["nexus"],
-    level: "Advanced"
-  },
-  {
-    name: "THE BLACK BOOK",
-    desc: "Black Book maps the overnight footprint. CyberStructure channels price into it. Your complete pre-session playbook — know the plan before the market opens.",
-    systems: ["blackbook", "cyberstructure"],
-    level: "All Levels"
-  },
-  {
-    name: "THE NY SNIPER",
-    desc: "Midas finds the breakout. Phase Dynamics times the entry. Built for the NY open — fast in, fast out, no chasing.",
-    systems: ["midas", "phase"],
-    level: "Intermediate"
-  },
-  {
-    name: "THE ZONE-TO-ZONE",
-    desc: "TrendGlow locks the direction. Gravity locks the levels. Drop to 15m–5m and trade zone-to-zone. This is the secret sauce.",
-    systems: ["trendglow", "gravity"],
-    level: "All Levels"
-  },
-  {
-    name: "THE LONDON PLAY",
-    desc: "London Break for the setup, Aura Map for clean visuals. One trade per day. Perfect for beginners who want to keep it simple.",
-    systems: ["london", "auramap"],
-    level: "Beginner"
-  },
-  {
-    name: "THE ZONE TRADER",
-    desc: "ZoneWars catches the sweep and rides the reclaim. For traders who love reversals and trapped moves.",
-    systems: ["zonewars"],
-    level: "Intermediate"
-  },
-  {
-    name: "THE LIQUIDITY HUNTER",
-    desc: "Heist maps the stop loss pools. LSM executes mechanically at the edges. See the target, take the shot.",
-    systems: ["heist", "lsm"],
-    level: "Intermediate"
-  },
+const phases = [
+  { name: "COMPRESS", r: "0-40%", i: "🫧", c: "#6666AA", d: "Market coiling. Low volatility. Candles shrinking. The calm before the storm." },
+  { name: "CHARGING", r: "40-70%", i: "⚡", c: C, d: "Energy building. Range tightening. Levels clustering. Spring is loading." },
+  { name: "ARMED", r: "70-threshold", i: "💣", c: Y, d: "Ready to explode. One displacement candle away from ignition. BE READY." },
+  { name: "IGNITION", r: "Threshold breach", i: "🔥", c: R, d: "BOOM. Displacement confirmed. High-probability expansion move in progress." },
+  { name: "EXPANSION", r: "Post-ignition", i: "🚀", c: G, d: "Locked in. The move is happening. Ride it until energy depletes below 40%." },
 ];
 
-// ═══ BOOT ═══
-function Boot({onDone}) {
-  var [lines,setLines]=useState([]);
-  var [phase,setPhase]=useState("boot");
-  var bl=["$ ssh operator@vault.aurabot.classified","> Authenticating biometric signature...","> Decrypting archive: AURABOT-SYSTEMS.enc","> Clearance verified: LEVEL ∞","> Loading classified modules...","> VAULT ACCESS GRANTED."];
-  useEffect(function(){
-    if(phase==="boot"){var i=0;var iv=setInterval(function(){if(i<bl.length){setLines(function(p){return p.concat([bl[i]]);});i++;}else{clearInterval(iv);setTimeout(function(){setPhase("flash");},600);}},220);return function(){clearInterval(iv);};}
-    if(phase==="flash")setTimeout(onDone,2200);
-  },[phase]);
-  if(phase==="flash") return <div style={{position:"fixed",inset:0,background:"#000",zIndex:9999,display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
-    <img src="/aurabot-logo.png" alt="" style={{width:80,height:80,borderRadius:"50%",marginBottom:20,opacity:0.9,animation:"fadeIn .5s ease"}}/>
-    <div style={{fontSize:"clamp(28px,6vw,44px)",fontFamily:"'Oxanium',sans-serif",fontWeight:800,letterSpacing:8,color:"#BF00FF",textShadow:"0 0 60px #BF00FF80"}}>AURΔBØT™</div>
-    <div style={{fontSize:12,letterSpacing:4,color:"#6a6a80",marginTop:8,fontFamily:"'JetBrains Mono',monospace"}}>WEAPONS VAULT</div>
-    <div style={{fontSize:10,letterSpacing:3,color:"#BF00FF80",marginTop:16,fontFamily:"'JetBrains Mono',monospace"}}>CLASSIFIED SYSTEMS ARCHIVE</div>
-  </div>;
-  return <div style={{position:"fixed",inset:0,background:"#000",zIndex:9999,display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",fontFamily:"'JetBrains Mono',monospace"}}>
-    <div style={{maxWidth:500,width:"90%",padding:20}}>
-      <div style={{fontSize:22,fontFamily:"'Oxanium',sans-serif",fontWeight:800,color:"#BF00FF",marginBottom:24,letterSpacing:6}}>AURΔBØT™</div>
-      {lines.map(function(l,i){var isLast=i===lines.length-1&&i===bl.length-1;return <div key={i} style={{color:isLast?"#00FF88":"#334",fontSize:12,lineHeight:2}}>{l}</div>;})}
-    </div>
-  </div>;
-}
-
-// ═══ STYLES ═══
-function Styles(){return <style>{`
-@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;700;800&family=Chakra+Petch:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--ac:#BF00FF;--bg:#06060c;--bg2:#0d0d16;--bg3:#13131f;--tx:#d8d8e4;--tx2:#6a6a80;--brd:#1e1e30}
-body{background:var(--bg);color:var(--tx);font-family:'Chakra Petch',sans-serif}
-input,textarea,select{background:var(--bg3);color:var(--tx);border:1px solid var(--brd);border-radius:6px;padding:10px 12px;font-family:inherit;font-size:13px;width:100%;outline:none}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:4px}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes boltPulse{0%,100%{opacity:1;filter:drop-shadow(0 0 4px #ffd700)}50%{opacity:0.5;filter:drop-shadow(0 0 12px #ffd700)}}
-@keyframes candleFloat{0%{opacity:0;transform:translateY(20px)}20%{opacity:1}80%{opacity:1}100%{opacity:0;transform:translateY(-60px)}}
-@keyframes candlePulse{0%,100%{opacity:0.03}50%{opacity:0.06}}
-.card{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:18px;position:relative;overflow:hidden}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:.4}
-.card:hover{border-color:#BF00FF30}
-@media(max-width:768px){
-  body{overflow-x:hidden!important}
-  header{padding:10px 14px!important;flex-direction:column!important;gap:8px!important}
-  header>div:first-child{width:100%;justify-content:center!important}
-  header>div:last-child{width:100%;justify-content:center!important;flex-wrap:wrap!important;gap:4px!important}
-  header>div:last-child>div{padding:10px 10px!important;font-size:10px!important;flex:1!important;text-align:center!important;min-width:0!important}
-  button{min-height:44px!important}
-  .card{padding:16px!important}
-}
-@media(max-width:480px){
-  header>div:last-child>div{padding:10px 6px!important;font-size:9px!important;letter-spacing:0.5px!important}
-}
-`}</style>;}
-
-// ═══ CANDLE BACKGROUND ═══
-function CandleBackground() {
-  var candles = [];
-  for (var i = 0; i < 24; i++) {
-    var isBull = Math.random() > 0.45;
-    var height = 20 + Math.random() * 50;
-    var wickTop = 4 + Math.random() * 14;
-    var wickBot = 4 + Math.random() * 14;
-    var left = 2 + (i / 24) * 96;
-    var delay = Math.random() * 12;
-    var dur = 8 + Math.random() * 6;
-    var opacity = 0.02 + Math.random() * 0.03;
-    candles.push({id:i, isBull:isBull, height:height, wickTop:wickTop, wickBot:wickBot, left:left, delay:delay, dur:dur, opacity:opacity});
-  }
-  return <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:0,overflow:"hidden"}}>
-    {candles.map(function(c) {
-      var color = c.isBull ? "#BF00FF" : "#BF00FF";
-      return <div key={c.id} style={{position:"absolute",left:c.left+"%",bottom:"-10%",display:"flex",flexDirection:"column",alignItems:"center",animation:"candleFloat "+c.dur+"s ease-in-out "+c.delay+"s infinite",opacity:c.opacity}}>
-        <div style={{width:1,height:c.wickTop,background:color,borderRadius:1}}/>
-        <div style={{width:5+Math.random()*4,height:c.height,background:c.isBull?color:color+"60",borderRadius:1,border:"1px solid "+color+"40"}}/>
-        <div style={{width:1,height:c.wickBot,background:color,borderRadius:1}}/>
-      </div>;
-    })}
-  </div>;
-}
-
-// ═══ ACCESS GATE ═══
-var ACCESS_CODE = "AURASZN2026";
-
-function LockScreen({onUnlock}) {
-  var [code,setCode]=useState("");
-  var [error,setError]=useState(false);
-  var [typing,setTyping]=useState("");
-  var [granted,setGranted]=useState(false);
-  var [scanLine,setScanLine]=useState(0);
-
-  useEffect(function(){
-    var iv=setInterval(function(){setScanLine(function(p){return p>100?0:p+0.5;});},30);
-    return function(){clearInterval(iv);};
-  },[]);
-
-  function handleSubmit(){
-    if(code.trim().toUpperCase()===ACCESS_CODE){
-      setGranted(true);
-      setTimeout(onUnlock,2200);
-    } else {
-      setError(true);
-      setCode("");
-      setTimeout(function(){setError(false);},1500);
-    }
-  }
-
-  function handleKey(e){if(e.key==="Enter")handleSubmit();}
-
-  if(granted) return <div style={{position:"fixed",inset:0,background:"#000",zIndex:9999,display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
-    <div style={{width:60,height:60,borderRadius:"50%",border:"2px solid #00FF88",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:20,animation:"fadeIn .3s ease"}}>
-      <span style={{color:"#00FF88",fontSize:28}}>✓</span>
-    </div>
-    <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:24,fontWeight:800,color:"#00FF88",letterSpacing:4,marginBottom:8}}>ACCESS GRANTED</div>
-    <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:"#00FF8860",letterSpacing:2}}>DECRYPTING CLASSIFIED ARCHIVES...</div>
-  </div>;
-
-  return <div style={{position:"fixed",inset:0,background:"#000",zIndex:9999,display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",fontFamily:"'JetBrains Mono',monospace"}}>
-    <div style={{position:"absolute",top:scanLine+"%",left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,#BF00FF20,transparent)",pointerEvents:"none"}}/>
-    <div style={{position:"fixed",inset:0,pointerEvents:"none",opacity:0.015,backgroundImage:"linear-gradient(#BF00FF 1px,transparent 1px),linear-gradient(90deg,#BF00FF 1px,transparent 1px)",backgroundSize:"50px 50px"}}/>
-
-    <div style={{textAlign:"center",position:"relative",zIndex:1,maxWidth:400,width:"90%",padding:20}}>
-      <div style={{width:80,height:80,borderRadius:"50%",border:"2px solid #BF00FF40",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 24px",position:"relative"}}>
-        <div style={{position:"absolute",inset:-4,borderRadius:"50%",border:"1px solid #BF00FF15",animation:"pulse 3s infinite"}}/>
-        <span style={{fontSize:32}}>🔒</span>
-      </div>
-
-      <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:"clamp(22px,5vw,30px)",fontWeight:800,color:"#BF00FF",letterSpacing:4,marginBottom:6}}>RESTRICTED</div>
-      <div style={{fontSize:11,color:"#6a6a80",letterSpacing:2,marginBottom:6}}>CLASSIFIED SYSTEMS ARCHIVE</div>
-      <div style={{fontSize:10,color:"#BF00FF40",letterSpacing:1.5,marginBottom:32}}>AUTHORIZED OPERATORS ONLY</div>
-
-      <div style={{position:"relative",marginBottom:16}}>
-        <input
-          type="password"
-          value={code}
-          onChange={function(e){setCode(e.target.value);setError(false);}}
-          onKeyDown={handleKey}
-          placeholder="ENTER ACCESS CODE"
-          style={{
-            width:"100%",background:"#0a0a14",border:"1px solid "+(error?"#FF3366":"#BF00FF30"),borderRadius:8,
-            padding:"14px 18px",fontSize:14,fontFamily:"'JetBrains Mono',monospace",letterSpacing:3,
-            color:"#fff",textAlign:"center",outline:"none",transition:"border-color .3s"
-          }}
-        />
-        {error && <div style={{position:"absolute",top:"100%",left:0,right:0,textAlign:"center",marginTop:8}}>
-          <span style={{fontSize:11,color:"#FF3366",letterSpacing:1}}>⚠ ACCESS DENIED — INVALID CODE</span>
-        </div>}
-      </div>
-
-      <button onClick={handleSubmit} style={{
-        width:"100%",padding:"14px",borderRadius:8,border:"1px solid #BF00FF40",
-        background:"#BF00FF15",color:"#BF00FF",fontSize:13,fontFamily:"'Oxanium',sans-serif",
-        fontWeight:700,letterSpacing:3,cursor:"pointer",marginTop:error?20:8,transition:"all .2s"
-      }}>AUTHENTICATE</button>
-
-      <div style={{marginTop:30,fontSize:10,color:"#333",letterSpacing:1,lineHeight:1.8}}>
-        Access codes are distributed to verified<br/>AURΔBØT™ members via Discord.
-      </div>
-      <div style={{marginTop:16,fontSize:10,color:"#BF00FF20",letterSpacing:2}}>AURΔBØT™ VAULT SECURITY</div>
-    </div>
-  </div>;
-}
-
-// ═══ OPERATOR CLASSIFICATION SYSTEM ═══
-var QUIZ_QUESTIONS = [
-  {
-    num:"QUERY 01 OF 03",
-    q:"You see a setup forming on the chart. What's your instinct?",
-    opts:[
-      {text:"Get in early — ride the momentum before it leaves without me.",cls:"breacher"},
-      {text:"Wait for the fake move, the trap, the reversal — then strike.",cls:"sniper"},
-      {text:"Check the session and time first. The clock matters as much as the chart.",cls:"ghost"}
-    ]
-  },
-  {
-    num:"QUERY 02 OF 03",
-    q:"How do you want your trading day to feel?",
-    opts:[
-      {text:"Fast. In and out. Stack contracts, hit target, move on with my day.",cls:"breacher"},
-      {text:"Patient. One perfect trade is enough. Quality over quantity.",cls:"sniper"},
-      {text:"Flexible. I'll trade when the right window opens — even if that's 3 AM.",cls:"ghost"}
-    ]
-  },
-  {
-    num:"QUERY 03 OF 03",
-    q:"What matters most to you in a trading system?",
-    opts:[
-      {text:"Catching the move early. I want to be first through the door.",cls:"breacher"},
-      {text:"Precision. I'd rather miss a trade than take a bad one.",cls:"sniper"},
-      {text:"Understanding the market's rhythm — when it moves, when it traps, when to sit out.",cls:"ghost"}
-    ]
-  }
+const hf = [
+  { name: "Momentum (1m)", p: 20, c: C, d: "10-bar rate of change normalized by ATR — raw directional force" },
+  { name: "State Machine", p: 20, c: M, d: "AIMLOCK stage direction + conviction boost from higher stages" },
+  { name: "MTF Agreement", p: 18, c: Y, d: "1m + 15m + 1H momentum aligned? 3/3 = full directional conviction" },
+  { name: "Candle Memory", p: 12, c: G, d: "Last 3 candles: growing bullish bodies = continuation bias forward" },
+  { name: "EMA Structure", p: 10, c: "#66AAFF", d: "9 EMA vs 21 EMA crossover — trend direction confirmation" },
+  { name: "VWAP Gravity", p: 8, c: "#FF9800", d: "Distance from VWAP creates pull — extended = mean reversion" },
+  { name: "Liquidity Pull", p: 7, c: N, d: "Nearby equal highs/lows magnetically attract projected price" },
+  { name: "RSI Caps", p: 5, c: R, d: "Overbought >70 or oversold <30 applies reversal pressure" },
 ];
 
-var CLASS_DATA = {
-  sniper:{
-    label:"THE SNIPER",icon:"⊕",subtitle:"REVERSAL SPECIALIST",color:"#00f0ff",
-    desc:"You're patient. Calculated. You wait for the market to overextend, trap everyone — then reverse. You don't chase. You don't guess. One shot is all you need.",
-    loadout:[
-      {name:"NQ LSM v3.2",tag:"Primary",id:"lsm"},
-      {name:"Aura Map",tag:"Support",id:"auramap"},
-      {name:"ZoneWars v3",tag:"Zones",id:"zonewars"},
-      {name:"Phase Dynamics v5",tag:"Timing",id:"phase"}
-    ]
-  },
-  breacher:{
-    label:"THE BREACHER",icon:"⚡",subtitle:"BREAKOUT SPECIALIST",color:"#ff00ff",
-    desc:"You're aggressive. First through the door. When the level breaks and momentum hits — you're already in. Speed is your edge. But only when the system says GO.",
-    loadout:[
-      {name:"MIDAS TOUCH v2",tag:"Primary",id:"midas"},
-      {name:"London Break v1",tag:"Alt Session",id:"london"},
-      {name:"TrendGlow",tag:"Bias",id:"trendglow"},
-      {name:"Aura Gravity",tag:"Zones",id:"gravity"}
-    ]
-  },
-  ghost:{
-    label:"THE GHOST",icon:"◎",subtitle:"SESSION SPECIALIST",color:"#00ff88",
-    desc:"You move in the dark. Asia session, London open, NY pre-market — you trade the transitions. While everyone sleeps, you're already positioned. The clock is your weapon.",
-    loadout:[
-      {name:"Hologram Candles",tag:"Primary",id:"nexus"},
-      {name:"TrendGlow",tag:"Bias",id:"trendglow"},
-      {name:"Aura Gravity",tag:"Zones",id:"gravity"},
-      {name:"Aura Map",tag:"Overlay",id:"auramap"}
-    ]
-  }
-};
+const lvls = [
+  { z: "Supply Box", i: "🔴", c: R, b: "Shrinks 20%", w: "Upper wick 2× (rejection into supply)", m: "Reverses downward", nx: "Strong follow-through candle pushes away" },
+  { z: "Demand Box", i: "🟢", c: G, b: "Shrinks 20%", w: "Lower wick 2× (rejection into demand)", m: "Bounces upward", nx: "Strong follow-through candle pushes away" },
+  { z: "Equal Highs", i: "💧", c: C, b: "GROWS 40%", w: "Short wicks (pure momentum)", m: "Accelerates INTO liquidity grab", nx: "Reversal candle after the sweep" },
+  { z: "Equal Lows", i: "💧", c: C, b: "GROWS 40%", w: "Short wicks (pure momentum)", m: "Accelerates INTO liquidity grab", nx: "Reversal candle after the sweep" },
+  { z: "VWAP", i: "🧲", c: "#FF9800", b: "Shrinks 50%", w: "Long wicks BOTH ways (doji)", m: "Indecision wobble at VWAP", nx: "Direction depends on overall bias" },
+  { z: "9 EMA", i: "📊", c: "#66AAFF", b: "Normal size", w: "Wick reaches into EMA (tests it)", m: "Tests then bounces or breaks", nx: "Continuation if trend holds" },
+  { z: "Extended", i: "↩️", c: M, b: "Normal size", w: "Normal", m: "Mean reversion pull back to VWAP", nx: "Candle body leans back toward value" },
+];
 
-function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
-  var saved = vault && vault.operator && vault.classification;
-  var [screen,setScreen]=useState(saved ? "dossier" : "name");
-  var [name,setName]=useState(vault ? vault.operator : "");
-  var [scores,setScores]=useState({sniper:0,breacher:0,ghost:0});
-  var [step,setStep]=useState(0);
-  var [result,setResult]=useState(vault ? vault.classification : null);
-  var [scanPhase,setScanPhase]=useState(0);
-  var [showResult,setShowResult]=useState(false);
-  var [showDossier,setShowDossier]=useState(false);
-  var [particles,setParticles]=useState([]);
-  var canvasRef=useRef(null);
+const Glow = ({ children, color = C, size = "1rem", glow = true }) => (
+  <span style={{ color, fontSize: size, fontWeight: "bold", fontFamily: "'Orbitron',sans-serif", textShadow: glow ? `0 0 12px ${color}55, 0 0 24px ${color}22` : "none", letterSpacing: "0.5px" }}>{children}</span>
+);
 
-  useEffect(function(){ if(saved && screen==="dossier") generateCard(vault.classification); },[screen]);
+const Bx = ({ children, color = C, style = {} }) => (
+  <div style={{ border: `1px solid ${color}33`, borderRadius: 12, padding: 16, background: `linear-gradient(135deg,${color}06,${B2})`, boxShadow: `inset 0 0 30px ${color}05, 0 0 15px ${color}08`, ...style }}>{children}</div>
+);
 
-  function shuffleArray(arr){var a=arr.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+const Bar = ({ value, max, color = C, h = 5 }) => (
+  <div style={{ height: h, borderRadius: h/2, background: `${D}33`, overflow: "hidden" }}>
+    <div style={{ width: `${Math.min((value/max)*100,100)}%`, height: "100%", borderRadius: h/2, background: `linear-gradient(90deg,${color}88,${color})`, boxShadow: `0 0 8px ${color}44`, transition: "width 0.5s" }} />
+  </div>
+);
 
-  function goToAssessment(){
-    if(!name.trim())return;
-    setScreen("assessment");
-  }
+const SBar = ({ score, max = 15, threshold }) => (
+  <div style={{ display: "flex", gap: 2, alignItems: "center" }}>
+    {Array.from({ length: max }, (_, i) => (
+      <div key={i} style={{ flex: 1, height: 12, borderRadius: 2, background: i < score ? (i < threshold ? `${G}CC` : `${Y}CC`) : `${D}22`, border: i === threshold - 1 ? `1px solid ${R}` : "none", boxShadow: i < score ? `0 0 4px ${G}33` : "none", transition: "all 0.3s" }} />
+    ))}
+    <span style={{ fontSize: 10, color: Y, marginLeft: 4, fontFamily: "'Orbitron',sans-serif" }}>{score}/{max}</span>
+  </div>
+);
 
-  function selectAnswer(cls){
-    var newScores=Object.assign({},scores);
-    newScores[cls]=(newScores[cls]||0)+1;
-    setScores(newScores);
-    if(step<QUIZ_QUESTIONS.length-1){
-      setTimeout(function(){setStep(step+1);},250);
-    } else {
-      var max=0;var res="sniper";
-      Object.keys(newScores).forEach(function(k){if(newScores[k]>max){max=newScores[k];res=k;}});
-      setResult(res);
-      var newVault = Object.assign({}, vault || getDefaultVault(name.trim(), res), { operator: name.trim(), classification: res, dossierComplete: true });
-      onUpdateVault(newVault);
-      setScreen("reveal");
-      var phases=["ANALYZING RESPONSES...","CROSS-REFERENCING OPERATOR PROFILE...","MATCH FOUND.","CLASSIFYING..."];
-      phases.forEach(function(p,i){
-        setTimeout(function(){setScanPhase(i+1);},i*700);
-      });
-      setTimeout(function(){
-        setShowResult(true);
-        var pts=[];for(var i=0;i<30;i++){pts.push({id:i,x:50+Math.random()*0.1,y:50,tx:(Math.random()-0.5)*120,ty:(Math.random()-0.5)*120,size:Math.random()*4+1,delay:Math.random()*0.3});}
-        setParticles(pts);
-      },3200);
-    }
-  }
+export default function NexusGuide() {
+  const [tab, setTab] = useState(0);
+  const [stg, setStg] = useState(0);
+  const [md, setMd] = useState(2);
+  const [ph, setPh] = useState(0);
+  const [li, setLi] = useState(0);
+  const [lk, setLk] = useState(false);
+  const [pulse, setPulse] = useState(false);
 
-  function openDossier(){setShowDossier(true);setScreen("dossier");window.scrollTo(0,0);generateCard(result||vault.classification);}
-  function reset(){setScreen("name");setName("");setScores({sniper:0,breacher:0,ghost:0});setStep(0);setResult(null);setScanPhase(0);setShowResult(false);setShowDossier(false);setParticles([]);onUpdateVault(getDefaultVault("",null));}
+  useEffect(() => { const t = setInterval(() => setPh(p => (p+1)%5), 2500); return () => clearInterval(t); }, []);
+  useEffect(() => { const t = setInterval(() => setStg(s => (s+1)%6), 4000); return () => clearInterval(t); }, []);
+  useEffect(() => { const t = setInterval(() => setPulse(p => !p), 1500); return () => clearInterval(t); }, []);
 
-  function generateCard(res){
-    setTimeout(function(){
-      var canvas=canvasRef.current;if(!canvas)return;
-      var ctx=canvas.getContext("2d");var w=600,h=340;canvas.width=w;canvas.height=h;
-      var c=CLASS_DATA[res];var colorMap={sniper:"#00f0ff",breacher:"#ff00ff",ghost:"#00ff88"};var ac=colorMap[res];
-      var today=new Date();var dateStr=today.toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
-      var bg=ctx.createLinearGradient(0,0,w,h);bg.addColorStop(0,"#080810");bg.addColorStop(1,"#0c0c1a");ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
-      ctx.strokeStyle=ac+"60";ctx.lineWidth=1;ctx.strokeRect(0,0,w,h);
-      var lg=ctx.createLinearGradient(0,0,w,0);lg.addColorStop(0,ac);lg.addColorStop(0.6,ac+"40");lg.addColorStop(1,"transparent");ctx.fillStyle=lg;ctx.fillRect(0,0,w,2);
-      var gl=ctx.createRadialGradient(80,60,0,80,60,200);gl.addColorStop(0,ac+"18");gl.addColorStop(1,"transparent");ctx.fillStyle=gl;ctx.fillRect(0,0,w,h);
-      ctx.fillStyle="rgba(0,0,0,0.04)";for(var y=0;y<h;y+=4){ctx.fillRect(0,y,w,2);}
-      ctx.font='9px monospace';ctx.fillStyle="#ff335580";ctx.textAlign="left";
-      ctx.fillText("◈  C L A S S I F I E D  —  O P E R A T O R   C A R D  ◈",30,30);
-      ctx.font='bold 11px monospace';ctx.fillStyle="#ffd700";ctx.fillText("AURΔBØT™ HQ",30,55);
-      ctx.font='10px monospace';ctx.fillStyle="#555570";ctx.textAlign="right";ctx.fillText(dateStr,w-30,55);ctx.textAlign="left";
-      ctx.strokeStyle="#1a1a2e";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(30,70);ctx.lineTo(w-30,70);ctx.stroke();
-      ctx.font="48px sans-serif";ctx.fillStyle=ac;ctx.fillText(c.icon,30,128);
-      ctx.font="bold 32px monospace";ctx.fillStyle="#e8e8f0";ctx.fillText(name.toUpperCase(),95,115);
-      ctx.font="bold 16px monospace";ctx.fillStyle=ac;ctx.fillText(c.label,95,140);
-      ctx.font="10px monospace";ctx.fillStyle="#555570";ctx.fillText(c.subtitle,95,160);
-      ctx.strokeStyle="#1a1a2e";ctx.beginPath();ctx.moveTo(30,180);ctx.lineTo(w-30,180);ctx.stroke();
-      var statsY=200;var boxW=160;var boxH=60;
-      [{label:"TRADES",value:"0"},{label:"COMBINE",value:"PENDING"},{label:"PAYOUT",value:"$0.00"}].forEach(function(stat,i){
-        var x=30+i*(boxW+15);
-        ctx.fillStyle="#0a0a14";ctx.fillRect(x,statsY,boxW,boxH);ctx.strokeStyle="#1a1a2e";ctx.strokeRect(x,statsY,boxW,boxH);
-        ctx.font="bold 18px monospace";ctx.fillStyle=stat.label==="COMBINE"?"#555570":"#e8e8f0";ctx.textAlign="center";ctx.fillText(stat.value,x+boxW/2,statsY+28);
-        ctx.font="8px monospace";ctx.fillStyle="#555570";ctx.fillText(stat.label,x+boxW/2,statsY+48);
-      });
-      ctx.textAlign="left";
-      ctx.fillStyle="#0a0a14";ctx.fillRect(0,h-40,w,40);
-      ctx.font="bold 10px monospace";ctx.fillStyle="#ffd700";ctx.fillText("AURΔBØT™",30,h-16);
-      ctx.font="9px monospace";ctx.fillStyle="#555570";ctx.textAlign="right";ctx.fillText("Trade like you've seen the future.",w-30,h-16);ctx.textAlign="left";
-      ctx.fillStyle=ac;ctx.beginPath();ctx.arc(16,h-18,3,0,Math.PI*2);ctx.fill();
-    },300);
-  }
+  const tabs = [
+    { i: "⚡", l: "NEXUS" }, { i: "🎯", l: "STAGES" }, { i: "🎮", l: "MODES" }, { i: "⚡", l: "ENERGY" },
+    { i: "👻", l: "HOLOGRAM" }, { i: "🗺️", l: "MAP" }, { i: "🛡️", l: "DEFENSE" }, { i: "💰", l: "TRADE" }, { i: "🚀", l: "SETUP" },
+  ];
 
-  function downloadCard(){
-    var canvas=canvasRef.current;if(!canvas)return;
-    var link=document.createElement("a");link.download="AURABOT-"+name.replace(/\s+/g,"_")+"-Operator-Card.png";link.href=canvas.toDataURL("image/png");link.click();
-  }
-
-  var cls=result?CLASS_DATA[result]:null;
-  var accentColor=cls?cls.color:"#00f0ff";
-
-  if(screen==="name") return <div style={{minHeight:"80vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",padding:20,animation:"fadeIn .5s ease"}}>
-    <div style={{position:"fixed",width:400,height:400,borderRadius:"50%",filter:"blur(150px)",opacity:0.1,top:-150,left:-80,background:"#00f0ff",pointerEvents:"none"}}/>
-    <div style={{position:"fixed",width:400,height:400,borderRadius:"50%",filter:"blur(150px)",opacity:0.1,bottom:-150,right:-80,background:"#ff00ff",pointerEvents:"none"}}/>
-    <div style={{position:"relative",zIndex:1,maxWidth:400,width:"100%"}}>
-      <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:3,color:"#BF00FF60",marginBottom:16}}>// SECURE ACCESS PORTAL</div>
-      <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:32,fontWeight:800,color:"#BF00FF",letterSpacing:6,marginBottom:6}}>AURΔBØT™</div>
-      <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:"var(--tx2)",letterSpacing:2,marginBottom:40}}>Operator Dossier</div>
-      <div style={{textAlign:"left",marginBottom:6}}><span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",letterSpacing:1}}>Enter Your Operator Handle</span></div>
-      <input value={name} onChange={function(e){setName(e.target.value);}} onKeyDown={function(e){if(e.key==="Enter")goToAssessment();}} placeholder="Your name..." style={{width:"100%",background:"#0a0a14",border:"1px solid #1a1a2e",borderRadius:6,padding:"14px 16px",fontSize:16,fontFamily:"'JetBrains Mono',monospace",color:"#e8e8f0",textAlign:"center",letterSpacing:2,outline:"none",marginBottom:20}}/>
-      <div onClick={goToAssessment} style={{width:"100%",padding:"14px",borderRadius:6,background:name.trim()?"#BF00FF15":"transparent",border:"1px solid "+(name.trim()?"#BF00FF40":"#1a1a2e"),color:name.trim()?"#BF00FF":"#555",fontSize:12,fontFamily:"'Oxanium',sans-serif",fontWeight:700,letterSpacing:3,cursor:name.trim()?"pointer":"default",textAlign:"center",transition:"all .3s"}}>BEGIN ASSESSMENT ▸</div>
-    </div>
-  </div>;
-
-  if(screen==="assessment"){
-    var q=QUIZ_QUESTIONS[step];
-    var progress=Math.round((step/QUIZ_QUESTIONS.length)*100);
-    var shuffled=shuffleArray(q.opts);
-    return <div style={{maxWidth:600,margin:"0 auto",padding:"40px 0",animation:"fadeIn .3s ease"}}>
-      <div style={{textAlign:"center",marginBottom:30}}>
-        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:18,fontWeight:700,color:"#fff",letterSpacing:2}}>OPERATOR ASSESSMENT</div>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:"var(--tx2)",marginTop:4}}>// 3 questions — answer with your gut</div>
-      </div>
-      <div style={{height:3,background:"#1a1a2e",borderRadius:2,marginBottom:30,overflow:"hidden"}}>
-        <div style={{width:progress+"%",height:"100%",background:"linear-gradient(90deg,#BF00FF,#00FFFF)",borderRadius:2,transition:"width .5s ease"}}/>
-      </div>
-      <div style={{animation:"fadeIn .3s ease"}} key={step}>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#BF00FF60",letterSpacing:2,marginBottom:12}}>{q.num}</div>
-        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:18,fontWeight:600,color:"#e8e8f0",lineHeight:1.6,marginBottom:24}}>{q.q}</div>
-        <div style={{display:"grid",gap:10}}>
-          {shuffled.map(function(opt,i){
-            var letters=["A","B","C"];
-            return <div key={i} onClick={function(){selectAnswer(opt.cls);}} className="card" style={{padding:"16px 18px",cursor:"pointer",transition:"all .2s",borderLeft:"3px solid transparent"}}>
-              <div style={{display:"flex",alignItems:"flex-start",gap:14}}>
-                <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:"var(--tx2)",opacity:0.5,marginTop:2}}>[ {letters[i]} ]</div>
-                <div style={{fontSize:14,color:"var(--tx)",lineHeight:1.7}}>{opt.text}</div>
-              </div>
-            </div>;
-          })}
-        </div>
-      </div>
-    </div>;
-  }
-
-  if(screen==="reveal"){
-    var scanTexts=["","ANALYZING RESPONSES...","CROSS-REFERENCING OPERATOR PROFILE...","MATCH FOUND.","CLASSIFYING..."];
-    return <div style={{minHeight:"80vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",padding:20,position:"relative",overflow:"hidden"}}>
-      <div style={{position:"fixed",width:500,height:500,borderRadius:"50%",filter:"blur(150px)",opacity:showResult?0.15:0.08,top:-200,left:-100,background:accentColor,pointerEvents:"none",transition:"all 1s"}}/>
-      <div style={{position:"fixed",width:500,height:500,borderRadius:"50%",filter:"blur(150px)",opacity:showResult?0.15:0.08,bottom:-200,right:-100,background:accentColor,pointerEvents:"none",transition:"all 1s"}}/>
-      {showResult&&<div style={{position:"fixed",inset:0,background:accentColor,opacity:0,animation:"flash .4s ease-out",pointerEvents:"none",zIndex:10}}/>}
-      {particles.map(function(p){return <div key={p.id} style={{position:"fixed",left:p.x+"%",top:p.y+"%",width:p.size,height:p.size,borderRadius:"50%",background:accentColor,opacity:0,animation:"particleFly 1s ease-out "+p.delay+"s forwards",pointerEvents:"none","--tx":p.tx+"px","--ty":p.ty+"px"}}/>;})}
-      <style>{"@keyframes flash{0%{opacity:0.6}100%{opacity:0}}@keyframes particleFly{0%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(var(--tx),var(--ty))}}"}</style>
-      {!showResult&&<div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:accentColor,letterSpacing:2,animation:"fadeIn .3s ease"}}>{scanTexts[scanPhase]||""}</div>}
-      {showResult&&<div style={{animation:"fadeIn .5s ease",position:"relative",zIndex:1}}>
-        <div style={{fontSize:64,marginBottom:16}}>{cls.icon}</div>
-        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:"clamp(26px,6vw,36px)",fontWeight:800,color:accentColor,letterSpacing:4,marginBottom:6}}>{cls.label}</div>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:accentColor+"80",letterSpacing:3,marginBottom:20}}>{cls.subtitle}</div>
-        <div style={{fontSize:14,color:"var(--tx)",lineHeight:1.8,maxWidth:480,margin:"0 auto",marginBottom:30}}>{cls.desc}</div>
-        <div onClick={openDossier} style={{display:"inline-block",padding:"14px 32px",borderRadius:6,background:accentColor+"15",border:"1px solid "+accentColor+"40",color:accentColor,fontSize:13,fontFamily:"'Oxanium',sans-serif",fontWeight:700,letterSpacing:3,cursor:"pointer",transition:"all .2s"}}>OPEN YOUR DOSSIER ▸</div>
-      </div>}
-    </div>;
-  }
-
-  if(screen==="dossier"&&cls){
-    var today=new Date();var dateStr=today.toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
-    return <div style={{animation:"fadeIn .5s ease"}}>
-      <div style={{textAlign:"center",padding:"30px 0 20px",borderBottom:"1px solid #1a1a2e",marginBottom:20}}>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#ff335580",letterSpacing:3,marginBottom:10}}>◈ CLASSIFIED — OPERATOR DOSSIER ◈</div>
-        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:20,fontWeight:700,color:"#ffd700",letterSpacing:2,marginBottom:8}}>AURΔBØT™ HQ — Operator File</div>
-        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:22,fontWeight:800,color:"#e8e8f0",letterSpacing:1,marginBottom:6}}>{name.toUpperCase()}</div>
-        <div style={{display:"inline-block",padding:"6px 16px",borderRadius:4,border:"1px solid "+accentColor+"40",background:accentColor+"10",fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:accentColor,letterSpacing:2}}>{cls.label} — {cls.subtitle}</div>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",marginTop:8}}>Activated: {dateStr}</div>
-      </div>
-
-      <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #ffd700"}}>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#ffd700",letterSpacing:2,marginBottom:10}}>// Message from Aura</div>
-        <div style={{display:"flex",gap:14,alignItems:"flex-start"}}>
-          <img src="/aura-avatar.png" style={{width:48,height:48,borderRadius:"50%",border:"2px solid #BF00FF40",objectFit:"cover",flexShrink:0,boxShadow:"0 0 20px #BF00FF20"}}/>
-          <div style={{fontSize:14,lineHeight:1.8,color:"var(--tx)"}}>
-            Welcome to the crew, <strong style={{color:"#fff"}}>{name}</strong>. You didn't just join a Discord — you joined a movement. This isn't about signals. This isn't about hype. This is about <strong style={{color:"#fff"}}>discipline, faith, and execution.</strong>
-            <br/><br/>
-            I built this because I believe trading should change your life — not drain it. You've got the tools. You've got the community. Now it's on you to show up, trust the process, and put in the work.
-            <br/><br/>
-            Believe in yourself. Bet on yourself. Stay dangerous.
-          </div>
-        </div>
-        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:12,color:"#ffd700",marginTop:12,fontWeight:600}}>— AURA™ ⚡</div>
-      </div>
-
-      <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #00f0ff"}}>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#00f0ff",letterSpacing:2,marginBottom:12}}>// Operator Stats</div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}}>
-          {[{label:"Trades",value:"0"},{label:"Combine",value:"PENDING"},{label:"Payout",value:"$0.00"}].map(function(s){
-            return <div key={s.label} style={{textAlign:"center",padding:"14px 10px",background:"#0a0a14",borderRadius:6,border:"1px solid #1a1a2e"}}>
-              <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:18,fontWeight:700,color:s.label==="Combine"?"var(--tx2)":"#e8e8f0"}}>{s.value}</div>
-              <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,color:"var(--tx2)",letterSpacing:1,marginTop:4}}>{s.label}</div>
-            </div>;
-          })}
-        </div>
-      </div>
-
-      <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid "+accentColor}}>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:accentColor,letterSpacing:2,marginBottom:12}}>// Your Operator Loadout — {cls.label}</div>
-        <div style={{display:"grid",gap:8}}>
-          {cls.loadout.map(function(item){
-            var sys=systems.find(function(s){return s.id===item.id;});
-            return <div key={item.name} onClick={function(){if(sys)onOpenGuide(item.id);}} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 14px",background:"#0a0a14",borderRadius:6,border:"1px solid #1a1a2e",cursor:sys?"pointer":"default",transition:"all .2s"}}>
-              <div style={{width:8,height:8,borderRadius:"50%",background:accentColor,boxShadow:"0 0 8px "+accentColor+"60",flexShrink:0}}/>
-              <div style={{flex:1,fontFamily:"'JetBrains Mono',monospace",fontSize:13,color:"#e8e8f0"}}>{item.name}</div>
-              <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",padding:"2px 8px",borderRadius:3,border:"1px solid #1a1a2e"}}>{item.tag}</div>
-              {sys&&<div style={{fontSize:10,color:accentColor}}>→</div>}
-            </div>;
-          })}
-        </div>
-      </div>
-
-      <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #ff00ff"}}>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#ff00ff",letterSpacing:2,marginBottom:12}}>// Mission 1 — Get Operational (First 48 Hours)</div>
-        {[
-          {n:"1",t:"Read the rules & terms — Know the code before you operate."},
-          {n:"2",t:"Watch all setup videos — Chart setup, indicator install, backtest walkthrough."},
-          {n:"3",t:"Set up your TradingView chart — Install your operator loadout with correct settings."},
-          {n:"4",t:"Create your Topstep account — Get your combine funded."},
-          {n:"5",t:"Read The Prop Firm Blueprint — The mindset. The math. The strategy for passing combines fast."},
-          {n:"6",t:"Post your first chart screenshot — Show the crew you're locked in."}
-        ].map(function(m){
-          return <div key={m.n} style={{display:"flex",gap:12,marginBottom:10,alignItems:"flex-start"}}>
-            <div style={{width:24,height:24,borderRadius:4,background:"#ff00ff15",border:"1px solid #ff00ff30",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,color:"#ff00ff",fontFamily:"'Oxanium',sans-serif",flexShrink:0}}>{m.n}</div>
-            <div style={{fontSize:13,color:"var(--tx)",lineHeight:1.6}}>{m.t}</div>
-          </div>;
-        })}
-      </div>
-
-      <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #00f0ff"}}>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#00f0ff",letterSpacing:2,marginBottom:12}}>// Pre-Session Ritual — Before Every Session</div>
-        {[
-          {label:"Step 1 — Physical Reset (30 sec)",text:"Breathe deep: In for 4, hold for 4, out for 6. Repeat 3x. \"I am focused. I am present. I am in flow.\""},
-          {label:"Step 2 — Alignment (1 min)",text:"Surrender fear, doubt, ego, and greed. Ask for wisdom, patience, and purpose. Trade for impact, not hype."},
-          {label:"Step 3 — Trade Plan (1 min)",text:"What is my mission today? What setups am I waiting for? What invalidates the trade? Where do I take profit — without greed?"},
-          {label:"Confirmation",text:"✓ Mentally clear · ✓ Spiritually aligned · ✓ Emotionally neutral · ✓ Locked in · ✓ Ready to execute",green:true}
-        ].map(function(r){
-          return <div key={r.label} style={{marginBottom:12,padding:"10px 14px",background:"#0a0a14",borderRadius:6}}>
-            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#00f0ff",letterSpacing:1,marginBottom:4}}>{r.label}</div>
-            <div style={{fontSize:13,color:r.green?"#00ff88":"var(--tx)",lineHeight:1.6}}>{r.text}</div>
-          </div>;
-        })}
-      </div>
-
-      <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #ffd700"}}>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#ffd700",letterSpacing:2,marginBottom:12}}>// Non-Negotiable Rules</div>
-        {[
-          "Never spend more than 2 weeks on any single combine. Reset and go again.",
-          "On combines: risk higher. Use A+ signals. Hit the target. Get out.",
-          "On funded accounts: risk goes DOWN. 1–1.5% max. Protect the account.",
-          "Never violate drawdown rules on a funded account. Never. Not once.",
-          "Stack funded accounts using copy-trade. Same signal. Split risk. Scale income.",
-          "Trust the system. Do not override it. Do not add your 'gut feel' to a funded account.",
-          "Your first payout changes everything. Until then — it is not real. Stay focused.",
-          "Blow a combine? Good. $50 tuition. Reset. You now know exactly what to do."
-        ].map(function(r,i){
-          return <div key={i} style={{display:"flex",gap:12,marginBottom:8,alignItems:"flex-start"}}>
-            <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:11,fontWeight:700,color:"#ffd700",opacity:0.5,width:20,flexShrink:0,textAlign:"right"}}>{"0"+(i+1)}</div>
-            <div style={{fontSize:13,color:"var(--tx)",lineHeight:1.6}}>{r}</div>
-          </div>;
-        })}
-      </div>
-
-      <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #00ff88"}}>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#00ff88",letterSpacing:2,marginBottom:12}}>// Discord Quick-Start — Hit These First</div>
-        <div style={{display:"grid",gap:6}}>
-          {[
-            {icon:"👽",name:"#how-to-setup-backtest-videos",desc:"Start here"},
-            {icon:"⚙️",name:"#aurabot-indicator-settings",desc:"Your settings"},
-            {icon:"😈",name:"#aurabot-sniper-killshot-exe",desc:"Executions"},
-            {icon:"🤫",name:"#the-prop-firm-blueprint",desc:"The playbook"},
-            {icon:"🏰",name:"#aurabot-master-chatroom",desc:"Daily ops"},
-            {icon:"📺",name:"#results-vault",desc:"Post wins"},
-            {icon:"🧠",name:"#trading-psychology",desc:"Stay sharp"},
-            {icon:"🙏",name:"#prayer-requests",desc:"Morning ritual"}
-          ].map(function(ch){
-            return <div key={ch.name} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 14px",background:"#0a0a14",borderRadius:6,border:"1px solid #1a1a2e"}}>
-              <div style={{fontSize:16,flexShrink:0}}>{ch.icon}</div>
-              <div style={{flex:1,fontFamily:"'JetBrains Mono',monospace",fontSize:13,color:"#e8e8f0"}}>{ch.name}</div>
-              <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)"}}>{ch.desc}</div>
-            </div>;
-          })}
-        </div>
-      </div>
-
-      <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #ffd700"}}>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#ffd700",letterSpacing:2,marginBottom:12}}>// Operator Card — Save & Share</div>
-        <div style={{borderRadius:8,overflow:"hidden",border:"1px solid #1a1a2e",marginBottom:16}}>
-          <canvas ref={canvasRef} style={{width:"100%",height:"auto",display:"block"}}/>
-        </div>
-        <div onClick={downloadCard} style={{width:"100%",padding:"14px",borderRadius:6,background:accentColor+"15",border:"1px solid "+accentColor+"40",color:accentColor,fontSize:13,fontFamily:"'Oxanium',sans-serif",fontWeight:700,letterSpacing:2,cursor:"pointer",textAlign:"center",transition:"all .2s"}}>⬇ DOWNLOAD OPERATOR CARD</div>
-        <div style={{textAlign:"center",marginTop:12}}>
-          <div style={{fontSize:12,color:"var(--tx)",lineHeight:1.6}}><strong style={{color:"#ffd700"}}>FINAL STEP:</strong> Post your Operator Card in <span style={{color:"#00ff88",fontFamily:"'JetBrains Mono',monospace"}}>#introductions</span> to complete your activation.</div>
-          <div style={{fontSize:11,color:"var(--tx2)",marginTop:4}}>This is how the crew knows you're locked in.</div>
-        </div>
-        <div style={{textAlign:"center",marginTop:12,fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#ff335580",letterSpacing:1}}>⚠ ACTIVATION INCOMPLETE UNTIL POSTED</div>
-      </div>
-
-      <div style={{textAlign:"center",padding:"30px 20px",marginBottom:14}}>
-        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:15,fontWeight:500,color:"#ffd700",lineHeight:1.7,fontStyle:"italic"}}>"The combine is not where you trade. It is a TOLL you pay to access real capital."</div>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",marginTop:8,letterSpacing:1}}>— AURA</div>
-      </div>
-
-      <div style={{textAlign:"center",padding:"20px 0 10px",borderTop:"1px solid #1a1a2e"}}>
-        <img src="/aurabot-logo.png" style={{width:50,height:50,borderRadius:"50%",objectFit:"cover",margin:"0 auto 10px",display:"block",opacity:0.8}}/>
-        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:13,fontWeight:700,color:"#ffd700",letterSpacing:3,marginBottom:4}}>AURΔBØT™</div>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",letterSpacing:1,marginBottom:8}}>Trade like you've seen the future.</div>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,color:"#333",letterSpacing:1}}>This dossier is your operator file. Keep it. Reference it. Live it.</div>
-      </div>
-
-      <div style={{textAlign:"center",marginTop:10,marginBottom:30}}>
-        <div onClick={reset} style={{display:"inline-block",padding:"10px 24px",borderRadius:6,cursor:"pointer",fontSize:11,fontFamily:"'JetBrains Mono',monospace",color:"var(--tx2)",border:"1px solid var(--brd)",letterSpacing:1}}>↻ RETAKE ASSESSMENT</div>
-      </div>
-    </div>;
-  }
-
-  return null;
-}
-
-// ═══ MAIN ═══
-export default function App(){
-  var [booted,setBooted]=useState(false);
-  var [unlocked,setUnlocked]=useState(false);
-  var [page,setPage]=useState("home");
-  var [activeGuide,setActiveGuide]=useState(null);
-  var [vault,setVault]=useState(function(){ return loadVault() || getDefaultVault("",null); });
-
-  var updateVault = useCallback(function(newData){
-    var merged = Object.assign({}, vault, newData);
-    setVault(merged);
-    saveVault(merged);
-  },[vault]);
-
-  var operatorName = vault.operator || "";
-
-  if(!booted) return <><Styles/><Boot onDone={function(){setBooted(true);}}/></>;
-  if(!unlocked) return <><Styles/><LockScreen onUnlock={function(){setUnlocked(true);}}/></>;
-
-  if(activeGuide){
-    var sys=SYSTEMS.find(function(s){return s.id===activeGuide;});
-    var GuideComponent=sys?sys.component:null;
-    return <><Styles/>
-      <div style={{minHeight:"100vh",background:"var(--bg)"}}>
-        <div style={{position:"fixed",inset:0,pointerEvents:"none",opacity:0.012,backgroundImage:"linear-gradient(var(--ac) 1px,transparent 1px),linear-gradient(90deg,var(--ac) 1px,transparent 1px)",backgroundSize:"60px 60px"}}/>
-        <div style={{position:"sticky",top:0,zIndex:100,background:"#06060cee",borderBottom:"1px solid var(--brd)",padding:"10px 20px",display:"flex",justifyContent:"space-between",alignItems:"center",backdropFilter:"blur(12px)"}}>
-          <div onClick={function(){setActiveGuide(null);}} style={{cursor:"pointer",display:"flex",alignItems:"center",gap:8}}>
-            <span style={{color:"var(--tx2)",fontSize:14}}>←</span>
-            <span style={{fontFamily:"'Oxanium',sans-serif",fontSize:16,fontWeight:800,letterSpacing:4,color:"#BF00FF"}}>AURΔBØT™</span>
-            <span style={{fontSize:9,letterSpacing:2,color:"var(--tx2)",fontFamily:"'JetBrains Mono',monospace"}}>VAULT</span>
-          </div>
-          <div style={{fontSize:11,color:sys?sys.color:"var(--tx2)",fontFamily:"'Oxanium',sans-serif",fontWeight:700,letterSpacing:1}}>{sys?sys.name:""}</div>
-        </div>
-        {GuideComponent && <GuideComponent/>}
-      </div>
-    </>;
-  }
-
-  return <><Styles/>
-    <div style={{minHeight:"100vh",background:"var(--bg)",paddingBottom:40}}>
-      <CandleBackground/>
-      <div style={{position:"fixed",inset:0,pointerEvents:"none",opacity:0.012,backgroundImage:"linear-gradient(var(--ac) 1px,transparent 1px),linear-gradient(90deg,var(--ac) 1px,transparent 1px)",backgroundSize:"60px 60px"}}/>
-
-      <header style={{position:"sticky",top:0,zIndex:100,background:"#06060cee",borderBottom:"1px solid var(--brd)",padding:"12px 20px",display:"flex",justifyContent:"space-between",alignItems:"center",backdropFilter:"blur(12px)"}}>
-        <div onClick={function(){setPage("home");}} style={{cursor:"pointer",display:"flex",alignItems:"center",gap:8}}>
-          <img src="/aura-avatar.png" style={{width:30,height:30,borderRadius:"50%",border:"1.5px solid #BF00FF40",objectFit:"cover"}}/>
-          <span style={{fontFamily:"'Oxanium',sans-serif",fontSize:18,fontWeight:800,letterSpacing:4,color:"#BF00FF"}}>AURΔBØT™</span>
-          <span style={{fontSize:10,letterSpacing:2,color:"var(--tx2)",fontFamily:"'JetBrains Mono',monospace"}}>ACADEMY VAULT</span>
-          <span style={{fontSize:14,animation:"boltPulse 2s ease-in-out infinite"}}>⚡</span>
-        </div>
-        <div style={{display:"flex",gap:6,alignItems:"center"}}>
-          {operatorName && <span style={{fontSize:10,color:"#00FF88",fontFamily:"'JetBrains Mono',monospace",marginRight:6}}>⚡ {operatorName.toUpperCase()}</span>}
-          {[{id:"profile",label:"PROFILE"},{id:"home",label:"SYSTEMS"},{id:"loadouts",label:"LOADOUTS"},{id:"settings",label:"SETTINGS"},{id:"mindset",label:"MINDSET"},{id:"momentum",label:"MOMENTUM"}].map(function(n){
-            return <div key={n.id} onClick={function(){setPage(n.id);}} style={{padding:"6px 14px",borderRadius:6,cursor:"pointer",fontSize:10,fontFamily:"'JetBrains Mono',monospace",letterSpacing:1.5,background:page===n.id?"#BF00FF18":"transparent",color:page===n.id?"#BF00FF":"var(--tx2)",border:"1px solid "+(page===n.id?"#BF00FF40":"transparent"),transition:"all .2s"}}>{n.label}</div>;
-          })}
-        </div>
-      </header>
-
-      <div style={{maxWidth:800,margin:"0 auto",padding:"0 20px"}}>
-
-        {page==="home"&&<div>
-          {operatorName && <div style={{textAlign:"center",padding:"12px 0 0"}}><div style={{fontSize:12,color:"#00FF88",fontFamily:"'JetBrains Mono',monospace"}}>Welcome back, <strong>{operatorName}</strong> ⚡</div></div>}
-          <div style={{textAlign:"center",padding:"50px 0 20px",position:"relative"}}>
-            <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:300,height:300,background:"radial-gradient(circle,#BF00FF,transparent 70%)",opacity:0.06,borderRadius:"50%"}}/>
-            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:3,color:"#BF00FF80",marginBottom:8}}>⚡ CLASSIFIED SYSTEMS ARCHIVE</div>
-            <img src="/aura-avatar.png" style={{width:70,height:70,borderRadius:"50%",border:"2px solid #BF00FF40",objectFit:"cover",margin:"0 auto 14px",display:"block",boxShadow:"0 0 30px #BF00FF20"}}/>
-            <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:"clamp(26px,5vw,38px)",fontWeight:800,color:"#fff",lineHeight:1.2}}>The <span style={{color:"#BF00FF"}}>Weapons</span> Vault</div>
-            <div style={{fontSize:14,color:"var(--tx2)",marginTop:12,maxWidth:500,margin:"12px auto 0",lineHeight:1.7}}>Every system AURΔBØT™ has built. Tap any weapon to open its full classified guide.</div>
-          </div>
-
-          <div style={{textAlign:"center",padding:"16px 20px",margin:"10px 0 30px",borderTop:"1px solid var(--brd)",borderBottom:"1px solid var(--brd)"}}>
-            <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:13,color:"#BF00FF",fontWeight:500,fontStyle:"italic"}}>"{QUOTES[Math.floor(Math.random()*QUOTES.length)]}"</div>
-            <div style={{fontSize:10,color:"var(--tx2)",marginTop:4,fontFamily:"'JetBrains Mono',monospace"}}>— AURA</div>
-          </div>
-
-          {["FLAGSHIP","CORE","CLASSIFIED","SPECIALIZED","SUPPORT"].map(function(tier){
-            var ts=SYSTEMS.filter(function(s){return s.tier===tier;});
-            if(ts.length===0) return null;
-            var labels={FLAGSHIP:"THE FLAGSHIP",CORE:"CORE SYSTEMS",CLASSIFIED:"🔒 CLASSIFIED",SPECIALIZED:"SPECIALIZED WEAPONS",SUPPORT:"SUPPORT LAYERS"};
-            var descs={
-              FLAGSHIP:"The system that sees the future. Everything unified into one.",
-              CORE:"Direction. Structure. Levels. The foundation of every trade.",
-              CLASSIFIED:"Aura's personal systems. 6+ years and $250K in market tuition.",
-              SPECIALIZED:"Purpose-built for specific sessions and setups.",
-              SUPPORT:"Stack these with anything for added intelligence."
-            };
-            return <div key={tier} style={{marginBottom:32}}>
-              <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:2.5,color:"#BF00FF",marginBottom:4,display:"flex",alignItems:"center",gap:8}}>
-                <span style={{width:16,height:1,background:"#BF00FF",display:"inline-block"}}/>{labels[tier]}
-              </div>
-              <div style={{fontSize:12,color:"var(--tx2)",marginBottom:14}}>{descs[tier]}</div>
-              <div style={{display:"grid",gap:10}}>
-                {ts.map(function(s){
-                  return <div key={s.id} className="card" onClick={function(){setActiveGuide(s.id);window.scrollTo(0,0);}} style={{cursor:"pointer",padding:16,borderLeft:"3px solid "+s.color,transition:"all .2s"}}>
-                    <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
-                      <span style={{fontSize:18}}>{s.icon}</span>
-                      <div>
-                        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:15,fontWeight:700,color:s.color,letterSpacing:1}}>{s.name}</div>
-                        <div style={{fontSize:11,color:"var(--tx2)"}}>{s.tagline}</div>
-                      </div>
-                      <div style={{marginLeft:"auto",fontSize:10,color:"var(--tx2)",fontFamily:"'JetBrains Mono',monospace",textAlign:"right"}}>
-                        <div>{s.tf}</div><div style={{color:s.color+"80"}}>{s.inst}</div>
-                      </div>
-                    </div>
-                    <div style={{fontSize:12,color:"var(--tx2)",lineHeight:1.6}}>{s.desc.substring(0,140)}...</div>
-                    <div style={{fontSize:10,color:"#BF00FF",marginTop:10,fontFamily:"'JetBrains Mono',monospace",fontWeight:600}}>⚡ OPEN FULL GUIDE →</div>
-                  </div>;
-                })}
-              </div>
-            </div>;
-          })}
-        </div>}
-
-        {page==="loadouts"&&<div>
-          <div style={{textAlign:"center",padding:"40px 0 30px"}}>
-            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:3,color:"#BF00FF80",marginBottom:8}}>RECOMMENDED CONFIGURATIONS</div>
-            <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:"clamp(24px,5vw,32px)",fontWeight:800,color:"#fff"}}>Battle <span style={{color:"#BF00FF"}}>Loadouts</span></div>
-            <div style={{fontSize:13,color:"var(--tx2)",marginTop:10,maxWidth:440,margin:"10px auto 0",lineHeight:1.7}}>Don't know where to start? Pick a loadout that matches your style. Each one is tested, proven, and ready to deploy.</div>
-          </div>
-          <div style={{display:"grid",gap:14}}>
-            {LOADOUTS.map(function(l,i){
-              var lSys=l.systems.map(function(sid){return SYSTEMS.find(function(s){return s.id===sid;});}).filter(Boolean);
-              return <div key={i} className="card" style={{padding:20}}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-                  <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:16,fontWeight:700,color:"#fff",letterSpacing:1}}>{l.name}</div>
-                  <div style={{fontSize:10,fontFamily:"'JetBrains Mono',monospace",color:"#BF00FF",background:"#BF00FF15",padding:"3px 8px",borderRadius:4}}>{l.level}</div>
-                </div>
-                <div style={{fontSize:13,color:"var(--tx2)",lineHeight:1.6,marginBottom:14}}>{l.desc}</div>
-                <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                  {lSys.map(function(s){return <div key={s.id} onClick={function(){setActiveGuide(s.id);window.scrollTo(0,0);}} style={{padding:"6px 12px",borderRadius:6,cursor:"pointer",fontSize:11,fontFamily:"'Oxanium',sans-serif",fontWeight:600,background:s.color+"15",color:s.color,border:"1px solid "+s.color+"30"}}>{s.icon} {s.name}</div>;})}
-                </div>
-              </div>;
-            })}
-          </div>
-        </div>}
-
-        {page==="momentum"&&<div>
-          <div style={{textAlign:"center",padding:"50px 0 30px",position:"relative"}}>
-            <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:300,height:300,background:"radial-gradient(circle,#00FFFF,transparent 70%)",opacity:0.04,borderRadius:"50%"}}/>
-            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:3,color:"#00FFFF80",marginBottom:8}}>DAILY OPERATIONS SYSTEM</div>
-            <img src="/aurabot-logo.png" style={{width:70,height:70,borderRadius:"50%",border:"2px solid #00FFFF30",objectFit:"cover",margin:"0 auto 14px",display:"block",boxShadow:"0 0 30px #00FFFF15"}}/>
-            <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:"clamp(26px,5vw,34px)",fontWeight:800,color:"#fff"}}>Momentum <span style={{color:"#00FFFF"}}>OS</span></div>
-            <div style={{fontSize:14,color:"var(--tx2)",marginTop:12,maxWidth:480,margin:"12px auto 0",lineHeight:1.7}}>Your daily planner, trade journal, hourly tracker, and accountability system. All in one.</div>
-          </div>
-
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:20}}>
-            {[{icon:"📋",label:"Daily Planner",desc:"Set your mission, power moves, and hourly blocks",color:"#00FFFF"},{icon:"📊",label:"Trade Journal",desc:"Log every trade with P&L, setup type, and notes",color:"#00FF88"},{icon:"🧠",label:"Life Journals",desc:"Trade, life, spiritual, and business reflections",color:"#BF00FF"}].map(function(f,i){
-              return <div key={i} className="card" style={{padding:16,textAlign:"center"}}>
-                <div style={{fontSize:24,marginBottom:8}}>{f.icon}</div>
-                <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:12,fontWeight:700,color:f.color,letterSpacing:0.5}}>{f.label}</div>
-                <div style={{fontSize:10,color:"var(--tx2)",marginTop:4,lineHeight:1.5}}>{f.desc}</div>
-              </div>;
-            })}
-          </div>
-
-          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:20}}>
-            {[{icon:"📅",label:"90-Day Plan"},{icon:"📈",label:"Stats"},{icon:"🎯",label:"Intel"},{icon:"📖",label:"Guide"}].map(function(f,i){
-              return <div key={i} className="card" style={{padding:12,textAlign:"center"}}>
-                <div style={{fontSize:18,marginBottom:4}}>{f.icon}</div>
-                <div style={{fontSize:9,color:"var(--tx2)",fontFamily:"'JetBrains Mono',monospace",letterSpacing:0.5}}>{f.label}</div>
-              </div>;
-            })}
-          </div>
-
-          <a href="https://auraszn-momentum-os.vercel.app" target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"block"}}>
-            <div className="card" style={{padding:20,textAlign:"center",cursor:"pointer",borderLeft:"3px solid #00FFFF",transition:"all .2s"}}>
-              <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:18,fontWeight:800,color:"#00FFFF",letterSpacing:2,marginBottom:6}}>⚡ LAUNCH MOMENTUM OS</div>
-              <div style={{fontSize:12,color:"var(--tx2)"}}>Opens in a new tab — save it as an app on your phone for daily use</div>
-              <div style={{marginTop:14,display:"inline-block",padding:"12px 32px",borderRadius:8,background:"#00FFFF12",border:"1px solid #00FFFF40",color:"#00FFFF",fontSize:13,fontFamily:"'Oxanium',sans-serif",fontWeight:700,letterSpacing:3}}>OPEN APP →</div>
+  const renderOverview = () => (
+    <div>
+      <div style={{ textAlign: "center", marginBottom: 28, position: "relative" }}>
+        <div style={{ position: "absolute", top: -20, left: "50%", transform: "translateX(-50%)", width: 200, height: 200, borderRadius: "50%", background: `radial-gradient(circle, ${C}08, transparent 70%)`, pointerEvents: "none" }} />
+        <div style={{ fontSize: 14, color: Y, letterSpacing: 4, fontFamily: "'Orbitron',sans-serif", marginBottom: 4 }}>AURASZN</div>
+        <Glow color={C} size="2.4rem">NEXUS v1.1</Glow>
+        <p style={{ color: D, fontSize: 13, marginTop: 8, lineHeight: 1.5 }}>Unified ICT Trading Intelligence<br />9 Engines • 1 System • Zero Guesswork</p>
+        <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: 12 }}>
+          {[{ l: "Engines", v: "9", c: C }, { l: "Factors", v: "9", c: G }, { l: "Defenses", v: "5", c: R }].map((s, i) => (
+            <div key={i} style={{ textAlign: "center" }}>
+              <div style={{ fontSize: 28, color: s.c, fontFamily: "'Orbitron',sans-serif", fontWeight: 900, textShadow: `0 0 15px ${s.c}44` }}>{s.v}</div>
+              <div style={{ fontSize: 10, color: D }}>{s.l}</div>
             </div>
-          </a>
+          ))}
+        </div>
+      </div>
 
-          <div style={{textAlign:"center",marginTop:20,padding:"16px 20px",borderTop:"1px solid var(--brd)"}}>
-            <div style={{fontSize:11,color:"var(--tx2)",lineHeight:1.7}}>💡 <strong style={{color:"#fff"}}>Pro tip:</strong> On your phone, open Momentum OS in Safari/Chrome, tap <strong style={{color:"#00FFFF"}}>"Add to Home Screen"</strong> — it becomes a standalone app. Use it every morning before your session.</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
+        {[
+          { n: "AIMLOCK™", d: "6-stage liquidity → entry state machine", i: "🎯", c: C },
+          { n: "Energy Engine", d: "Compression → ignition timing", i: "⚡", c: Y },
+          { n: "Smart Hologram™", d: "9-factor AI predictive candles", i: "👻", c: G },
+          { n: "Gravity Zones", d: "Pivot-based rolling S/R + zone lock", i: "🔮", c: M },
+          { n: "HTF Dual Boxes", d: "15m+1H liquidity zones with 4 states", i: "📦", c: "#FF9800" },
+          { n: "Session Map", d: "Asia/London/NY + VWAP + Opening Print", i: "🗺️", c: N },
+          { n: "Defense Shield", d: "5 layers of loss prevention", i: "🛡️", c: R },
+          { n: "Trade Manager", d: "Entry/SL/3-tier TP + daily P&L tracker", i: "💰", c: "#00FF00" },
+        ].map((e, i) => (
+          <Bx key={i} color={e.c}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ fontSize: 24 }}>{e.i}</span>
+              <div>
+                <Glow color={e.c} size="0.75rem">{e.n}</Glow>
+                <div style={{ fontSize: 11, color: "#888", marginTop: 2 }}>{e.d}</div>
+              </div>
+            </div>
+          </Bx>
+        ))}
+      </div>
+
+      <Bx color={Y}>
+        <Glow color={Y} size="0.85rem">⚡ 30-SECOND FLOW</Glow>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 12, flexWrap: "wrap" }}>
+          {["💧 Sweep", "→", "🔀 SMT", "→", "💥 Shift", "→", "🚀 Displace", "→", "📦 Retrace", "→", "🎯 FIRE"].map((s, i) => (
+            <span key={i} style={{ fontSize: i % 2 === 1 ? 10 : 13, color: i % 2 === 1 ? D : i === 10 ? G : C, fontFamily: "'Orbitron',sans-serif", fontWeight: i === 10 ? 900 : 500, textShadow: i === 10 ? `0 0 12px ${G}` : "none", transition: "all 0.3s" }}>{s}</span>
+          ))}
+        </div>
+      </Bx>
+
+      <Bx color={G} style={{ marginTop: 12 }}>
+        <Glow color={G} size="0.85rem">🆕 v1.1 FEATURES</Glow>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
+          {[
+            { f: "9-Factor Hologram", d: "MTF momentum + candle pattern memory", c: G },
+            { f: "Per-Bar Intelligence", d: "Each candle reads its position vs all levels", c: M },
+            { f: "Rolling Gravity Zones", d: "Real pivot S/R that staircase with price", c: Y },
+            { f: "Zone Lock Window", d: "Freeze zones during NY open (customizable)", c: R },
+            { f: "Session Map", d: "Asia/London/NY boxes + VWAP + Open line", c: N },
+            { f: "Live Market Seed", d: "Patterns change only when price moves 2pts+", c: C },
+          ].map((f, i) => (
+            <div key={i} style={{ display: "flex", gap: 6, alignItems: "start" }}>
+              <span style={{ color: f.c, fontSize: 12 }}>◈</span>
+              <div><span style={{ color: W, fontSize: 12, fontWeight: "bold" }}>{f.f}</span><br /><span style={{ color: "#777", fontSize: 10 }}>{f.d}</span></div>
+            </div>
+          ))}
+        </div>
+      </Bx>
+    </div>
+  );
+
+  const renderStages = () => (
+    <div>
+      <div style={{ textAlign: "center", marginBottom: 20 }}>
+        <Glow color={C} size="1.5rem">6-STAGE STATE MACHINE</Glow>
+        <p style={{ color: D, fontSize: 12, marginTop: 4 }}>Each stage must confirm sequentially. No shortcuts. No skipping.</p>
+      </div>
+      <div style={{ display: "flex", gap: 4, marginBottom: 16 }}>
+        {stages.map((s, i) => (
+          <button key={i} onClick={() => setStg(i)} style={{ flex: 1, padding: "8px 4px", border: `1px solid ${i <= stg ? s.c : D}44`, borderRadius: 8, background: i <= stg ? `${s.c}15` : B3, cursor: "pointer", boxShadow: i === stg ? `0 0 14px ${s.c}33` : "none", transition: "all 0.4s" }}>
+            <div style={{ fontSize: 20 }}>{s.i}</div>
+            <div style={{ fontSize: 9, color: i <= stg ? s.c : D, fontWeight: "bold", marginTop: 2 }}>{s.n}</div>
+          </button>
+        ))}
+      </div>
+      <Bx color={stages[stg].c}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
+          <span style={{ fontSize: 44 }}>{stages[stg].i}</span>
+          <div>
+            <Glow color={stages[stg].c} size="1.1rem">{stages[stg].n}. {stages[stg].name}</Glow>
+            <div style={{ fontSize: 11, color: D, marginTop: 3 }}>Stage {stages[stg].n} of 6</div>
           </div>
-        </div>}
+        </div>
+        <p style={{ color: "#ccc", fontSize: 14, lineHeight: 1.7 }}>{stages[stg].d}</p>
+        <div style={{ marginTop: 14, padding: 12, borderRadius: 8, background: `${BG}88`, border: `1px solid ${stages[stg].c}22` }}>
+          <span style={{ fontSize: 11, color: Y, fontWeight: "bold" }}>NQ EXAMPLE: </span>
+          <span style={{ fontSize: 12, color: "#bbb" }}>{stages[stg].ex}</span>
+        </div>
+      </Bx>
+      <div style={{ marginTop: 14 }}><SBar score={stg + 1} max={6} threshold={6} /></div>
+      <Bx color={C} style={{ marginTop: 14 }}>
+        <Glow color={C} size="0.8rem">💡 KEY INSIGHT</Glow>
+        <p style={{ color: "#999", fontSize: 12, marginTop: 6, lineHeight: 1.6 }}>
+          The state machine prevents you from entering on incomplete setups. Stage 3 without Stage 1? The sweep never happened — you'd be entering without a liquidity grab. Stage 5 without Stage 4? No displacement = no institutional commitment = trap.
+        </p>
+      </Bx>
+    </div>
+  );
 
-        {page==="profile"&&<OperatorProfile systems={SYSTEMS} onOpenGuide={function(id){setActiveGuide(id);window.scrollTo(0,0);}} vault={vault} onUpdateVault={updateVault}/>}
-        {page==="mindset"&&<MindsetLab vault={vault} onUpdateVault={updateVault}/>}
-        {page==="settings"&&<IndicatorSettings/>}
+  const renderModes = () => (
+    <div>
+      <div style={{ textAlign: "center", marginBottom: 20 }}>
+        <Glow color={C} size="1.5rem">SIGNAL MODES</Glow>
+        <p style={{ color: D, fontSize: 12, marginTop: 4 }}>From raw to surgical. Choose your aggression level.</p>
+      </div>
+      <div style={{ display: "flex", gap: 4, marginBottom: 16 }}>
+        {modes.map((m, i) => (
+          <button key={i} onClick={() => setMd(i)} style={{ flex: 1, padding: "10px 4px", border: `1px solid ${i === md ? m.c : D}44`, borderRadius: 8, background: i === md ? `${m.c}18` : B3, cursor: "pointer", transition: "all 0.3s", boxShadow: i === md ? `0 0 12px ${m.c}22` : "none" }}>
+            <div style={{ fontSize: 22 }}>{m.i}</div>
+            <div style={{ fontSize: 9, color: i === md ? m.c : D, fontWeight: "bold" }}>{m.name}</div>
+          </button>
+        ))}
+      </div>
+      <Bx color={modes[md].c}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 14 }}>
+          <span style={{ fontSize: 52 }}>{modes[md].i}</span>
+          <div>
+            <Glow color={modes[md].c} size="1.3rem">{modes[md].name} MODE</Glow>
+            <div style={{ display: "flex", gap: 16, marginTop: 6 }}>
+              <span style={{ fontSize: 12, color: Y }}>Min Score: {modes[md].sc}</span>
+              <span style={{ fontSize: 12, color: C }}>Filters: {modes[md].f}</span>
+            </div>
+          </div>
+        </div>
+        <p style={{ color: "#ccc", fontSize: 14, lineHeight: 1.6 }}>{modes[md].d}</p>
+        <div style={{ marginTop: 12 }}><SBar score={modes[md].sc} max={15} threshold={modes[md].sc} /></div>
+      </Bx>
+      <Bx color={G} style={{ marginTop: 14 }}>
+        <Glow color={G} size="0.85rem">🎯 WHICH MODE SHOULD I USE?</Glow>
+        <div style={{ marginTop: 10, display: "grid", gap: 8 }}>
+          {[
+            { q: "I'm new to the system", a: "Start BALANCED — best signal-to-noise ratio", c: C },
+            { q: "Too many signals firing", a: "Move to HARD or SNIPER — raises the bar", c: Y },
+            { q: "Missing good moves", a: "Drop to SOFT — removes SMT requirement", c: M },
+            { q: "Backtesting/studying", a: "Use GHOST — see every potential setup", c: D },
+          ].map((item, i) => (
+            <div key={i} style={{ display: "flex", gap: 8, alignItems: "start" }}>
+              <span style={{ color: item.c, fontSize: 13 }}>▸</span>
+              <div><span style={{ color: "#ddd", fontSize: 12, fontWeight: "bold" }}>{item.q}?</span><span style={{ color: "#888", fontSize: 12 }}> → {item.a}</span></div>
+            </div>
+          ))}
+        </div>
+      </Bx>
+    </div>
+  );
 
+  const renderEnergy = () => (
+    <div>
+      <div style={{ textAlign: "center", marginBottom: 24 }}>
+        <Glow color={Y} size="1.5rem">ENERGY PRESSURE ENGINE</Glow>
+        <p style={{ color: D, fontSize: 12, marginTop: 4 }}>Markets compress before they expand. This engine times the explosion.</p>
+      </div>
+      <div style={{ display: "flex", gap: 4, marginBottom: 20 }}>
+        {phases.map((p, i) => (
+          <div key={i} style={{ flex: 1, padding: "12px 6px", borderRadius: 8, textAlign: "center", background: i <= ph ? `${p.c}18` : B3, border: `1px solid ${i <= ph ? p.c : D}33`, transition: "all 0.5s", boxShadow: i === ph ? `0 0 18px ${p.c}33` : "none" }}>
+            <div style={{ fontSize: 24 }}>{p.i}</div>
+            <div style={{ fontSize: 9, color: i <= ph ? p.c : D, fontWeight: "bold", marginTop: 3 }}>{p.name}</div>
+          </div>
+        ))}
+      </div>
+      <Bx color={phases[ph].c}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <span style={{ fontSize: 44 }}>{phases[ph].i}</span>
+          <div>
+            <Glow color={phases[ph].c} size="1.1rem">{phases[ph].name}</Glow>
+            <div style={{ fontSize: 12, color: D, marginTop: 2 }}>Range: {phases[ph].r}</div>
+          </div>
+        </div>
+        <p style={{ color: "#ccc", fontSize: 14, lineHeight: 1.6, marginTop: 10 }}>{phases[ph].d}</p>
+      </Bx>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 16 }}>
+        {[
+          { n: "ATR Compression", w: "35%", d: "Current ATR vs baseline", c: C },
+          { n: "Range Tightening", w: "30%", d: "First half vs second half", c: M },
+          { n: "Level Clustering", w: "35%", d: "How close H/L are", c: Y },
+        ].map((e, i) => (
+          <Bx key={i} color={e.c} style={{ textAlign: "center" }}>
+            <Glow color={e.c} size="0.75rem">{e.n}</Glow>
+            <div style={{ fontSize: 26, fontWeight: 900, color: e.c, margin: "6px 0", fontFamily: "'Orbitron',sans-serif" }}>{e.w}</div>
+            <div style={{ fontSize: 10, color: "#777" }}>{e.d}</div>
+          </Bx>
+        ))}
+      </div>
+      <Bx color={Y} style={{ marginTop: 14 }}>
+        <Glow color={Y} size="0.8rem">🕐 SESSION MULTIPLIERS</Glow>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6, marginTop: 10 }}>
+          {[
+            { t: "Pre-Market", m: "0.7×", c: D }, { t: "NY Open", m: "2.0×", c: R },
+            { t: "Mid-Day", m: "1.1×", c: C }, { t: "Lunch", m: "0.3×", c: D },
+            { t: "Afternoon", m: "0.8×", c: M }, { t: "Power Hour", m: "1.3×", c: Y },
+            { t: "After Hours", m: "0.2×", c: D }, { t: "Kill Zone", m: "1.5×", c: G },
+          ].map((s, i) => (
+            <div key={i} style={{ textAlign: "center", padding: 6, borderRadius: 6, background: `${s.c}08`, border: `1px solid ${s.c}22` }}>
+              <div style={{ fontSize: 14, color: s.c, fontWeight: 900, fontFamily: "'Orbitron',sans-serif" }}>{s.m}</div>
+              <div style={{ fontSize: 8, color: "#666", marginTop: 2 }}>{s.t}</div>
+            </div>
+          ))}
+        </div>
+      </Bx>
+    </div>
+  );
+
+  const renderHologram = () => (
+    <div>
+      <div style={{ textAlign: "center", marginBottom: 24, position: "relative" }}>
+        <div style={{ position: "absolute", top: -10, left: "50%", transform: "translateX(-50%)", width: 160, height: 160, borderRadius: "50%", background: `radial-gradient(circle, ${G}0A, transparent 70%)`, pointerEvents: "none" }} />
+        <Glow color={G} size="1.5rem">👻 SMART AI HOLOGRAM™</Glow>
+        <p style={{ color: D, fontSize: 12, marginTop: 4 }}>9-factor bias • per-bar intelligence • live seed • gravity zones • zone lock</p>
+      </div>
+
+      <Bx color={G} style={{ marginBottom: 14 }}>
+        <Glow color={G} size="0.9rem">9-FACTOR AI BIAS MODEL</Glow>
+        <div style={{ marginTop: 12 }}>
+          {hf.map((f, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+              <div style={{ width: 36, textAlign: "center" }}>
+                <span style={{ fontSize: 14, color: f.c, fontFamily: "'Orbitron',sans-serif", fontWeight: 900 }}>{f.p}%</span>
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+                  <span style={{ fontSize: 12, color: "#ccc" }}>{f.name}</span>
+                </div>
+                <Bar value={f.p} max={25} color={f.c} h={6} />
+                <div style={{ fontSize: 10, color: "#666", marginTop: 2 }}>{f.d}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Bx>
+
+      <Bx color={M} style={{ marginBottom: 14 }}>
+        <Glow color={M} size="0.9rem">🧠 PER-BAR LEVEL AWARENESS</Glow>
+        <p style={{ color: "#888", fontSize: 11, margin: "8px 0" }}>Each hologram candle individually scans WHERE IT IS vs every known level — then adjusts its own body size, wick direction, and movement:</p>
+        <div style={{ display: "flex", gap: 3, marginBottom: 10 }}>
+          {lvls.map((l, i) => (
+            <button key={i} onClick={() => setLi(i)} style={{ flex: 1, padding: "6px 2px", border: `1px solid ${i === li ? l.c : D}44`, borderRadius: 6, background: i === li ? `${l.c}18` : B3, cursor: "pointer", transition: "all 0.3s", boxShadow: i === li ? `0 0 8px ${l.c}22` : "none" }}>
+              <div style={{ fontSize: 14 }}>{l.i}</div>
+              <div style={{ fontSize: 7, color: i === li ? l.c : D }}>{l.z.split(" ")[0]}</div>
+            </button>
+          ))}
+        </div>
+        <div style={{ padding: 12, borderRadius: 8, background: `${BG}88`, border: `1px solid ${lvls[li].c}22` }}>
+          <Glow color={lvls[li].c} size="0.9rem">At {lvls[li].z}</Glow>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 10 }}>
+            {[{ l: "Body", v: lvls[li].b }, { l: "Wicks", v: lvls[li].w }, { l: "Movement", v: lvls[li].m }, { l: "Next Candle", v: lvls[li].nx }].map((item, j) => (
+              <div key={j}>
+                <div style={{ fontSize: 10, color: D, marginBottom: 2 }}>{item.l}</div>
+                <div style={{ fontSize: 12, color: W, lineHeight: 1.4 }}>{item.v}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Bx>
+
+      <Bx color={Y} style={{ marginBottom: 14 }}>
+        <Glow color={Y} size="0.9rem">🔮 ROLLING GRAVITY ZONES</Glow>
+        <p style={{ color: "#888", fontSize: 12, margin: "8px 0", lineHeight: 1.5 }}>
+          Detects real swing pivots on chart → stores up to 12 levels → selects closest above as <span style={{ color: R }}>Resistance</span> and closest below as <span style={{ color: G }}>Support</span>. When price breaks through decisively, that pivot is removed and the next nearest takes over. Natural staircase.
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 12 }}>
+          {[
+            { l: "Pivot Lookback", v: "3-50", u: "bars", d: "12 = 1hr on 5m", c: C },
+            { l: "Min Distance", v: "2-50", u: "pts", d: "No duplicate clusters", c: G },
+            { l: "Thickness", v: "3-30", u: "pts", d: "Zone box width", c: Y },
+          ].map((s, i) => (
+            <div key={i} style={{ textAlign: "center", padding: 10, borderRadius: 8, background: `${s.c}0A`, border: `1px solid ${s.c}22` }}>
+              <div style={{ fontSize: 10, color: s.c, fontFamily: "'Orbitron',sans-serif" }}>{s.l}</div>
+              <div style={{ fontSize: 22, color: W, fontWeight: 900, fontFamily: "'Orbitron',sans-serif" }}>{s.v}</div>
+              <div style={{ fontSize: 10, color: D }}>{s.u}</div>
+              <div style={{ fontSize: 9, color: "#555", marginTop: 2 }}>{s.d}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: "flex", gap: 6 }}>
+          {[
+            { label: "Resistance above", color: R, icon: "🔴" },
+            { label: "Price breaks through", color: Y, icon: "💥" },
+            { label: "Pivot removed, next takes over", color: G, icon: "🔄" },
+          ].map((s, i) => (
+            <div key={i} style={{ flex: 1, textAlign: "center", padding: 8, borderRadius: 6, background: `${s.color}08`, border: `1px solid ${s.color}22` }}>
+              <div style={{ fontSize: 18 }}>{s.icon}</div>
+              <div style={{ fontSize: 10, color: s.color, marginTop: 4 }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </Bx>
+
+      <Bx color={R} style={{ marginBottom: 14 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <Glow color={R} size="0.9rem">🔒 ZONE LOCK WINDOW</Glow>
+          <button onClick={() => setLk(!lk)} style={{ padding: "5px 14px", borderRadius: 8, cursor: "pointer", background: lk ? `${R}33` : B3, border: `1px solid ${lk ? R : D}`, color: lk ? R : D, fontSize: 11, fontFamily: "'Orbitron',sans-serif", fontWeight: "bold", transition: "all 0.3s", boxShadow: lk ? `0 0 10px ${R}33` : "none" }}>
+            {lk ? "🔒 LOCKED" : "🔓 UNLOCKED"}
+          </button>
+        </div>
+        <div style={{ marginTop: 14, display: "flex", gap: 12, alignItems: "center", justifyContent: "center" }}>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 9, color: D }}>LOCK START</div>
+            <div style={{ fontSize: 22, color: G, fontFamily: "'Orbitron',sans-serif", textShadow: `0 0 8px ${G}33` }}>9:25</div>
+          </div>
+          <div style={{ flex: 1, height: 6, borderRadius: 3, background: `${D}33`, position: "relative", overflow: "hidden" }}>
+            <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: lk ? "100%" : "0%", background: `linear-gradient(90deg, ${G}44, ${R}66)`, borderRadius: 3, transition: "width 0.6s", boxShadow: lk ? `0 0 12px ${R}44` : "none" }} />
+            {lk && <div style={{ position: "absolute", left: "50%", top: -16, transform: "translateX(-50%)", fontSize: 11, color: R, fontFamily: "'Orbitron',sans-serif", fontWeight: 900, animation: pulse ? "none" : "none" }}>🔒 FROZEN</div>}
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 9, color: D }}>LOCK END</div>
+            <div style={{ fontSize: 22, color: R, fontFamily: "'Orbitron',sans-serif", textShadow: `0 0 8px ${R}33` }}>10:00</div>
+          </div>
+        </div>
+        <div style={{ marginTop: 14, fontSize: 12, color: "#999", lineHeight: 1.7 }}>
+          <span style={{ color: G, fontWeight: "bold" }}>Before lock:</span> Zones roll freely through premarket, finding best pivot levels naturally.
+          <br /><span style={{ color: R, fontWeight: "bold" }}>During lock:</span> Zones freeze. Labels show 🔒. Borders go solid + thicker. No flipping, no moving. Hologram candles project between frozen zones.
+          <br /><span style={{ color: C, fontWeight: "bold" }}>After lock:</span> Zones unlock and resume rolling with new session pivots.
+        </div>
+        <div style={{ marginTop: 10, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+          {[
+            { l: "Lock Start Options", v: "9:00 - 10:00 ET", c: G },
+            { l: "Lock End Options", v: "9:45 - 4:00 PM ET", c: R },
+          ].map((s, i) => (
+            <div key={i} style={{ textAlign: "center", padding: 8, borderRadius: 6, background: `${s.c}08`, border: `1px solid ${s.c}22` }}>
+              <div style={{ fontSize: 10, color: D }}>{s.l}</div>
+              <div style={{ fontSize: 12, color: s.c, fontWeight: "bold", fontFamily: "'Orbitron',sans-serif" }}>{s.v}</div>
+            </div>
+          ))}
+        </div>
+      </Bx>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        <Bx color={N}>
+          <Glow color={N} size="0.8rem">🔄 LIVE SEED</Glow>
+          <p style={{ color: "#888", fontSize: 11, marginTop: 6, lineHeight: 1.5 }}>
+            Patterns seeded from <span style={{ color: C }}>close rounded to 2pts</span>. Price still = hologram still. Price moves = new pattern. No random flickering.
+          </p>
+        </Bx>
+        <Bx color={N}>
+          <Glow color={N} size="0.8rem">🕐 SESSION SIZING</Glow>
+          <div style={{ display: "flex", gap: 2, marginTop: 8, alignItems: "flex-end", justifyContent: "center", height: 50 }}>
+            {[{ t: "Pre", h: 15, c: D },{ t: "Open", h: 48, c: R },{ t: "Mid", h: 30, c: C },{ t: "Lunch", h: 12, c: D },{ t: "Pwr", h: 35, c: Y },{ t: "AH", h: 10, c: D }].map((b, i) => (
+              <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                <div style={{ width: "80%", height: b.h, borderRadius: 2, background: `linear-gradient(180deg,${b.c}CC,${b.c}44)`, boxShadow: `0 0 4px ${b.c}22` }} />
+                <span style={{ fontSize: 7, color: b.c }}>{b.t}</span>
+              </div>
+            ))}
+          </div>
+        </Bx>
       </div>
     </div>
-  </>;
+  );
+
+  const renderMap = () => (
+    <div>
+      <div style={{ textAlign: "center", marginBottom: 24 }}>
+        <Glow color={N} size="1.5rem">🗺️ SESSION MAP</Glow>
+        <p style={{ color: D, fontSize: 12, marginTop: 4 }}>Open your chart → instantly read the entire day's order flow narrative.</p>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+        {[
+          { n: "Asia Box", c: C, ic: "🌏", d: "Overnight range drawn as cyan box. Top & bottom = major liquidity sweep targets." },
+          { n: "London Box", c: M, ic: "🇬🇧", d: "London session range as magenta box. See instantly if London swept Asia's high or low." },
+          { n: "NY Range Box", c: Y, ic: "🗽", d: "Real-time gold box from 9:30 open. See how much daily range NY has consumed." },
+          { n: "Opening Print", c: W, ic: "📍", d: "White dashed line at 9:30 open price. NQ respects this level — instant bias read." },
+          { n: "Prev Day H/L/C", c: "#AA88FF", ic: "📊", d: "Yesterday's high, low, and close as dotted lines. Key institutional reference levels." },
+          { n: "VWAP Line", c: "#FF9800", ic: "🧲", d: "Orange VWAP line. The gravity center of the day. Price always returns to VWAP." },
+        ].map((s, i) => (
+          <Bx key={i} color={s.c}>
+            <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 6 }}>
+              <span style={{ fontSize: 20 }}>{s.ic}</span>
+              <Glow color={s.c} size="0.8rem">{s.n}</Glow>
+            </div>
+            <p style={{ color: "#888", fontSize: 12, lineHeight: 1.5 }}>{s.d}</p>
+          </Bx>
+        ))}
+      </div>
+      <Bx color={Y}>
+        <Glow color={Y} size="0.85rem">📖 READING THE MAP</Glow>
+        <p style={{ color: "#bbb", fontSize: 13, lineHeight: 1.7, marginTop: 8 }}>
+          "Asia built a range at 24,900-24,950. London swept the Asia low. NY opened at 24,920 below VWAP. Price is in discount below yesterday's close. Hologram projecting bearish toward demand."
+        </p>
+        <p style={{ color: D, fontSize: 11, marginTop: 6 }}>The whole story in one glance. Zero analysis needed.</p>
+      </Bx>
+      <Bx color={C} style={{ marginTop: 14 }}>
+        <Glow color={C} size="0.85rem">📊 NEW HUD ROWS</Glow>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 10 }}>
+          {[
+            { l: "MTF Align", v: "3/3 BULL", d: "1m + 15m + 1H agree", c: G },
+            { l: "vs Open", v: "+12.5pts", d: "From 9:30 open print", c: C },
+            { l: "Today", v: "2 sig | 1W 0L", d: "Daily trade tracker", c: Y },
+          ].map((h, i) => (
+            <div key={i} style={{ textAlign: "center", padding: 10, borderRadius: 8, background: `${h.c}0A`, border: `1px solid ${h.c}22`, boxShadow: `0 0 6px ${h.c}08` }}>
+              <div style={{ fontSize: 10, color: D }}>{h.l}</div>
+              <div style={{ fontSize: 16, color: h.c, fontFamily: "'Orbitron',sans-serif", fontWeight: 900, margin: "4px 0", textShadow: `0 0 8px ${h.c}33` }}>{h.v}</div>
+              <div style={{ fontSize: 10, color: "#666" }}>{h.d}</div>
+            </div>
+          ))}
+        </div>
+      </Bx>
+    </div>
+  );
+
+  const renderDefense = () => (
+    <div>
+      <div style={{ textAlign: "center", marginBottom: 24 }}>
+        <Glow color={R} size="1.5rem">🛡️ LOSS PREVENTION SHIELD</Glow>
+        <p style={{ color: D, fontSize: 12, marginTop: 4 }}>5 layers of defense. Bad setups get blocked before they can hurt you.</p>
+      </div>
+      {[
+        { n: "CHOP DAY FILTER", i: "🌀", c: R, h: "Range < 40% ADR + NY crosses > 3 = CHOP", r: "All signals blocked for the day. Saves you from death by 1000 cuts." },
+        { n: "ADR CONSUMPTION GATE", i: "📏", c: Y, h: "Current range > 55% of 20-bar ADR", r: "No new trades. The daily range is exhausted — moves are over." },
+        { n: "FAKE-BREAK DEFENSE", i: "🎭", c: M, h: "Sweep reclaimed within 3 bars", r: "Sweep invalidated. Prevents entering on false sweeps that reverse instantly." },
+        { n: "PREMIUM/DISCOUNT", i: "💎", c: C, h: "Above EQ = Premium, below = Discount", r: "Shorts only in Premium, longs only in Discount. No buying at the top." },
+        { n: "KILL ZONE GATE", i: "🕐", c: G, h: "Phase 1: 8:30-9:45 | Phase 2: 10:15-11:00", r: "Signals only during high-probability windows. No 2am entries." },
+      ].map((d, i) => (
+        <Bx key={i} color={d.c} style={{ marginBottom: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{ fontSize: 34 }}>{d.i}</span>
+            <div style={{ flex: 1 }}>
+              <Glow color={d.c} size="0.9rem">{d.n}</Glow>
+              <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}><span style={{ color: d.c }}>How: </span>{d.h}</div>
+              <div style={{ fontSize: 12, color: "#ccc", marginTop: 2 }}><span style={{ color: G }}>Result: </span>{d.r}</div>
+            </div>
+          </div>
+        </Bx>
+      ))}
+    </div>
+  );
+
+  const renderTrade = () => (
+    <div>
+      <div style={{ textAlign: "center", marginBottom: 24 }}>
+        <Glow color={G} size="1.5rem">💰 TRADE MANAGEMENT</Glow>
+        <p style={{ color: D, fontSize: 12, marginTop: 4 }}>Full visual trade system with 3-tier exits.</p>
+      </div>
+      <Bx color={C} style={{ marginBottom: 14 }}>
+        <Glow color={C} size="0.85rem">ENTRY VISUALS ON CHART</Glow>
+        <div style={{ marginTop: 10, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontSize: 12 }}>
+          {[
+            { v: "▲/▼ Triangle", d: "On the entry candle", c: C },
+            { v: "Entry Line", d: "Thick solid, extends right", c: G },
+            { v: "SL Line", d: "Red dashed at stop loss", c: R },
+            { v: "TP1/TP2/TP3 Lines", d: "Green dashed at each target", c: G },
+            { v: "Signal Label", d: "LONG or SHORT text", c: Y },
+            { v: "Info Box", d: "Direction, entry, SL, TPs, R values, $", c: N },
+            { v: "TP Hit Circles", d: "Small circles when targets hit", c: G },
+            { v: "Win/Loss Label", d: "Summary when trade closes", c: M },
+          ].map((item, i) => (
+            <div key={i} style={{ display: "flex", gap: 6, alignItems: "center" }}>
+              <span style={{ color: item.c, fontSize: 10 }}>◈</span>
+              <span style={{ color: W, fontWeight: "bold" }}>{item.v}</span>
+              <span style={{ color: D, fontSize: 10 }}>{item.d}</span>
+            </div>
+          ))}
+        </div>
+      </Bx>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 14 }}>
+        {[{ n: "TP1", r: "1R", p: "33%", c: G }, { n: "TP2", r: "2R", p: "33%", c: Y }, { n: "TP3", r: "3R", p: "34%", c: C }].map((tp, i) => (
+          <Bx key={i} color={tp.c} style={{ textAlign: "center" }}>
+            <Glow color={tp.c} size="1.2rem">{tp.n}</Glow>
+            <div style={{ fontSize: 28, color: tp.c, fontWeight: 900, margin: "6px 0", fontFamily: "'Orbitron',sans-serif", textShadow: `0 0 12px ${tp.c}44` }}>{tp.r}</div>
+            <div style={{ fontSize: 11, color: D }}>Exit {tp.p}</div>
+            <div style={{ marginTop: 6 }}><Bar value={i + 1} max={3} color={tp.c} h={4} /></div>
+          </Bx>
+        ))}
+      </div>
+      <Bx color={Y}>
+        <Glow color={Y} size="0.85rem">⚙️ ENTRY MODELS</Glow>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
+          {[
+            { n: "Box Breakout", d: "Enter when price breaks out of HTF box", c: C },
+            { n: "Box Retest", d: "Enter on pullback retest of broken box", c: G },
+            { n: "Wick Entry", d: "Enter on wick rejection from box edge", c: Y },
+            { n: "Close Inside", d: "Enter when candle closes inside the box", c: M },
+          ].map((e, i) => (
+            <div key={i} style={{ padding: 10, borderRadius: 8, background: `${e.c}08`, border: `1px solid ${e.c}22` }}>
+              <Glow color={e.c} size="0.75rem">{e.n}</Glow>
+              <div style={{ fontSize: 11, color: "#888", marginTop: 3 }}>{e.d}</div>
+            </div>
+          ))}
+        </div>
+      </Bx>
+    </div>
+  );
+
+  const renderSetup = () => (
+    <div>
+      <div style={{ textAlign: "center", marginBottom: 24 }}>
+        <Glow color={G} size="1.5rem">🚀 5-MINUTE SETUP GUIDE</Glow>
+        <p style={{ color: D, fontSize: 12, marginTop: 4 }}>From zero to trading in 5 steps.</p>
+      </div>
+      {[
+        { s: 1, t: "Add to Chart", d: "NQ1! or MNQ1! • 5-minute timeframe • Apply NEXUS indicator", c: C },
+        { s: 2, t: "Set Signal Mode", d: "Start with BALANCED (score 8). Drop to SOFT if missing setups. Rise to HARD if too many.", c: G },
+        { s: 3, t: "Configure Gravity Zones", d: "Pivot Lookback: 12 • Min Distance: 10pts • Thickness: 10pts. Adjust to your style.", c: Y },
+        { s: 4, t: "Set Zone Lock Window", d: "Lock Start: 9:25 ET → Lock End: 10:00 ET. Freezes zones during opening volatility.", c: R },
+        { s: 5, t: "Trade the System", d: "Wait for 6 stages during kill zone. Read the session map. Trust the hologram. Execute.", c: M },
+      ].map((s, i) => (
+        <Bx key={i} color={s.c} style={{ marginBottom: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <div style={{ width: 40, height: 40, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: `${s.c}22`, border: `2px solid ${s.c}`, color: s.c, fontFamily: "'Orbitron',sans-serif", fontWeight: 900, fontSize: 18, boxShadow: `0 0 10px ${s.c}33`, flexShrink: 0 }}>{s.s}</div>
+            <div>
+              <Glow color={s.c} size="0.9rem">{s.t}</Glow>
+              <div style={{ fontSize: 12, color: "#999", marginTop: 3 }}>{s.d}</div>
+            </div>
+          </div>
+        </Bx>
+      ))}
+      <Bx color={Y} style={{ marginTop: 16 }}>
+        <Glow color={Y} size="0.85rem">⚙️ RECOMMENDED STARTER SETTINGS</Glow>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginTop: 10 }}>
+          {[
+            ["Signal Mode", "Balanced"], ["Entry Style", "Box Breakout"], ["SL Mode", "Box Edge"], ["TP Mode", "Auto R:R"],
+            ["Pivot Lookback", "12 bars"], ["Zone Thickness", "10 pts"], ["Min Distance", "10 pts"], ["Zone Lock", "9:25 → 10:00"],
+          ].map(([k, v], i) => (
+            <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "6px 10px", borderRadius: 6, background: i % 2 === 0 ? `${Y}08` : `${Y}04` }}>
+              <span style={{ fontSize: 12, color: D }}>{k}</span>
+              <span style={{ fontSize: 12, color: Y, fontWeight: "bold" }}>{v}</span>
+            </div>
+          ))}
+        </div>
+      </Bx>
+      <Bx color={G} style={{ marginTop: 14 }}>
+        <Glow color={G} size="0.85rem">✅ DAILY CHECKLIST</Glow>
+        <div style={{ marginTop: 10 }}>
+          {[
+            "Chart loaded on NQ 5m before 8:30am ET",
+            "Check HUD: Chop Score < 3, ADR < 55%",
+            "Read session map: Asia range → London swept?",
+            "Identify premium/discount zone from sweep",
+            "Wait for kill zone Phase 1 (8:30-9:45am)",
+            "Watch 6 stages complete sequentially",
+            "Execute signal. Trust the system.",
+          ].map((item, i) => (
+            <div key={i} style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 6 }}>
+              <div style={{ width: 18, height: 18, borderRadius: 4, border: `1px solid ${G}44`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: G, flexShrink: 0 }}>✓</div>
+              <span style={{ fontSize: 12, color: "#999" }}>{item}</span>
+            </div>
+          ))}
+        </div>
+      </Bx>
+    </div>
+  );
+
+  const pages = [renderOverview, renderStages, renderModes, renderEnergy, renderHologram, renderMap, renderDefense, renderTrade, renderSetup];
+
+  return (
+    <div style={{ minHeight: "100vh", background: BG, color: W, fontFamily: "'Segoe UI',sans-serif", position: "relative" }}>
+      <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, pointerEvents: "none", zIndex: 100, background: "repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,255,0.008) 2px,rgba(0,255,255,0.008) 4px)" }} />
+      <div style={{ display: "flex", gap: 2, padding: "8px 6px 0", overflowX: "auto", background: `linear-gradient(180deg,${B2},${BG})`, borderBottom: `1px solid ${C}18` }}>
+        {tabs.map((t, i) => (
+          <button key={i} onClick={() => setTab(i)} style={{ flex: "0 0 auto", padding: "8px 10px", border: "none", cursor: "pointer", borderRadius: "8px 8px 0 0", transition: "all 0.2s", background: tab === i ? `${C}15` : "transparent", borderBottom: tab === i ? `2px solid ${C}` : "2px solid transparent" }}>
+            <div style={{ fontSize: 16 }}>{t.i}</div>
+            <div style={{ fontSize: 9, color: tab === i ? C : D, fontFamily: "'Orbitron',sans-serif", whiteSpace: "nowrap" }}>{t.l}</div>
+          </button>
+        ))}
+      </div>
+      <div style={{ padding: 16, maxWidth: 680, margin: "0 auto" }}>{pages[tab]()}</div>
+      <div style={{ textAlign: "center", padding: "16px 0 24px", borderTop: `1px solid ${D}22` }}>
+        <span style={{ fontSize: 10, color: D, fontFamily: "'Orbitron',sans-serif" }}>AURASZN NEXUS v1.1 • 9 ENGINES • SMART AI HOLOGRAM™ • 2026</span>
+      </div>
+    </div>
+  );
 }
