@@ -24,62 +24,230 @@ var QUOTES = [
   "You either drift or you design.",
   "The chart doesn't lie. Your ego does.",
   "Discipline is the shortcut manifestation responds to.",
-  "FOMO only exists when you believe there won't be another opportunity.",
   "The combine is not where you trade. It is a TOLL you pay to access real capital.",
-  "Revenge only exists when you believe you need to fix this right now.",
-  "Over-leverage only exists when you believe this one is special. Those are belief leaks.",
+  "Your stop loss was the target. Now you know.",
   "Consistency beats intensity every single time.",
   "God rewards structure.",
   "Momentum compounds. Protect it.",
   "One setup. Two directions. No noise.",
-  "Data doesn't lie and neither does this system.",
   "Hard decisions today. Easy life tomorrow.",
   "The boring middle is where champions are built.",
+  "The market isn't random — it's structured.",
+  "Most traders lose because they can't see what's coming.",
+  "Trade like you've seen the future.",
+  "Where faith meets fire.",
 ];
 
 var SYSTEMS = [
-  { id:"nexus", name:"NEXUS v1.1", tier:"FLAGSHIP", tagline:"Unified Institutional Operating System", color:"#00FFFF", icon:"⚡", tf:"1m–15m", inst:"NQ/MNQ", desc:"The culmination of 12 systems unified into one engine. AIMLOCK + MIDAS + AURA-X + Phase Dynamics + ZoneWars + Smart AI Hologram. Every engine, one indicator.", component: NexusGuide },
-  { id:"cyberstructure", name:"CYBERSTRUCTURE V3", tier:"FLAGSHIP", tagline:"AI-Powered Channel Intelligence", color:"#BF00FF", icon:"◈", tf:"All TFs", inst:"NQ/MNQ/Multi", desc:"Smart channel fitting, breakout confirmation, fakeout filtering, split coloring, HTF lock, Aura Magnet Lock, AI Smart Entry Assist. 10 cyberpunk themes. Pure structure.", component: CyberStructureGuide },
-  { id:"blackbook", name:"BLACK BOOK", tier:"FLAGSHIP", tagline:"The Institutional Playbook", color:"#FFD700", icon:"📓", tf:"15m", inst:"NQ/MNQ", desc:"Auraszn's institutional playbook. Asian Range mapping, self-validating institutional levels, FU candle detection, M/W divergence engine, live bias compass with flip detection, and extreme buy/sell zones. The overnight cheat sheet for your NY session.", component: BlackBookGuide },
-  { id:"trendglow", name:"TRENDGLOW⚡", tier:"UTILITY", tagline:"HTF Trend Bias Engine", color:"#00E5FF", icon:"⚡", tf:"45m–30m Lock", inst:"NQ/MNQ/Multi", desc:"One glowing line. One truth. Trend Magic engine locked to your session TF (45m/30m) — see the bias on any chart. Glow line, ribbon band, 3 candle color modes, HTF flip markers. Pairs with Gravity for the full stack.", component: TrendGlowGuide },
-  { id:"gravity", name:"AURA GRAVITY", tier:"UTILITY", tagline:"Auto S/R Zone Engine — HTF Locked", color:"#00FF6A", icon:"🧲", tf:"4H Lock", inst:"NQ/MNQ/Multi", desc:"Auto-detected support & resistance zones from 4H swing structure. Smart memory stores the freshest levels, selects the 2 closest above & below. Trade zone-to-zone with TrendGlow for direction.", component: GravityGuide },
-  { id:"midas", name:"MIDAS TOUCH v2", tier:"SPECIALIZED", tagline:"NY Breakout Operating System", color:"#FFD700", icon:"👑", tf:"1m–5m", inst:"NQ/MNQ", desc:"Weighted confluence scoring, breakout velocity filter, ADR consumption gate, chop detection, fake-break invalidation, two-phase reclaim entry model.", component: MidasGuide },
-  { id:"london", name:"LONDON BREAK v1", tier:"SPECIALIZED", tagline:"One Setup. Two Directions. No Noise.", color:"#00FF88", icon:"🌅", tf:"5m–15m", inst:"NQ/Forex", desc:"Detect London trend line with 3+ touches, wait for close-through after 9 AM ET, enter on pullback into the FVG. No setup? No trade.", component: LondonGuide },
-  { id:"zonewars", name:"ZONEWARS v3", tier:"SPECIALIZED", tagline:"Institutional Sweep & Reclaim Engine", color:"#FF00FF", icon:"⚔️", tf:"1m–5m", inst:"NQ", desc:"ATR-dynamic zones, VWAP bands, MTF bias alignment, volume-confirmed reclaims, partial exit engine. The zone-based institutional approach.", component: ZoneWarsGuide },
-  { id:"heist", name:"LIQUIDITY HEIST", tier:"SPECIALIZED", tagline:"Full Liquidity Mapping System", color:"#FF3366", icon:"🔓", tf:"1m–15m", inst:"Multi-Asset", desc:"Complete liquidity visualization with 8+ theme modes. Maps pools, sweeps, and institutional order flow in real time.", component: HeistGuide },
-  { id:"phase", name:"PHASE DYNAMICS v5", tier:"SUPPORT", tagline:"Time-Based Energy Pressure Engine", color:"#FFEA00", icon:"⚡", tf:"1m–15m", inst:"Multi-Asset", desc:"Energy pressure measurement with time weighting. Hologram Projection Module forecasts candle behavior using session timing, VWAP gravity, and S/R magnetism.", component: PhaseGuide },
-  { id:"auramap", name:"AURA MAP", tier:"SUPPORT", tagline:"Visual Intelligence Overlay", color:"#00FF88", icon:"📡", tf:"All", inst:"Multi-Asset", desc:"Clean visual mapping overlay that syncs its theme engine with all AURA SZN tools. Session zones, key levels, institutional reference points.", component: AuraMapGuide },
-  { id:"lsm", name:"NQ LSM v3.2", tier:"SUPPORT", tagline:"Liquidity State Machine", color:"#FF6B00", icon:"🔧", tf:"1m", inst:"NQ", desc:"Mechanical first-box levels post-9:30. Entry at box edges, ATR-buffered SL, 3-tier TP at 1R/2R/3R with TP3 snapping to liquidity pools.", component: LSMGuide },
+  {
+    id: "nexus",
+    name: "HOLOGRAM CANDLES",
+    tier: "FLAGSHIP",
+    tagline: "See the candle before it prints.",
+    color: "#00FFFF",
+    icon: "⚡",
+    tf: "1m–15m",
+    inst: "NQ/MNQ",
+    desc: "The first and only system that projects future candles forward on your chart. While everyone else reacts — you're already positioned. Every engine AURΔBØT™ has ever built, unified into one indicator.",
+    component: NexusGuide
+  },
+  {
+    id: "cyberstructure",
+    name: "CYBERSTRUCTURE V3",
+    tier: "CORE",
+    tagline: "Smart channels that think for you.",
+    color: "#BF00FF",
+    icon: "◈",
+    tf: "All TFs",
+    inst: "NQ/MNQ/Multi",
+    desc: "Draws the channels. Detects the breakout. Filters the fakeouts. Locks to the higher timeframe so you never lose the big picture. 10 cyberpunk themes. Pure structure, zero guesswork.",
+    component: CyberStructureGuide
+  },
+  {
+    id: "blackbook",
+    name: "BLACK BOOK",
+    tier: "CLASSIFIED",
+    tagline: "Aura's personal playbook — 6 years in the making.",
+    color: "#FFD700",
+    icon: "📓",
+    tf: "15m",
+    inst: "NQ/MNQ",
+    desc: "The overnight cheat sheet for your NY session. Maps what happened while you slept, marks the levels that matter, detects the traps before they spring, and tells you which direction to trade — before the market opens.",
+    component: BlackBookGuide
+  },
+  {
+    id: "trendglow",
+    name: "TRENDGLOW",
+    tier: "CORE",
+    tagline: "One glowing line. One truth.",
+    color: "#00E5FF",
+    icon: "⚡",
+    tf: "45m–30m Lock",
+    inst: "NQ/MNQ/Multi",
+    desc: "Locks onto the higher timeframe trend and shows it on any chart you're trading. One line tells you the direction. The glow tells you the strength. Stop fighting the trend — see it.",
+    component: TrendGlowGuide
+  },
+  {
+    id: "gravity",
+    name: "AURA GRAVITY",
+    tier: "CORE",
+    tagline: "The zones price always comes back to.",
+    color: "#00FF6A",
+    icon: "🧲",
+    tf: "4H Lock",
+    inst: "NQ/MNQ/Multi",
+    desc: "Automatically detects support and resistance zones from the 4-hour chart. Finds the freshest levels, picks the 2 closest above and 2 below. Pair with TrendGlow and you always know where price is going — and where it'll bounce.",
+    component: GravityGuide
+  },
+  {
+    id: "midas",
+    name: "MIDAS TOUCH v2",
+    tier: "SPECIALIZED",
+    tagline: "The NY session breakout hunter.",
+    color: "#FFD700",
+    icon: "👑",
+    tf: "1m–5m",
+    inst: "NQ/MNQ",
+    desc: "Scores every breakout. Filters the fakes. Tells you when the move is real and when it's a trap. Built specifically for the New York open — the most profitable (and most dangerous) hour of the day.",
+    component: MidasGuide
+  },
+  {
+    id: "london",
+    name: "LONDON BREAK v1",
+    tier: "SPECIALIZED",
+    tagline: "One setup. Two directions. No noise.",
+    color: "#00FF88",
+    icon: "🌅",
+    tf: "5m–15m",
+    inst: "NQ/Forex",
+    desc: "Find the London trend line. Wait for the break after 9 AM. Enter on the pullback. One clean trade per day. No setup? No trade. This is how you keep things simple.",
+    component: LondonGuide
+  },
+  {
+    id: "zonewars",
+    name: "ZONEWARS v3",
+    tier: "SPECIALIZED",
+    tagline: "Catch the sweep. Ride the reclaim.",
+    color: "#FF00FF",
+    icon: "⚔️",
+    tf: "1m–5m",
+    inst: "NQ",
+    desc: "The market sweeps a level, traps everyone — then reverses. This system detects that pattern in real time. It finds the zones, confirms the trap, and gives you the entry after the fake move is over.",
+    component: ZoneWarsGuide
+  },
+  {
+    id: "heist",
+    name: "LIQUIDITY HEIST",
+    tier: "SPECIALIZED",
+    tagline: "See where the stops are hiding.",
+    color: "#FF3366",
+    icon: "🔓",
+    tf: "1m–15m",
+    inst: "Multi-Asset",
+    desc: "Maps every pool of stop losses sitting in the market. Shows you where price is being pulled — and where the trap is waiting. 8 visual themes so you see it your way.",
+    component: HeistGuide
+  },
+  {
+    id: "phase",
+    name: "PHASE DYNAMICS v5",
+    tier: "SUPPORT",
+    tagline: "Know when the move is coming — before it moves.",
+    color: "#FFEA00",
+    icon: "⚡",
+    tf: "1m–15m",
+    inst: "Multi-Asset",
+    desc: "Measures energy and pressure building in the market using time and session data. When pressure peaks — the move is about to hit. Stop guessing when. Start seeing when.",
+    component: PhaseGuide
+  },
+  {
+    id: "auramap",
+    name: "AURA MAP",
+    tier: "SUPPORT",
+    tagline: "Your chart, cleaned up and locked in.",
+    color: "#00FF88",
+    icon: "📡",
+    tf: "All",
+    inst: "Multi-Asset",
+    desc: "A clean visual overlay that marks your session times, key levels, and reference points. Syncs with every other AURΔBØT™ tool. Makes your chart look like a cockpit, not a mess.",
+    component: AuraMapGuide
+  },
+  {
+    id: "lsm",
+    name: "NQ LSM v3.2",
+    tier: "SUPPORT",
+    tagline: "Mechanical entries. No decisions required.",
+    color: "#FF6B00",
+    icon: "🔧",
+    tf: "1m",
+    inst: "NQ",
+    desc: "After the 9:30 open, it draws the box. You enter at the edges. Stop loss is set automatically. Take profit at 1R, 2R, 3R. Completely mechanical — no thinking, no emotions, no second-guessing.",
+    component: LSMGuide
+  },
 ];
 
 var LOADOUTS = [
-  { name:"THE FULL STACK", desc:"NEXUS by itself. Every engine unified. One indicator to rule them all.", systems:["nexus"], level:"Advanced" },
-  { name:"THE BLACK BOOK", desc:"BLACK BOOK maps the overnight institutional footprint. CYBERSTRUCTURE channels price into it. The complete pre-session playbook.", systems:["blackbook","cyberstructure"], level:"All Levels" },
-  { name:"THE NY SNIPER", desc:"AURA-X maps the session, MIDAS finds the breakout, Phase Dynamics times the entry.", systems:["midas","phase"], level:"Intermediate" },
-  { name:"THE ZONE-TO-ZONE", desc:"TrendGlow locks the 45m bias. Gravity locks 4H zones. Drop to 15m-5m and trade zone-to-zone. The secret sauce.", systems:["trendglow","gravity"], level:"All Levels" },
-  { name:"THE LONDON PLAY", desc:"London Break for the setup, AURA MAP for clean visuals. One trade per day.", systems:["london","auramap"], level:"Beginner" },
-  { name:"THE ZONE TRADER", desc:"ZoneWars handles sweeps and reclaims. The institutional approach.", systems:["zonewars"], level:"Intermediate" },
-  { name:"THE LIQUIDITY HUNTER", desc:"Heist Engine maps the pools, LSM executes mechanically at first-box levels.", systems:["heist","lsm"], level:"Intermediate" },
+  {
+    name: "THE FULL STACK",
+    desc: "Hologram Candles by itself. Every engine unified into one indicator. If you only run one thing — run this.",
+    systems: ["nexus"],
+    level: "Advanced"
+  },
+  {
+    name: "THE BLACK BOOK",
+    desc: "Black Book maps the overnight footprint. CyberStructure channels price into it. Your complete pre-session playbook — know the plan before the market opens.",
+    systems: ["blackbook", "cyberstructure"],
+    level: "All Levels"
+  },
+  {
+    name: "THE NY SNIPER",
+    desc: "Midas finds the breakout. Phase Dynamics times the entry. Built for the NY open — fast in, fast out, no chasing.",
+    systems: ["midas", "phase"],
+    level: "Intermediate"
+  },
+  {
+    name: "THE ZONE-TO-ZONE",
+    desc: "TrendGlow locks the direction. Gravity locks the levels. Drop to 15m–5m and trade zone-to-zone. This is the secret sauce.",
+    systems: ["trendglow", "gravity"],
+    level: "All Levels"
+  },
+  {
+    name: "THE LONDON PLAY",
+    desc: "London Break for the setup, Aura Map for clean visuals. One trade per day. Perfect for beginners who want to keep it simple.",
+    systems: ["london", "auramap"],
+    level: "Beginner"
+  },
+  {
+    name: "THE ZONE TRADER",
+    desc: "ZoneWars catches the sweep and rides the reclaim. For traders who love reversals and trapped moves.",
+    systems: ["zonewars"],
+    level: "Intermediate"
+  },
+  {
+    name: "THE LIQUIDITY HUNTER",
+    desc: "Heist maps the stop loss pools. LSM executes mechanically at the edges. See the target, take the shot.",
+    systems: ["heist", "lsm"],
+    level: "Intermediate"
+  },
 ];
 
 // ═══ BOOT ═══
 function Boot({onDone}) {
   var [lines,setLines]=useState([]);
   var [phase,setPhase]=useState("boot");
-  var bl=["$ ssh auraszn@vault.classified","> Authenticating biometric signature...","> Decrypting archive: AURA-SYSTEMS.enc","> Clearance verified: LEVEL ∞","> Loading classified modules...","> VAULT ACCESS GRANTED."];
+  var bl=["$ ssh operator@vault.aurabot.classified","> Authenticating biometric signature...","> Decrypting archive: AURABOT-SYSTEMS.enc","> Clearance verified: LEVEL ∞","> Loading classified modules...","> VAULT ACCESS GRANTED."];
   useEffect(function(){
     if(phase==="boot"){var i=0;var iv=setInterval(function(){if(i<bl.length){setLines(function(p){return p.concat([bl[i]]);});i++;}else{clearInterval(iv);setTimeout(function(){setPhase("flash");},600);}},220);return function(){clearInterval(iv);};}
     if(phase==="flash")setTimeout(onDone,2200);
   },[phase]);
   if(phase==="flash") return <div style={{position:"fixed",inset:0,background:"#000",zIndex:9999,display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center"}}>
     <img src="/aurabot-logo.png" alt="" style={{width:80,height:80,borderRadius:"50%",marginBottom:20,opacity:0.9,animation:"fadeIn .5s ease"}}/>
-    <div style={{fontSize:"clamp(28px,6vw,44px)",fontFamily:"'Oxanium',sans-serif",fontWeight:800,letterSpacing:8,color:"#BF00FF",textShadow:"0 0 60px #BF00FF80"}}>AURASZN</div>
-    <div style={{fontSize:12,letterSpacing:4,color:"#6a6a80",marginTop:8,fontFamily:"'JetBrains Mono',monospace"}}>SECRET VAULT</div>
+    <div style={{fontSize:"clamp(28px,6vw,44px)",fontFamily:"'Oxanium',sans-serif",fontWeight:800,letterSpacing:8,color:"#BF00FF",textShadow:"0 0 60px #BF00FF80"}}>AURΔBØT™</div>
+    <div style={{fontSize:12,letterSpacing:4,color:"#6a6a80",marginTop:8,fontFamily:"'JetBrains Mono',monospace"}}>WEAPONS VAULT</div>
     <div style={{fontSize:10,letterSpacing:3,color:"#BF00FF80",marginTop:16,fontFamily:"'JetBrains Mono',monospace"}}>CLASSIFIED SYSTEMS ARCHIVE</div>
   </div>;
   return <div style={{position:"fixed",inset:0,background:"#000",zIndex:9999,display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",fontFamily:"'JetBrains Mono',monospace"}}>
     <div style={{maxWidth:500,width:"90%",padding:20}}>
-      <div style={{fontSize:22,fontFamily:"'Oxanium',sans-serif",fontWeight:800,color:"#BF00FF",marginBottom:24,letterSpacing:6}}>AURASZN</div>
+      <div style={{fontSize:22,fontFamily:"'Oxanium',sans-serif",fontWeight:800,color:"#BF00FF",marginBottom:24,letterSpacing:6}}>AURΔBØT™</div>
       {lines.map(function(l,i){var isLast=i===lines.length-1&&i===bl.length-1;return <div key={i} style={{color:isLast?"#00FF88":"#334",fontSize:12,lineHeight:2}}>{l}</div>;})}
     </div>
   </div>;
@@ -215,9 +383,9 @@ function LockScreen({onUnlock}) {
       }}>AUTHENTICATE</button>
 
       <div style={{marginTop:30,fontSize:10,color:"#333",letterSpacing:1,lineHeight:1.8}}>
-        Access codes are distributed to verified<br/>AuraSzn members via Discord.
+        Access codes are distributed to verified<br/>AURΔBØT™ members via Discord.
       </div>
-      <div style={{marginTop:16,fontSize:10,color:"#BF00FF20",letterSpacing:2}}>AURASZN™ VAULT SECURITY</div>
+      <div style={{marginTop:16,fontSize:10,color:"#BF00FF20",letterSpacing:2}}>AURΔBØT™ VAULT SECURITY</div>
     </div>
   </div>;
 }
@@ -229,7 +397,7 @@ var QUIZ_QUESTIONS = [
     q:"You see a setup forming on the chart. What's your instinct?",
     opts:[
       {text:"Get in early — ride the momentum before it leaves without me.",cls:"breacher"},
-      {text:"Wait for the sweep, the reclaim, the perfect confirmation — then strike.",cls:"sniper"},
+      {text:"Wait for the fake move, the trap, the reversal — then strike.",cls:"sniper"},
       {text:"Check the session and time first. The clock matters as much as the chart.",cls:"ghost"}
     ]
   },
@@ -237,7 +405,7 @@ var QUIZ_QUESTIONS = [
     num:"QUERY 02 OF 03",
     q:"How do you want your trading day to feel?",
     opts:[
-      {text:"Fast. In and out. Stack contracts, hit TP, move on with my day.",cls:"breacher"},
+      {text:"Fast. In and out. Stack contracts, hit target, move on with my day.",cls:"breacher"},
       {text:"Patient. One perfect trade is enough. Quality over quantity.",cls:"sniper"},
       {text:"Flexible. I'll trade when the right window opens — even if that's 3 AM.",cls:"ghost"}
     ]
@@ -256,9 +424,9 @@ var QUIZ_QUESTIONS = [
 var CLASS_DATA = {
   sniper:{
     label:"THE SNIPER",icon:"⊕",subtitle:"REVERSAL SPECIALIST",color:"#00f0ff",
-    desc:"You're patient. Calculated. You wait for the market to overextend, sweep liquidity, and reclaim — then you strike with surgical precision. One shot is all you need.",
+    desc:"You're patient. Calculated. You wait for the market to overextend, trap everyone — then reverse. You don't chase. You don't guess. One shot is all you need.",
     loadout:[
-      {name:"NQ-LSM v3.2",tag:"Primary",id:"lsm"},
+      {name:"NQ LSM v3.2",tag:"Primary",id:"lsm"},
       {name:"Aura Map",tag:"Support",id:"auramap"},
       {name:"ZoneWars v3",tag:"Zones",id:"zonewars"},
       {name:"Phase Dynamics v5",tag:"Timing",id:"phase"}
@@ -266,11 +434,11 @@ var CLASS_DATA = {
   },
   breacher:{
     label:"THE BREACHER",icon:"⚡",subtitle:"BREAKOUT SPECIALIST",color:"#ff00ff",
-    desc:"You're aggressive. First through the door. When structure breaks and momentum ignites, you're already in. Speed is your edge — but only when the system says GO.",
+    desc:"You're aggressive. First through the door. When the level breaks and momentum hits — you're already in. Speed is your edge. But only when the system says GO.",
     loadout:[
       {name:"MIDAS TOUCH v2",tag:"Primary",id:"midas"},
       {name:"London Break v1",tag:"Alt Session",id:"london"},
-      {name:"TrendGlow⚡",tag:"Bias",id:"trendglow"},
+      {name:"TrendGlow",tag:"Bias",id:"trendglow"},
       {name:"Aura Gravity",tag:"Zones",id:"gravity"}
     ]
   },
@@ -278,8 +446,8 @@ var CLASS_DATA = {
     label:"THE GHOST",icon:"◎",subtitle:"SESSION SPECIALIST",color:"#00ff88",
     desc:"You move in the dark. Asia session, London open, NY pre-market — you trade the transitions. While everyone sleeps, you're already positioned. The clock is your weapon.",
     loadout:[
-      {name:"NEXUS v1.1",tag:"Primary",id:"nexus"},
-      {name:"TrendGlow⚡",tag:"Bias",id:"trendglow"},
+      {name:"Hologram Candles",tag:"Primary",id:"nexus"},
+      {name:"TrendGlow",tag:"Bias",id:"trendglow"},
       {name:"Aura Gravity",tag:"Zones",id:"gravity"},
       {name:"Aura Map",tag:"Overlay",id:"auramap"}
     ]
@@ -349,7 +517,7 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
       ctx.fillStyle="rgba(0,0,0,0.04)";for(var y=0;y<h;y+=4){ctx.fillRect(0,y,w,2);}
       ctx.font='9px monospace';ctx.fillStyle="#ff335580";ctx.textAlign="left";
       ctx.fillText("◈  C L A S S I F I E D  —  O P E R A T O R   C A R D  ◈",30,30);
-      ctx.font='bold 11px monospace';ctx.fillStyle="#ffd700";ctx.fillText("AURASZN™ HQ",30,55);
+      ctx.font='bold 11px monospace';ctx.fillStyle="#ffd700";ctx.fillText("AURΔBØT™ HQ",30,55);
       ctx.font='10px monospace';ctx.fillStyle="#555570";ctx.textAlign="right";ctx.fillText(dateStr,w-30,55);ctx.textAlign="left";
       ctx.strokeStyle="#1a1a2e";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(30,70);ctx.lineTo(w-30,70);ctx.stroke();
       ctx.font="48px sans-serif";ctx.fillStyle=ac;ctx.fillText(c.icon,30,128);
@@ -366,7 +534,7 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
       });
       ctx.textAlign="left";
       ctx.fillStyle="#0a0a14";ctx.fillRect(0,h-40,w,40);
-      ctx.font="bold 10px monospace";ctx.fillStyle="#ffd700";ctx.fillText("AURASZN™",30,h-16);
+      ctx.font="bold 10px monospace";ctx.fillStyle="#ffd700";ctx.fillText("AURΔBØT™",30,h-16);
       ctx.font="9px monospace";ctx.fillStyle="#555570";ctx.textAlign="right";ctx.fillText("Trade like you've seen the future.",w-30,h-16);ctx.textAlign="left";
       ctx.fillStyle=ac;ctx.beginPath();ctx.arc(16,h-18,3,0,Math.PI*2);ctx.fill();
     },300);
@@ -374,7 +542,7 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
 
   function downloadCard(){
     var canvas=canvasRef.current;if(!canvas)return;
-    var link=document.createElement("a");link.download="AURASZN-"+name.replace(/\s+/g,"_")+"-Operator-Card.png";link.href=canvas.toDataURL("image/png");link.click();
+    var link=document.createElement("a");link.download="AURABOT-"+name.replace(/\s+/g,"_")+"-Operator-Card.png";link.href=canvas.toDataURL("image/png");link.click();
   }
 
   var cls=result?CLASS_DATA[result]:null;
@@ -385,7 +553,7 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
     <div style={{position:"fixed",width:400,height:400,borderRadius:"50%",filter:"blur(150px)",opacity:0.1,bottom:-150,right:-80,background:"#ff00ff",pointerEvents:"none"}}/>
     <div style={{position:"relative",zIndex:1,maxWidth:400,width:"100%"}}>
       <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:3,color:"#BF00FF60",marginBottom:16}}>// SECURE ACCESS PORTAL</div>
-      <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:32,fontWeight:800,color:"#BF00FF",letterSpacing:6,marginBottom:6}}>AURASZN™</div>
+      <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:32,fontWeight:800,color:"#BF00FF",letterSpacing:6,marginBottom:6}}>AURΔBØT™</div>
       <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:"var(--tx2)",letterSpacing:2,marginBottom:40}}>Operator Dossier</div>
       <div style={{textAlign:"left",marginBottom:6}}><span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",letterSpacing:1}}>Enter Your Operator Handle</span></div>
       <input value={name} onChange={function(e){setName(e.target.value);}} onKeyDown={function(e){if(e.key==="Enter")goToAssessment();}} placeholder="Your name..." style={{width:"100%",background:"#0a0a14",border:"1px solid #1a1a2e",borderRadius:6,padding:"14px 16px",fontSize:16,fontFamily:"'JetBrains Mono',monospace",color:"#e8e8f0",textAlign:"center",letterSpacing:2,outline:"none",marginBottom:20}}/>
@@ -447,7 +615,7 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
     return <div style={{animation:"fadeIn .5s ease"}}>
       <div style={{textAlign:"center",padding:"30px 0 20px",borderBottom:"1px solid #1a1a2e",marginBottom:20}}>
         <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#ff335580",letterSpacing:3,marginBottom:10}}>◈ CLASSIFIED — OPERATOR DOSSIER ◈</div>
-        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:20,fontWeight:700,color:"#ffd700",letterSpacing:2,marginBottom:8}}>AURASZN™ HQ — Operator File</div>
+        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:20,fontWeight:700,color:"#ffd700",letterSpacing:2,marginBottom:8}}>AURΔBØT™ HQ — Operator File</div>
         <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:22,fontWeight:800,color:"#e8e8f0",letterSpacing:1,marginBottom:6}}>{name.toUpperCase()}</div>
         <div style={{display:"inline-block",padding:"6px 16px",borderRadius:4,border:"1px solid "+accentColor+"40",background:accentColor+"10",fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:accentColor,letterSpacing:2}}>{cls.label} — {cls.subtitle}</div>
         <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",marginTop:8}}>Activated: {dateStr}</div>
@@ -513,7 +681,7 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
       </div>
 
       <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #00f0ff"}}>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#00f0ff",letterSpacing:2,marginBottom:12}}>// AuraSzn Morning Ritual — Before Every Session</div>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#00f0ff",letterSpacing:2,marginBottom:12}}>// Pre-Session Ritual — Before Every Session</div>
         {[
           {label:"Step 1 — Physical Reset (30 sec)",text:"Breathe deep: In for 4, hold for 4, out for 6. Repeat 3x. \"I am focused. I am present. I am in flow.\""},
           {label:"Step 2 — Alignment (1 min)",text:"Surrender fear, doubt, ego, and greed. Ask for wisdom, patience, and purpose. Trade for impact, not hype."},
@@ -528,7 +696,7 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
       </div>
 
       <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #ffd700"}}>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#ffd700",letterSpacing:2,marginBottom:12}}>// AuraSzn's Non-Negotiable Rules</div>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#ffd700",letterSpacing:2,marginBottom:12}}>// Non-Negotiable Rules</div>
         {[
           "Never spend more than 2 weeks on any single combine. Reset and go again.",
           "On combines: risk higher. Use A+ signals. Hit the target. Get out.",
@@ -582,13 +750,13 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
       </div>
 
       <div style={{textAlign:"center",padding:"30px 20px",marginBottom:14}}>
-        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:15,fontWeight:500,color:"#ffd700",lineHeight:1.7,fontStyle:"italic"}}>"It is not real money... until you make that first payout."</div>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",marginTop:8,letterSpacing:1}}>— AURASZN</div>
+        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:15,fontWeight:500,color:"#ffd700",lineHeight:1.7,fontStyle:"italic"}}>"The combine is not where you trade. It is a TOLL you pay to access real capital."</div>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",marginTop:8,letterSpacing:1}}>— AURA</div>
       </div>
 
       <div style={{textAlign:"center",padding:"20px 0 10px",borderTop:"1px solid #1a1a2e"}}>
         <img src="/aurabot-logo.png" style={{width:50,height:50,borderRadius:"50%",objectFit:"cover",margin:"0 auto 10px",display:"block",opacity:0.8}}/>
-        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:13,fontWeight:700,color:"#ffd700",letterSpacing:3,marginBottom:4}}>AURASZN™</div>
+        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:13,fontWeight:700,color:"#ffd700",letterSpacing:3,marginBottom:4}}>AURΔBØT™</div>
         <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",letterSpacing:1,marginBottom:8}}>Trade like you've seen the future.</div>
         <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,color:"#333",letterSpacing:1}}>This dossier is your operator file. Keep it. Reference it. Live it.</div>
       </div>
@@ -630,7 +798,7 @@ export default function App(){
         <div style={{position:"sticky",top:0,zIndex:100,background:"#06060cee",borderBottom:"1px solid var(--brd)",padding:"10px 20px",display:"flex",justifyContent:"space-between",alignItems:"center",backdropFilter:"blur(12px)"}}>
           <div onClick={function(){setActiveGuide(null);}} style={{cursor:"pointer",display:"flex",alignItems:"center",gap:8}}>
             <span style={{color:"var(--tx2)",fontSize:14}}>←</span>
-            <span style={{fontFamily:"'Oxanium',sans-serif",fontSize:16,fontWeight:800,letterSpacing:4,color:"#BF00FF"}}>AURASZN</span>
+            <span style={{fontFamily:"'Oxanium',sans-serif",fontSize:16,fontWeight:800,letterSpacing:4,color:"#BF00FF"}}>AURΔBØT™</span>
             <span style={{fontSize:9,letterSpacing:2,color:"var(--tx2)",fontFamily:"'JetBrains Mono',monospace"}}>VAULT</span>
           </div>
           <div style={{fontSize:11,color:sys?sys.color:"var(--tx2)",fontFamily:"'Oxanium',sans-serif",fontWeight:700,letterSpacing:1}}>{sys?sys.name:""}</div>
@@ -648,13 +816,13 @@ export default function App(){
       <header style={{position:"sticky",top:0,zIndex:100,background:"#06060cee",borderBottom:"1px solid var(--brd)",padding:"12px 20px",display:"flex",justifyContent:"space-between",alignItems:"center",backdropFilter:"blur(12px)"}}>
         <div onClick={function(){setPage("home");}} style={{cursor:"pointer",display:"flex",alignItems:"center",gap:8}}>
           <img src="/aura-avatar.png" style={{width:30,height:30,borderRadius:"50%",border:"1.5px solid #BF00FF40",objectFit:"cover"}}/>
-          <span style={{fontFamily:"'Oxanium',sans-serif",fontSize:18,fontWeight:800,letterSpacing:4,color:"#BF00FF"}}>AURASZN</span>
-          <span style={{fontSize:10,letterSpacing:2,color:"var(--tx2)",fontFamily:"'JetBrains Mono',monospace"}}>ACADEMY VAULT</span>
+          <span style={{fontFamily:"'Oxanium',sans-serif",fontSize:18,fontWeight:800,letterSpacing:4,color:"#BF00FF"}}>AURΔBØT™</span>
+          <span style={{fontSize:10,letterSpacing:2,color:"var(--tx2)",fontFamily:"'JetBrains Mono',monospace"}}>WEAPONS VAULT</span>
           <span style={{fontSize:14,animation:"boltPulse 2s ease-in-out infinite"}}>⚡</span>
         </div>
         <div style={{display:"flex",gap:6,alignItems:"center"}}>
           {operatorName && <span style={{fontSize:10,color:"#00FF88",fontFamily:"'JetBrains Mono',monospace",marginRight:6}}>⚡ {operatorName.toUpperCase()}</span>}
-          {[{id:"profile",label:"PROFILE"},{id:"home",label:"AURABOT"},{id:"loadouts",label:"LOADOUTS"},{id:"settings",label:"SETTINGS"},{id:"mindset",label:"MINDSET"},{id:"momentum",label:"MOMENTUM"}].map(function(n){
+          {[{id:"profile",label:"PROFILE"},{id:"home",label:"SYSTEMS"},{id:"loadouts",label:"LOADOUTS"},{id:"settings",label:"SETTINGS"},{id:"mindset",label:"MINDSET"},{id:"momentum",label:"MOMENTUM"}].map(function(n){
             return <div key={n.id} onClick={function(){setPage(n.id);}} style={{padding:"6px 14px",borderRadius:6,cursor:"pointer",fontSize:10,fontFamily:"'JetBrains Mono',monospace",letterSpacing:1.5,background:page===n.id?"#BF00FF18":"transparent",color:page===n.id?"#BF00FF":"var(--tx2)",border:"1px solid "+(page===n.id?"#BF00FF40":"transparent"),transition:"all .2s"}}>{n.label}</div>;
           })}
         </div>
@@ -669,18 +837,25 @@ export default function App(){
             <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:3,color:"#BF00FF80",marginBottom:8}}>⚡ CLASSIFIED SYSTEMS ARCHIVE</div>
             <img src="/aura-avatar.png" style={{width:70,height:70,borderRadius:"50%",border:"2px solid #BF00FF40",objectFit:"cover",margin:"0 auto 14px",display:"block",boxShadow:"0 0 30px #BF00FF20"}}/>
             <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:"clamp(26px,5vw,38px)",fontWeight:800,color:"#fff",lineHeight:1.2}}>The <span style={{color:"#BF00FF"}}>Weapons</span> Vault</div>
-            <div style={{fontSize:14,color:"var(--tx2)",marginTop:12,maxWidth:500,margin:"12px auto 0",lineHeight:1.7}}>Every system AuraSzn has built. Tap any weapon to open its full classified guide.</div>
+            <div style={{fontSize:14,color:"var(--tx2)",marginTop:12,maxWidth:500,margin:"12px auto 0",lineHeight:1.7}}>Every system AURΔBØT™ has built. Tap any weapon to open its full classified guide.</div>
           </div>
 
           <div style={{textAlign:"center",padding:"16px 20px",margin:"10px 0 30px",borderTop:"1px solid var(--brd)",borderBottom:"1px solid var(--brd)"}}>
             <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:13,color:"#BF00FF",fontWeight:500,fontStyle:"italic"}}>"{QUOTES[Math.floor(Math.random()*QUOTES.length)]}"</div>
-            <div style={{fontSize:10,color:"var(--tx2)",marginTop:4,fontFamily:"'JetBrains Mono',monospace"}}>— AuraSzn</div>
+            <div style={{fontSize:10,color:"var(--tx2)",marginTop:4,fontFamily:"'JetBrains Mono',monospace"}}>— AURA</div>
           </div>
 
-          {["FLAGSHIP","UTILITY","SPECIALIZED","SUPPORT"].map(function(tier){
+          {["FLAGSHIP","CORE","CLASSIFIED","SPECIALIZED","SUPPORT"].map(function(tier){
             var ts=SYSTEMS.filter(function(s){return s.tier===tier;});
-            var labels={FLAGSHIP:"THE FLAGSHIP",UTILITY:"THE HTF LOCK DUO",SPECIALIZED:"SPECIALIZED WEAPONS",SUPPORT:"SUPPORT LAYERS"};
-            var descs={FLAGSHIP:"The unified system. Everything in one.",UTILITY:"Direction + Levels. Lock your HTF, trade any timeframe. The secret sauce.",SPECIALIZED:"Purpose-built engines for specific approaches.",SUPPORT:"Stack these with anything for added intelligence."};
+            if(ts.length===0) return null;
+            var labels={FLAGSHIP:"THE FLAGSHIP",CORE:"CORE SYSTEMS",CLASSIFIED:"🔒 CLASSIFIED",SPECIALIZED:"SPECIALIZED WEAPONS",SUPPORT:"SUPPORT LAYERS"};
+            var descs={
+              FLAGSHIP:"The system that sees the future. Everything unified into one.",
+              CORE:"Direction. Structure. Levels. The foundation of every trade.",
+              CLASSIFIED:"Aura's personal systems. 6+ years and $250K in market tuition.",
+              SPECIALIZED:"Purpose-built for specific sessions and setups.",
+              SUPPORT:"Stack these with anything for added intelligence."
+            };
             return <div key={tier} style={{marginBottom:32}}>
               <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:2.5,color:"#BF00FF",marginBottom:4,display:"flex",alignItems:"center",gap:8}}>
                 <span style={{width:16,height:1,background:"#BF00FF",display:"inline-block"}}/>{labels[tier]}
@@ -712,7 +887,7 @@ export default function App(){
           <div style={{textAlign:"center",padding:"40px 0 30px"}}>
             <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:3,color:"#BF00FF80",marginBottom:8}}>RECOMMENDED CONFIGURATIONS</div>
             <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:"clamp(24px,5vw,32px)",fontWeight:800,color:"#fff"}}>Battle <span style={{color:"#BF00FF"}}>Loadouts</span></div>
-            <div style={{fontSize:13,color:"var(--tx2)",marginTop:10}}>Tested combinations. Pick your style.</div>
+            <div style={{fontSize:13,color:"var(--tx2)",marginTop:10,maxWidth:440,margin:"10px auto 0",lineHeight:1.7}}>Don't know where to start? Pick a loadout that matches your style. Each one is tested, proven, and ready to deploy.</div>
           </div>
           <div style={{display:"grid",gap:14}}>
             {LOADOUTS.map(function(l,i){
@@ -780,3 +955,4 @@ export default function App(){
     </div>
   </>;
 }
+
