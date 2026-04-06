@@ -366,30 +366,58 @@ function LockScreen({onUnlock}) {
 // ═══ OPERATOR CLASSIFICATION SYSTEM ═══
 var QUIZ_QUESTIONS = [
   {
-    num:"QUERY 01 OF 03",
+    num:"QUERY 01 OF 05",
     q:"You see a setup forming on the chart. What's your instinct?",
     opts:[
       {text:"Get in early — ride the momentum before it leaves without me.",cls:"breacher"},
       {text:"Wait for the fake move, the trap, the reversal — then strike.",cls:"sniper"},
-      {text:"Check the session and time first. The clock matters as much as the chart.",cls:"ghost"}
+      {text:"Check the session and time first. The clock matters as much as the chart.",cls:"ghost"},
+      {text:"Check the channel structure. Where are the walls? What just broke?",cls:"architect"},
+      {text:"Look at the hologram. What is the projection showing 5 bars ahead?",cls:"oracle"}
     ]
   },
   {
-    num:"QUERY 02 OF 03",
+    num:"QUERY 02 OF 05",
     q:"How do you want your trading day to feel?",
     opts:[
       {text:"Fast. In and out. Stack contracts, hit target, move on with my day.",cls:"breacher"},
       {text:"Patient. One perfect trade is enough. Quality over quantity.",cls:"sniper"},
-      {text:"Flexible. I'll trade when the right window opens — even if that's 3 AM.",cls:"ghost"}
+      {text:"Flexible. I'll trade when the right window opens — even if that's 3 AM.",cls:"ghost"},
+      {text:"Prepared. I want to know the plan before the market even opens.",cls:"architect"},
+      {text:"Calculated. I want to see the move before anyone else does.",cls:"oracle"}
     ]
   },
   {
-    num:"QUERY 03 OF 03",
+    num:"QUERY 03 OF 05",
     q:"What matters most to you in a trading system?",
     opts:[
       {text:"Catching the move early. I want to be first through the door.",cls:"breacher"},
       {text:"Precision. I'd rather miss a trade than take a bad one.",cls:"sniper"},
-      {text:"Understanding the market's rhythm — when it moves, when it traps, when to sit out.",cls:"ghost"}
+      {text:"Understanding the market's rhythm — when it moves, when it traps, when to sit out.",cls:"ghost"},
+      {text:"Structure. Channels, levels, the overnight map. I want to see the framework.",cls:"architect"},
+      {text:"Prediction. Show me where price is going before it gets there.",cls:"oracle"}
+    ]
+  },
+  {
+    num:"QUERY 04 OF 05",
+    q:"When do you prefer to trade?",
+    opts:[
+      {text:"NY open. 9:30-10:30. That's where the money is.",cls:"breacher"},
+      {text:"After the first 30 minutes. Let the traps play out, then enter clean.",cls:"sniper"},
+      {text:"Multiple sessions. London, Asia, NY — wherever the setup is.",cls:"ghost"},
+      {text:"Pre-market prep, then one or two precision entries during NY.",cls:"architect"},
+      {text:"Kill zone windows. I wait for the energy to peak, then I strike.",cls:"oracle"}
+    ]
+  },
+  {
+    num:"QUERY 05 OF 05",
+    q:"How many indicators do you want on your chart?",
+    opts:[
+      {text:"Just what I need for the breakout. Direction + zones. Keep it clean.",cls:"breacher"},
+      {text:"Minimal. One or two. The less noise, the better the shot.",cls:"sniper"},
+      {text:"Full stack. Session map, bias line, zones — I want the whole picture.",cls:"ghost"},
+      {text:"Channels + levels + the overnight blueprint. Structure is everything.",cls:"architect"},
+      {text:"The hologram is all I need. One indicator that sees the future.",cls:"oracle"}
     ]
   }
 ];
@@ -397,32 +425,92 @@ var QUIZ_QUESTIONS = [
 var CLASS_DATA = {
   sniper:{
     label:"THE SNIPER",icon:"⊕",subtitle:"REVERSAL SPECIALIST",color:"#00f0ff",
+    motto:"One shot. One kill. No wasted ammo.",
     desc:"You're patient. Calculated. You wait for the market to overextend, trap everyone — then reverse. You don't chase. You don't guess. One shot is all you need.",
+    strength:"Patience & precision",
+    weakness:"Can miss big moves waiting for the perfect entry",
+    bestSession:"NY 9:45–11:00 (after the traps play out)",
     loadout:[
-      {name:"AURΔBØT™ NQ LSM v3.2",tag:"Primary",id:"lsm"},
-      {name:"AURΔBØT™ AURA MAP",tag:"Support",id:"auramap"},
-      {name:"AURΔBØT™ ZONEWARS v3",tag:"Zones",id:"zonewars"},
-      {name:"AURΔBØT™ PHASE DYNAMICS v5",tag:"Timing",id:"phase"}
+      {name:"AURΔBØT™ ZONEWARS v3",tag:"Primary",id:"zonewars"},
+      {name:"AURΔBØT™ NQ LSM v3.2",tag:"Execution",id:"lsm"},
+      {name:"AURΔBØT™ PHASE DYNAMICS v5",tag:"Timing",id:"phase"},
+      {name:"AURΔBØT™ AURA MAP",tag:"Overlay",id:"auramap"}
+    ],
+    altLoadout:[
+      {name:"AURΔBØT™ LIQUIDITY HEIST",tag:"Liquidity",id:"heist"},
+      {name:"AURΔBØT™ AURA GRAVITY",tag:"Zones",id:"gravity"}
     ]
   },
   breacher:{
     label:"THE BREACHER",icon:"⚡",subtitle:"BREAKOUT SPECIALIST",color:"#ff00ff",
+    motto:"First through the door. Speed is the edge.",
     desc:"You're aggressive. First through the door. When the level breaks and momentum hits — you're already in. Speed is your edge. But only when the system says GO.",
+    strength:"Speed & conviction",
+    weakness:"Can overtrade if not disciplined with filters",
+    bestSession:"NY Open 9:30–10:00 (the breakout window)",
     loadout:[
       {name:"AURΔBØT™ MIDAS TOUCH v2",tag:"Primary",id:"midas"},
       {name:"AURΔBØT™ LONDON BREAK v1",tag:"Alt Session",id:"london"},
       {name:"AURΔBØT™ TRENDGLOW",tag:"Bias",id:"trendglow"},
       {name:"AURΔBØT™ AURA GRAVITY",tag:"Zones",id:"gravity"}
+    ],
+    altLoadout:[
+      {name:"AURΔBØT™ PHASE DYNAMICS v5",tag:"Timing",id:"phase"},
+      {name:"AURΔBØT™ CYBERSTRUCTURE V3",tag:"Structure",id:"cyberstructure"}
     ]
   },
   ghost:{
     label:"THE GHOST",icon:"◎",subtitle:"SESSION SPECIALIST",color:"#00ff88",
+    motto:"While everyone sleeps, you're already positioned.",
     desc:"You move in the dark. Asia session, London open, NY pre-market — you trade the transitions. While everyone sleeps, you're already positioned. The clock is your weapon.",
+    strength:"Session awareness & adaptability",
+    weakness:"Requires discipline across multiple sessions",
+    bestSession:"Multi-session: Asia → London → NY transitions",
     loadout:[
       {name:"AURΔBØT™ HOLOGRAM CANDLES",tag:"Primary",id:"nexus"},
       {name:"AURΔBØT™ TRENDGLOW",tag:"Bias",id:"trendglow"},
       {name:"AURΔBØT™ AURA GRAVITY",tag:"Zones",id:"gravity"},
       {name:"AURΔBØT™ AURA MAP",tag:"Overlay",id:"auramap"}
+    ],
+    altLoadout:[
+      {name:"AURΔBØT™ LONDON BREAK v1",tag:"London",id:"london"},
+      {name:"AURΔBØT™ PHASE DYNAMICS v5",tag:"Timing",id:"phase"}
+    ]
+  },
+  architect:{
+    label:"THE ARCHITECT",icon:"◈",subtitle:"STRUCTURE SPECIALIST",color:"#BF00FF",
+    motto:"The blueprint was drawn before you woke up.",
+    desc:"You build the framework before the first candle prints. Channels, overnight levels, the pre-market map — you see the structure everyone else trades inside of. You don't react. You prepare.",
+    strength:"Preparation & structural awareness",
+    weakness:"Can over-analyze and miss the simple play",
+    bestSession:"Pre-market prep + NY 9:30–11:00",
+    loadout:[
+      {name:"AURΔBØT™ CYBERSTRUCTURE V3",tag:"Primary",id:"cyberstructure"},
+      {name:"AURΔBØT™ BLACK BOOK",tag:"Overnight",id:"blackbook"},
+      {name:"AURΔBØT™ AURA GRAVITY",tag:"Zones",id:"gravity"},
+      {name:"AURΔBØT™ TRENDGLOW",tag:"Bias",id:"trendglow"}
+    ],
+    altLoadout:[
+      {name:"AURΔBØT™ HOLOGRAM CANDLES",tag:"Projection",id:"nexus"},
+      {name:"AURΔBØT™ AURA MAP",tag:"Overlay",id:"auramap"}
+    ]
+  },
+  oracle:{
+    label:"THE ORACLE",icon:"👁",subtitle:"PREDICTION SPECIALIST",color:"#FFD700",
+    motto:"See the candle before it prints.",
+    desc:"You don't trade what happened. You trade what's about to happen. The hologram shows you the path. The energy engine tells you when. While everyone reads the last candle — you're reading the next five.",
+    strength:"Anticipation & timing",
+    weakness:"Can over-rely on projection without confirming with structure",
+    bestSession:"Kill zones: 9:30–9:45 + 10:15–11:00",
+    loadout:[
+      {name:"AURΔBØT™ HOLOGRAM CANDLES",tag:"Primary",id:"nexus"},
+      {name:"AURΔBØT™ PHASE DYNAMICS v5",tag:"Energy",id:"phase"},
+      {name:"AURΔBØT™ CYBERSTRUCTURE V3",tag:"Structure",id:"cyberstructure"},
+      {name:"AURΔBØT™ LIQUIDITY HEIST",tag:"Targets",id:"heist"}
+    ],
+    altLoadout:[
+      {name:"AURΔBØT™ TRENDGLOW",tag:"Bias",id:"trendglow"},
+      {name:"AURΔBØT™ AURA GRAVITY",tag:"Zones",id:"gravity"}
     ]
   }
 };
@@ -431,7 +519,7 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
   var saved = vault && vault.operator && vault.classification;
   var [screen,setScreen]=useState(saved ? "dossier" : "name");
   var [name,setName]=useState(vault ? vault.operator : "");
-  var [scores,setScores]=useState({sniper:0,breacher:0,ghost:0});
+  var [scores,setScores]=useState({sniper:0,breacher:0,ghost:0,architect:0,oracle:0});
   var [step,setStep]=useState(0);
   var [result,setResult]=useState(vault ? vault.classification : null);
   var [scanPhase,setScanPhase]=useState(0);
@@ -462,54 +550,93 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
       var newVault = Object.assign({}, vault || getDefaultVault(name.trim(), res), { operator: name.trim(), classification: res, dossierComplete: true });
       onUpdateVault(newVault);
       setScreen("reveal");
-      var phases=["ANALYZING RESPONSES...","CROSS-REFERENCING OPERATOR PROFILE...","MATCH FOUND.","CLASSIFYING..."];
+      var phases=["SCANNING RESPONSES...","ANALYZING TRADE PSYCHOLOGY...","CROSS-REFERENCING OPERATOR PROFILE...","CLASSIFICATION MATCH FOUND.","GENERATING DOSSIER..."];
       phases.forEach(function(p,i){
-        setTimeout(function(){setScanPhase(i+1);},i*700);
+        setTimeout(function(){setScanPhase(i+1);},i*600);
       });
       setTimeout(function(){
         setShowResult(true);
-        var pts=[];for(var i=0;i<30;i++){pts.push({id:i,x:50+Math.random()*0.1,y:50,tx:(Math.random()-0.5)*120,ty:(Math.random()-0.5)*120,size:Math.random()*4+1,delay:Math.random()*0.3});}
+        var pts=[];for(var i=0;i<40;i++){pts.push({id:i,x:50+Math.random()*0.1,y:50,tx:(Math.random()-0.5)*140,ty:(Math.random()-0.5)*140,size:Math.random()*4+1,delay:Math.random()*0.4});}
         setParticles(pts);
-      },3200);
+      },3500);
     }
   }
 
   function openDossier(){setShowDossier(true);setScreen("dossier");window.scrollTo(0,0);generateCard(result||vault.classification);}
-  function reset(){setScreen("name");setName("");setScores({sniper:0,breacher:0,ghost:0});setStep(0);setResult(null);setScanPhase(0);setShowResult(false);setShowDossier(false);setParticles([]);onUpdateVault(getDefaultVault("",null));}
+  function reset(){setScreen("name");setName("");setScores({sniper:0,breacher:0,ghost:0,architect:0,oracle:0});setStep(0);setResult(null);setScanPhase(0);setShowResult(false);setShowDossier(false);setParticles([]);onUpdateVault(getDefaultVault("",null));}
 
   function generateCard(res){
     setTimeout(function(){
       var canvas=canvasRef.current;if(!canvas)return;
-      var ctx=canvas.getContext("2d");var w=600,h=340;canvas.width=w;canvas.height=h;
-      var c=CLASS_DATA[res];var colorMap={sniper:"#00f0ff",breacher:"#ff00ff",ghost:"#00ff88"};var ac=colorMap[res];
+      var ctx=canvas.getContext("2d");var w=640,h=400;canvas.width=w;canvas.height=h;
+      var c=CLASS_DATA[res];var colorMap={sniper:"#00f0ff",breacher:"#ff00ff",ghost:"#00ff88",architect:"#BF00FF",oracle:"#FFD700"};var ac=colorMap[res]||"#00f0ff";
       var today=new Date();var dateStr=today.toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
-      var bg=ctx.createLinearGradient(0,0,w,h);bg.addColorStop(0,"#080810");bg.addColorStop(1,"#0c0c1a");ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
-      ctx.strokeStyle=ac+"60";ctx.lineWidth=1;ctx.strokeRect(0,0,w,h);
-      var lg=ctx.createLinearGradient(0,0,w,0);lg.addColorStop(0,ac);lg.addColorStop(0.6,ac+"40");lg.addColorStop(1,"transparent");ctx.fillStyle=lg;ctx.fillRect(0,0,w,2);
-      var gl=ctx.createRadialGradient(80,60,0,80,60,200);gl.addColorStop(0,ac+"18");gl.addColorStop(1,"transparent");ctx.fillStyle=gl;ctx.fillRect(0,0,w,h);
-      ctx.fillStyle="rgba(0,0,0,0.04)";for(var y=0;y<h;y+=4){ctx.fillRect(0,y,w,2);}
-      ctx.font='9px monospace';ctx.fillStyle="#ff335580";ctx.textAlign="left";
-      ctx.fillText("◈  C L A S S I F I E D  —  O P E R A T O R   C A R D  ◈",30,30);
-      ctx.font='bold 11px monospace';ctx.fillStyle="#ffd700";ctx.fillText("AURΔBØT™ HQ",30,55);
-      ctx.font='10px monospace';ctx.fillStyle="#555570";ctx.textAlign="right";ctx.fillText(dateStr,w-30,55);ctx.textAlign="left";
-      ctx.strokeStyle="#1a1a2e";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(30,70);ctx.lineTo(w-30,70);ctx.stroke();
-      ctx.font="48px sans-serif";ctx.fillStyle=ac;ctx.fillText(c.icon,30,128);
-      ctx.font="bold 32px monospace";ctx.fillStyle="#e8e8f0";ctx.fillText(name.toUpperCase(),95,115);
-      ctx.font="bold 16px monospace";ctx.fillStyle=ac;ctx.fillText(c.label,95,140);
-      ctx.font="10px monospace";ctx.fillStyle="#555570";ctx.fillText(c.subtitle,95,160);
-      ctx.strokeStyle="#1a1a2e";ctx.beginPath();ctx.moveTo(30,180);ctx.lineTo(w-30,180);ctx.stroke();
-      var statsY=200;var boxW=160;var boxH=60;
-      [{label:"TRADES",value:"0"},{label:"COMBINE",value:"PENDING"},{label:"PAYOUT",value:"$0.00"}].forEach(function(stat,i){
-        var x=30+i*(boxW+15);
-        ctx.fillStyle="#0a0a14";ctx.fillRect(x,statsY,boxW,boxH);ctx.strokeStyle="#1a1a2e";ctx.strokeRect(x,statsY,boxW,boxH);
-        ctx.font="bold 18px monospace";ctx.fillStyle=stat.label==="COMBINE"?"#555570":"#e8e8f0";ctx.textAlign="center";ctx.fillText(stat.value,x+boxW/2,statsY+28);
-        ctx.font="8px monospace";ctx.fillStyle="#555570";ctx.fillText(stat.label,x+boxW/2,statsY+48);
+
+      // Background
+      var bg=ctx.createLinearGradient(0,0,w,h);bg.addColorStop(0,"#06060c");bg.addColorStop(1,"#0a0a18");ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+      // Scanlines
+      ctx.fillStyle="rgba(0,0,0,0.03)";for(var y=0;y<h;y+=3){ctx.fillRect(0,y,w,1);}
+      // Border glow
+      ctx.strokeStyle=ac+"40";ctx.lineWidth=1;ctx.strokeRect(0,0,w,h);
+      ctx.strokeStyle=ac+"15";ctx.lineWidth=1;ctx.strokeRect(3,3,w-6,h-6);
+      // Top accent line
+      var lg=ctx.createLinearGradient(0,0,w,0);lg.addColorStop(0,"transparent");lg.addColorStop(0.3,ac);lg.addColorStop(0.7,ac);lg.addColorStop(1,"transparent");ctx.fillStyle=lg;ctx.fillRect(0,0,w,2);
+      // Corner glow
+      var gl=ctx.createRadialGradient(60,60,0,60,60,180);gl.addColorStop(0,ac+"15");gl.addColorStop(1,"transparent");ctx.fillStyle=gl;ctx.fillRect(0,0,w,h);
+
+      // Header
+      ctx.font='9px monospace';ctx.fillStyle="#ff335560";ctx.textAlign="left";
+      ctx.fillText("◈  C L A S S I F I E D  —  O P E R A T O R   C A R D  ◈",30,28);
+      ctx.font='bold 11px monospace';ctx.fillStyle="#ffd700";ctx.fillText("AURΔBØT™ HQ",30,50);
+      ctx.font='10px monospace';ctx.fillStyle="#555570";ctx.textAlign="right";ctx.fillText(dateStr,w-30,50);ctx.textAlign="left";
+      // Divider
+      ctx.strokeStyle="#1a1a2e";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(30,62);ctx.lineTo(w-30,62);ctx.stroke();
+
+      // Icon + Name + Class
+      ctx.font="44px sans-serif";ctx.fillStyle=ac;ctx.fillText(c.icon,30,112);
+      ctx.font="bold 28px monospace";ctx.fillStyle="#e8e8f0";
+      var displayName=name.toUpperCase();if(displayName.length>14)displayName=displayName.substring(0,14);
+      ctx.fillText(displayName,90,102);
+      ctx.font="bold 14px monospace";ctx.fillStyle=ac;ctx.fillText(c.label,90,125);
+      ctx.font="10px monospace";ctx.fillStyle="#555570";ctx.fillText(c.subtitle,90,142);
+
+      // Motto
+      ctx.font="italic 11px monospace";ctx.fillStyle=ac+"90";ctx.fillText('"'+c.motto+'"',90,162);
+
+      // Divider
+      ctx.strokeStyle="#1a1a2e";ctx.beginPath();ctx.moveTo(30,178);ctx.lineTo(w-30,178);ctx.stroke();
+
+      // Stats row
+      var statsY=195;var boxW=130;var boxH=55;var gap=15;var startX=30;
+      [{label:"TRADES",value:"0"},{label:"COMBINE",value:"PENDING"},{label:"PAYOUT",value:"$0.00"},{label:"SESSION",value:c.bestSession?c.bestSession.split(" ")[0]:"NY"}].forEach(function(stat,i){
+        var x=startX+i*(boxW+gap);
+        ctx.fillStyle="#0a0a14";ctx.fillRect(x,statsY,boxW,boxH);
+        ctx.strokeStyle=ac+"15";ctx.strokeRect(x,statsY,boxW,boxH);
+        ctx.font="bold 15px monospace";ctx.fillStyle=stat.label==="COMBINE"?"#555570":"#e8e8f0";ctx.textAlign="center";ctx.fillText(stat.value,x+boxW/2,statsY+24);
+        ctx.font="8px monospace";ctx.fillStyle="#555570";ctx.fillText(stat.label,x+boxW/2,statsY+42);
       });
       ctx.textAlign="left";
-      ctx.fillStyle="#0a0a14";ctx.fillRect(0,h-40,w,40);
-      ctx.font="bold 10px monospace";ctx.fillStyle="#ffd700";ctx.fillText("AURΔBØT™",30,h-16);
-      ctx.font="9px monospace";ctx.fillStyle="#555570";ctx.textAlign="right";ctx.fillText("Trade like you've seen the future.",w-30,h-16);ctx.textAlign="left";
-      ctx.fillStyle=ac;ctx.beginPath();ctx.arc(16,h-18,3,0,Math.PI*2);ctx.fill();
+
+      // Loadout preview
+      var loadY=265;
+      ctx.font="bold 9px monospace";ctx.fillStyle=ac+"80";ctx.fillText("PRIMARY LOADOUT",30,loadY);
+      ctx.strokeStyle="#1a1a2e";ctx.beginPath();ctx.moveTo(30,loadY+8);ctx.lineTo(w-30,loadY+8);ctx.stroke();
+      c.loadout.forEach(function(item,i){
+        var lx=30;var ly=loadY+18+i*22;
+        ctx.fillStyle=ac;ctx.beginPath();ctx.arc(lx+4,ly+4,3,0,Math.PI*2);ctx.fill();
+        ctx.font="12px monospace";ctx.fillStyle="#c8c8d8";ctx.fillText(item.name.replace("AURΔBØT™ ",""),lx+14,ly+8);
+        ctx.font="9px monospace";ctx.fillStyle="#555570";ctx.textAlign="right";ctx.fillText(item.tag,w-30,ly+8);ctx.textAlign="left";
+      });
+
+      // Footer
+      ctx.fillStyle="#0a0a14";ctx.fillRect(0,h-44,w,44);
+      ctx.strokeStyle=ac+"20";ctx.beginPath();ctx.moveTo(0,h-44);ctx.lineTo(w,h-44);ctx.stroke();
+      // Footer accent
+      var flg=ctx.createLinearGradient(0,0,w,0);flg.addColorStop(0,"transparent");flg.addColorStop(0.3,ac+"30");flg.addColorStop(0.7,ac+"30");flg.addColorStop(1,"transparent");ctx.fillStyle=flg;ctx.fillRect(0,h-44,w,1);
+
+      ctx.font="bold 10px monospace";ctx.fillStyle="#ffd700";ctx.fillText("AURΔBØT™",30,h-18);
+      ctx.fillStyle=ac;ctx.beginPath();ctx.arc(16,h-20,3,0,Math.PI*2);ctx.fill();
+      ctx.font="9px monospace";ctx.fillStyle="#555570";ctx.textAlign="right";ctx.fillText("Trade like you've seen the future.",w-30,h-18);ctx.textAlign="left";
     },300);
   }
 
@@ -525,23 +652,24 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
     <div style={{position:"fixed",width:400,height:400,borderRadius:"50%",filter:"blur(150px)",opacity:0.1,top:-150,left:-80,background:"#00f0ff",pointerEvents:"none"}}/>
     <div style={{position:"fixed",width:400,height:400,borderRadius:"50%",filter:"blur(150px)",opacity:0.1,bottom:-150,right:-80,background:"#ff00ff",pointerEvents:"none"}}/>
     <div style={{position:"relative",zIndex:1,maxWidth:400,width:"100%"}}>
-      <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:3,color:"#BF00FF60",marginBottom:16}}>// SECURE ACCESS PORTAL</div>
+      <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,letterSpacing:3,color:"#BF00FF60",marginBottom:16}}>// OPERATOR CLASSIFICATION SYSTEM</div>
       <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:32,fontWeight:800,color:"#BF00FF",letterSpacing:6,marginBottom:6}}>AURΔBØT™</div>
-      <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:"var(--tx2)",letterSpacing:2,marginBottom:40}}>Operator Dossier</div>
+      <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:"var(--tx2)",letterSpacing:2,marginBottom:8}}>Operator Dossier</div>
+      <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",marginBottom:40,lineHeight:1.6}}>5 questions. Answer with your gut.<br/>Your loadout will be assigned based on your trading DNA.</div>
       <div style={{textAlign:"left",marginBottom:6}}><span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",letterSpacing:1}}>Enter Your Operator Handle</span></div>
       <input value={name} onChange={function(e){setName(e.target.value);}} onKeyDown={function(e){if(e.key==="Enter")goToAssessment();}} placeholder="Your name..." style={{width:"100%",background:"#0a0a14",border:"1px solid #1a1a2e",borderRadius:6,padding:"14px 16px",fontSize:16,fontFamily:"'JetBrains Mono',monospace",color:"#e8e8f0",textAlign:"center",letterSpacing:2,outline:"none",marginBottom:20}}/>
-      <div onClick={goToAssessment} style={{width:"100%",padding:"14px",borderRadius:6,background:name.trim()?"#BF00FF15":"transparent",border:"1px solid "+(name.trim()?"#BF00FF40":"#1a1a2e"),color:name.trim()?"#BF00FF":"#555",fontSize:12,fontFamily:"'Oxanium',sans-serif",fontWeight:700,letterSpacing:3,cursor:name.trim()?"pointer":"default",textAlign:"center",transition:"all .3s"}}>BEGIN ASSESSMENT ▸</div>
+      <div onClick={goToAssessment} style={{width:"100%",padding:"14px",borderRadius:6,background:name.trim()?"#BF00FF15":"transparent",border:"1px solid "+(name.trim()?"#BF00FF40":"#1a1a2e"),color:name.trim()?"#BF00FF":"#555",fontSize:12,fontFamily:"'Oxanium',sans-serif",fontWeight:700,letterSpacing:3,cursor:name.trim()?"pointer":"default",textAlign:"center",transition:"all .3s"}}>BEGIN CLASSIFICATION ▸</div>
     </div>
   </div>;
 
   if(screen==="assessment"){
     var q=QUIZ_QUESTIONS[step];
-    var progress=Math.round((step/QUIZ_QUESTIONS.length)*100);
+    var progress=Math.round(((step+1)/QUIZ_QUESTIONS.length)*100);
     var shuffled=shuffleArray(q.opts);
     return <div style={{maxWidth:600,margin:"0 auto",padding:"40px 0",animation:"fadeIn .3s ease"}}>
       <div style={{textAlign:"center",marginBottom:30}}>
-        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:18,fontWeight:700,color:"#fff",letterSpacing:2}}>OPERATOR ASSESSMENT</div>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:"var(--tx2)",marginTop:4}}>// 3 questions — answer with your gut</div>
+        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:18,fontWeight:700,color:"#fff",letterSpacing:2}}>OPERATOR CLASSIFICATION</div>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:"var(--tx2)",marginTop:4}}>// 5 questions — answer with your gut</div>
       </div>
       <div style={{height:3,background:"#1a1a2e",borderRadius:2,marginBottom:30,overflow:"hidden"}}>
         <div style={{width:progress+"%",height:"100%",background:"linear-gradient(90deg,#BF00FF,#00FFFF)",borderRadius:2,transition:"width .5s ease"}}/>
@@ -551,7 +679,7 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
         <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:18,fontWeight:600,color:"#e8e8f0",lineHeight:1.6,marginBottom:24}}>{q.q}</div>
         <div style={{display:"grid",gap:10}}>
           {shuffled.map(function(opt,i){
-            var letters=["A","B","C"];
+            var letters=["A","B","C","D","E"];
             return <div key={i} onClick={function(){selectAnswer(opt.cls);}} className="card" style={{padding:"16px 18px",cursor:"pointer",transition:"all .2s",borderLeft:"3px solid transparent"}}>
               <div style={{display:"flex",alignItems:"flex-start",gap:14}}>
                 <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:"var(--tx2)",opacity:0.5,marginTop:2}}>[ {letters[i]} ]</div>
@@ -565,7 +693,7 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
   }
 
   if(screen==="reveal"){
-    var scanTexts=["","ANALYZING RESPONSES...","CROSS-REFERENCING OPERATOR PROFILE...","MATCH FOUND.","CLASSIFYING..."];
+    var scanTexts=["","SCANNING RESPONSES...","ANALYZING TRADE PSYCHOLOGY...","CROSS-REFERENCING OPERATOR PROFILE...","CLASSIFICATION MATCH FOUND.","GENERATING DOSSIER..."];
     return <div style={{minHeight:"80vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textAlign:"center",padding:20,position:"relative",overflow:"hidden"}}>
       <div style={{position:"fixed",width:500,height:500,borderRadius:"50%",filter:"blur(150px)",opacity:showResult?0.15:0.08,top:-200,left:-100,background:accentColor,pointerEvents:"none",transition:"all 1s"}}/>
       <div style={{position:"fixed",width:500,height:500,borderRadius:"50%",filter:"blur(150px)",opacity:showResult?0.15:0.08,bottom:-200,right:-100,background:accentColor,pointerEvents:"none",transition:"all 1s"}}/>
@@ -574,9 +702,10 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
       <style>{"@keyframes flash{0%{opacity:0.6}100%{opacity:0}}@keyframes particleFly{0%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(var(--tx),var(--ty))}}"}</style>
       {!showResult&&<div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:accentColor,letterSpacing:2,animation:"fadeIn .3s ease"}}>{scanTexts[scanPhase]||""}</div>}
       {showResult&&<div style={{animation:"fadeIn .5s ease",position:"relative",zIndex:1}}>
-        <div style={{fontSize:64,marginBottom:16}}>{cls.icon}</div>
+        <div style={{fontSize:72,marginBottom:16}}>{cls.icon}</div>
         <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:"clamp(26px,6vw,36px)",fontWeight:800,color:accentColor,letterSpacing:4,marginBottom:6}}>{cls.label}</div>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:accentColor+"80",letterSpacing:3,marginBottom:20}}>{cls.subtitle}</div>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:accentColor+"80",letterSpacing:3,marginBottom:12}}>{cls.subtitle}</div>
+        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:13,color:accentColor,fontStyle:"italic",marginBottom:20}}>"{cls.motto}"</div>
         <div style={{fontSize:14,color:"var(--tx)",lineHeight:1.8,maxWidth:480,margin:"0 auto",marginBottom:30}}>{cls.desc}</div>
         <div onClick={openDossier} style={{display:"inline-block",padding:"14px 32px",borderRadius:6,background:accentColor+"15",border:"1px solid "+accentColor+"40",color:accentColor,fontSize:13,fontFamily:"'Oxanium',sans-serif",fontWeight:700,letterSpacing:3,cursor:"pointer",transition:"all .2s"}}>OPEN YOUR DOSSIER ▸</div>
       </div>}
@@ -591,7 +720,20 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
         <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:20,fontWeight:700,color:"#ffd700",letterSpacing:2,marginBottom:8}}>AURΔBØT™ HQ — Operator File</div>
         <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:22,fontWeight:800,color:"#e8e8f0",letterSpacing:1,marginBottom:6}}>{name.toUpperCase()}</div>
         <div style={{display:"inline-block",padding:"6px 16px",borderRadius:4,border:"1px solid "+accentColor+"40",background:accentColor+"10",fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:accentColor,letterSpacing:2}}>{cls.label} — {cls.subtitle}</div>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",marginTop:8}}>Activated: {dateStr}</div>
+        <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:12,color:accentColor,fontStyle:"italic",marginTop:8}}>"{cls.motto}"</div>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",marginTop:6}}>Activated: {dateStr}</div>
+      </div>
+
+      <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid "+accentColor}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:accentColor,letterSpacing:2,marginBottom:12}}>// Operator Profile</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+          {[{label:"Strength",value:cls.strength,c:"#00ff88"},{label:"Watch Out",value:cls.weakness,c:"#FF3366"},{label:"Best Session",value:cls.bestSession,c:"#00FFFF"}].map(function(s){
+            return <div key={s.label} style={{padding:"10px",background:"#0a0a14",borderRadius:6,border:"1px solid #1a1a2e"}}>
+              <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,color:s.c,letterSpacing:1,marginBottom:4}}>{s.label}</div>
+              <div style={{fontSize:11,color:"var(--tx)",lineHeight:1.5}}>{s.value}</div>
+            </div>;
+          })}
+        </div>
       </div>
 
       <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #ffd700"}}>
@@ -611,10 +753,10 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
 
       <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #00f0ff"}}>
         <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#00f0ff",letterSpacing:2,marginBottom:12}}>// Operator Stats</div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}}>
-          {[{label:"Trades",value:"0"},{label:"Combine",value:"PENDING"},{label:"Payout",value:"$0.00"}].map(function(s){
-            return <div key={s.label} style={{textAlign:"center",padding:"14px 10px",background:"#0a0a14",borderRadius:6,border:"1px solid #1a1a2e"}}>
-              <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:18,fontWeight:700,color:s.label==="Combine"?"var(--tx2)":"#e8e8f0"}}>{s.value}</div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
+          {[{label:"Trades",value:"0"},{label:"Combine",value:"PENDING"},{label:"Payout",value:"$0.00"},{label:"Class",value:cls.label.split(" ")[1]}].map(function(s){
+            return <div key={s.label} style={{textAlign:"center",padding:"12px 8px",background:"#0a0a14",borderRadius:6,border:"1px solid #1a1a2e"}}>
+              <div style={{fontFamily:"'Oxanium',sans-serif",fontSize:16,fontWeight:700,color:s.label==="Combine"?"var(--tx2)":"#e8e8f0"}}>{s.value}</div>
               <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,color:"var(--tx2)",letterSpacing:1,marginTop:4}}>{s.label}</div>
             </div>;
           })}
@@ -622,15 +764,31 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
       </div>
 
       <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid "+accentColor}}>
-        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:accentColor,letterSpacing:2,marginBottom:12}}>// Your Operator Loadout — {cls.label}</div>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:accentColor,letterSpacing:2,marginBottom:12}}>// Primary Loadout — {cls.label}</div>
         <div style={{display:"grid",gap:8}}>
           {cls.loadout.map(function(item){
             var sys=systems.find(function(s){return s.id===item.id;});
             return <div key={item.name} onClick={function(){if(sys)onOpenGuide(item.id);}} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 14px",background:"#0a0a14",borderRadius:6,border:"1px solid #1a1a2e",cursor:sys?"pointer":"default",transition:"all .2s"}}>
               <div style={{width:8,height:8,borderRadius:"50%",background:accentColor,boxShadow:"0 0 8px "+accentColor+"60",flexShrink:0}}/>
-              <div style={{flex:1,fontFamily:"'JetBrains Mono',monospace",fontSize:13,color:"#e8e8f0"}}>{item.name}</div>
+              <div style={{flex:1,fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:"#e8e8f0"}}>{item.name}</div>
               <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",padding:"2px 8px",borderRadius:3,border:"1px solid #1a1a2e"}}>{item.tag}</div>
               {sys&&<div style={{fontSize:10,color:accentColor}}>→</div>}
+            </div>;
+          })}
+        </div>
+      </div>
+
+      <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #ff00ff"}}>
+        <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#ff00ff",letterSpacing:2,marginBottom:12}}>// Level-Up Loadout — Add These Next</div>
+        <div style={{fontSize:12,color:"var(--tx2)",marginBottom:10,lineHeight:1.5}}>Once you've mastered your primary loadout, stack these for added edge:</div>
+        <div style={{display:"grid",gap:8}}>
+          {cls.altLoadout.map(function(item){
+            var sys=systems.find(function(s){return s.id===item.id;});
+            return <div key={item.name} onClick={function(){if(sys)onOpenGuide(item.id);}} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 14px",background:"#0a0a14",borderRadius:6,border:"1px solid #1a1a2e",cursor:sys?"pointer":"default",transition:"all .2s"}}>
+              <div style={{width:8,height:8,borderRadius:"50%",background:"#ff00ff",boxShadow:"0 0 8px #ff00ff60",flexShrink:0}}/>
+              <div style={{flex:1,fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:"#e8e8f0"}}>{item.name}</div>
+              <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"var(--tx2)",padding:"2px 8px",borderRadius:3,border:"1px solid #1a1a2e"}}>{item.tag}</div>
+              {sys&&<div style={{fontSize:10,color:"#ff00ff"}}>→</div>}
             </div>;
           })}
         </div>
@@ -735,7 +893,7 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
       </div>
 
       <div style={{textAlign:"center",marginTop:10,marginBottom:30}}>
-        <div onClick={reset} style={{display:"inline-block",padding:"10px 24px",borderRadius:6,cursor:"pointer",fontSize:11,fontFamily:"'JetBrains Mono',monospace",color:"var(--tx2)",border:"1px solid var(--brd)",letterSpacing:1}}>↻ RETAKE ASSESSMENT</div>
+        <div onClick={reset} style={{display:"inline-block",padding:"10px 24px",borderRadius:6,cursor:"pointer",fontSize:11,fontFamily:"'JetBrains Mono',monospace",color:"var(--tx2)",border:"1px solid var(--brd)",letterSpacing:1}}>↻ RETAKE CLASSIFICATION</div>
       </div>
     </div>;
   }
