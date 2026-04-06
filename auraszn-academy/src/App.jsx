@@ -41,7 +41,7 @@ var QUOTES = [
 var SYSTEMS = [
   {
     id: "nexus",
-    name: "HOLOGRAM CANDLES",
+    name: "AURΔBØT™ HOLOGRAM CANDLES",
     tier: "FLAGSHIP",
     tagline: "See the candle before it prints.",
     color: "#00FFFF",
@@ -53,7 +53,7 @@ var SYSTEMS = [
   },
   {
     id: "cyberstructure",
-    name: "CYBERSTRUCTURE V3",
+    name: "AURΔBØT™ CYBERSTRUCTURE V3",
     tier: "CORE",
     tagline: "Smart channels that think for you.",
     color: "#BF00FF",
@@ -65,7 +65,7 @@ var SYSTEMS = [
   },
   {
     id: "blackbook",
-    name: "BLACK BOOK",
+    name: "AURΔBØT™ BLACK BOOK",
     tier: "CLASSIFIED",
     tagline: "Aura's personal playbook — 6 years in the making.",
     color: "#FFD700",
@@ -77,7 +77,7 @@ var SYSTEMS = [
   },
   {
     id: "trendglow",
-    name: "TRENDGLOW",
+    name: "AURΔBØT™ TRENDGLOW",
     tier: "CORE",
     tagline: "One glowing line. One truth.",
     color: "#00E5FF",
@@ -89,7 +89,7 @@ var SYSTEMS = [
   },
   {
     id: "gravity",
-    name: "AURA GRAVITY",
+    name: "AURΔBØT™ AURA GRAVITY",
     tier: "CORE",
     tagline: "The zones price always comes back to.",
     color: "#00FF6A",
@@ -101,7 +101,7 @@ var SYSTEMS = [
   },
   {
     id: "midas",
-    name: "MIDAS TOUCH v2",
+    name: "AURΔBØT™ MIDAS TOUCH v2",
     tier: "SPECIALIZED",
     tagline: "The NY session breakout hunter.",
     color: "#FFD700",
@@ -113,7 +113,7 @@ var SYSTEMS = [
   },
   {
     id: "london",
-    name: "LONDON BREAK v1",
+    name: "AURΔBØT™ LONDON BREAK v1",
     tier: "SPECIALIZED",
     tagline: "One setup. Two directions. No noise.",
     color: "#00FF88",
@@ -125,7 +125,7 @@ var SYSTEMS = [
   },
   {
     id: "zonewars",
-    name: "ZONEWARS v3",
+    name: "AURΔBØT™ ZONEWARS v3",
     tier: "SPECIALIZED",
     tagline: "Catch the sweep. Ride the reclaim.",
     color: "#FF00FF",
@@ -137,7 +137,7 @@ var SYSTEMS = [
   },
   {
     id: "heist",
-    name: "LIQUIDITY HEIST",
+    name: "AURΔBØT™ LIQUIDITY HEIST",
     tier: "SPECIALIZED",
     tagline: "See where the stops are hiding.",
     color: "#FF3366",
@@ -149,7 +149,7 @@ var SYSTEMS = [
   },
   {
     id: "phase",
-    name: "PHASE DYNAMICS v5",
+    name: "AURΔBØT™ PHASE DYNAMICS v5",
     tier: "SUPPORT",
     tagline: "Know when the move is coming — before it moves.",
     color: "#FFEA00",
@@ -161,7 +161,7 @@ var SYSTEMS = [
   },
   {
     id: "auramap",
-    name: "AURA MAP",
+    name: "AURΔBØT™ AURA MAP",
     tier: "SUPPORT",
     tagline: "Your chart, cleaned up and locked in.",
     color: "#00FF88",
@@ -173,7 +173,7 @@ var SYSTEMS = [
   },
   {
     id: "lsm",
-    name: "NQ LSM v3.2",
+    name: "AURΔBØT™ NQ LSM v3.2",
     tier: "SUPPORT",
     tagline: "Mechanical entries. No decisions required.",
     color: "#FF6B00",
@@ -426,30 +426,30 @@ var CLASS_DATA = {
     label:"THE SNIPER",icon:"⊕",subtitle:"REVERSAL SPECIALIST",color:"#00f0ff",
     desc:"You're patient. Calculated. You wait for the market to overextend, trap everyone — then reverse. You don't chase. You don't guess. One shot is all you need.",
     loadout:[
-      {name:"NQ LSM v3.2",tag:"Primary",id:"lsm"},
-      {name:"Aura Map",tag:"Support",id:"auramap"},
-      {name:"ZoneWars v3",tag:"Zones",id:"zonewars"},
-      {name:"Phase Dynamics v5",tag:"Timing",id:"phase"}
+      {name:"AURΔBØT™ NQ LSM v3.2",tag:"Primary",id:"lsm"},
+      {name:"AURΔBØT™ AURA MAP",tag:"Support",id:"auramap"},
+      {name:"AURΔBØT™ ZONEWARS v3",tag:"Zones",id:"zonewars"},
+      {name:"AURΔBØT™ PHASE DYNAMICS v5",tag:"Timing",id:"phase"}
     ]
   },
   breacher:{
     label:"THE BREACHER",icon:"⚡",subtitle:"BREAKOUT SPECIALIST",color:"#ff00ff",
     desc:"You're aggressive. First through the door. When the level breaks and momentum hits — you're already in. Speed is your edge. But only when the system says GO.",
     loadout:[
-      {name:"MIDAS TOUCH v2",tag:"Primary",id:"midas"},
-      {name:"London Break v1",tag:"Alt Session",id:"london"},
-      {name:"TrendGlow",tag:"Bias",id:"trendglow"},
-      {name:"Aura Gravity",tag:"Zones",id:"gravity"}
+      {name:"AURΔBØT™ MIDAS TOUCH v2",tag:"Primary",id:"midas"},
+      {name:"AURΔBØT™ LONDON BREAK v1",tag:"Alt Session",id:"london"},
+      {name:"AURΔBØT™ TRENDGLOW",tag:"Bias",id:"trendglow"},
+      {name:"AURΔBØT™ AURA GRAVITY",tag:"Zones",id:"gravity"}
     ]
   },
   ghost:{
     label:"THE GHOST",icon:"◎",subtitle:"SESSION SPECIALIST",color:"#00ff88",
     desc:"You move in the dark. Asia session, London open, NY pre-market — you trade the transitions. While everyone sleeps, you're already positioned. The clock is your weapon.",
     loadout:[
-      {name:"Hologram Candles",tag:"Primary",id:"nexus"},
-      {name:"TrendGlow",tag:"Bias",id:"trendglow"},
-      {name:"Aura Gravity",tag:"Zones",id:"gravity"},
-      {name:"Aura Map",tag:"Overlay",id:"auramap"}
+      {name:"AURΔBØT™ HOLOGRAM CANDLES",tag:"Primary",id:"nexus"},
+      {name:"AURΔBØT™ TRENDGLOW",tag:"Bias",id:"trendglow"},
+      {name:"AURΔBØT™ AURA GRAVITY",tag:"Zones",id:"gravity"},
+      {name:"AURΔBØT™ AURA MAP",tag:"Overlay",id:"auramap"}
     ]
   }
 };
