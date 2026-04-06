@@ -263,8 +263,6 @@ input,textarea,select{background:var(--bg3);color:var(--tx);border:1px solid var
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:4px}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes boltPulse{0%,100%{opacity:1;filter:drop-shadow(0 0 4px #ffd700)}50%{opacity:0.5;filter:drop-shadow(0 0 12px #ffd700)}}
-@keyframes candleFloat{0%{opacity:0;transform:translateY(20px)}20%{opacity:1}80%{opacity:1}100%{opacity:0;transform:translateY(-60px)}}
-@keyframes candlePulse{0%,100%{opacity:0.03}50%{opacity:0.06}}
 .card{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:18px;position:relative;overflow:hidden}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:.4}
 .card:hover{border-color:#BF00FF30}
@@ -283,31 +281,6 @@ input,textarea,select{background:var(--bg3);color:var(--tx);border:1px solid var
 `}</style>;}
 
 // ═══ CANDLE BACKGROUND ═══
-function CandleBackground() {
-  var candles = [];
-  for (var i = 0; i < 24; i++) {
-    var isBull = Math.random() > 0.45;
-    var height = 20 + Math.random() * 50;
-    var wickTop = 4 + Math.random() * 14;
-    var wickBot = 4 + Math.random() * 14;
-    var left = 2 + (i / 24) * 96;
-    var delay = Math.random() * 12;
-    var dur = 8 + Math.random() * 6;
-    var opacity = 0.02 + Math.random() * 0.03;
-    candles.push({id:i, isBull:isBull, height:height, wickTop:wickTop, wickBot:wickBot, left:left, delay:delay, dur:dur, opacity:opacity});
-  }
-  return <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:0,overflow:"hidden"}}>
-    {candles.map(function(c) {
-      var color = c.isBull ? "#BF00FF" : "#BF00FF";
-      return <div key={c.id} style={{position:"absolute",left:c.left+"%",bottom:"-10%",display:"flex",flexDirection:"column",alignItems:"center",animation:"candleFloat "+c.dur+"s ease-in-out "+c.delay+"s infinite",opacity:c.opacity}}>
-        <div style={{width:1,height:c.wickTop,background:color,borderRadius:1}}/>
-        <div style={{width:5+Math.random()*4,height:c.height,background:c.isBull?color:color+"60",borderRadius:1,border:"1px solid "+color+"40"}}/>
-        <div style={{width:1,height:c.wickBot,background:color,borderRadius:1}}/>
-      </div>;
-    })}
-  </div>;
-}
-
 // ═══ ACCESS GATE ═══
 var ACCESS_CODE = "AURASZN2026";
 
@@ -810,7 +783,6 @@ export default function App(){
 
   return <><Styles/>
     <div style={{minHeight:"100vh",background:"var(--bg)",paddingBottom:40}}>
-      <CandleBackground/>
       <div style={{position:"fixed",inset:0,pointerEvents:"none",opacity:0.012,backgroundImage:"linear-gradient(var(--ac) 1px,transparent 1px),linear-gradient(90deg,var(--ac) 1px,transparent 1px)",backgroundSize:"60px 60px"}}/>
 
       <header style={{position:"sticky",top:0,zIndex:100,background:"#06060cee",borderBottom:"1px solid var(--brd)",padding:"12px 20px",display:"flex",justifyContent:"space-between",alignItems:"center",backdropFilter:"blur(12px)"}}>
