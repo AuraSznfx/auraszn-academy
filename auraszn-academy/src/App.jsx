@@ -817,7 +817,7 @@ export default function App(){
         <div onClick={function(){setPage("home");}} style={{cursor:"pointer",display:"flex",alignItems:"center",gap:8}}>
           <img src="/aura-avatar.png" style={{width:30,height:30,borderRadius:"50%",border:"1.5px solid #BF00FF40",objectFit:"cover"}}/>
           <span style={{fontFamily:"'Oxanium',sans-serif",fontSize:18,fontWeight:800,letterSpacing:4,color:"#BF00FF"}}>AURΔBØT™</span>
-          <span style={{fontSize:10,letterSpacing:2,color:"var(--tx2)",fontFamily:"'JetBrains Mono',monospace"}}>WEAPONS VAULT</span>
+          <span style={{fontSize:10,letterSpacing:2,color:"var(--tx2)",fontFamily:"'JetBrains Mono',monospace"}}>ACADEMY VAULT</span>
           <span style={{fontSize:14,animation:"boltPulse 2s ease-in-out infinite"}}>⚡</span>
         </div>
         <div style={{display:"flex",gap:6,alignItems:"center"}}>
@@ -955,4 +955,3 @@ export default function App(){
     </div>
   </>;
 }
-
