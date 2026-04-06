@@ -874,7 +874,7 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
         </div>
         <div onClick={downloadCard} style={{width:"100%",padding:"14px",borderRadius:6,background:accentColor+"15",border:"1px solid "+accentColor+"40",color:accentColor,fontSize:13,fontFamily:"'Oxanium',sans-serif",fontWeight:700,letterSpacing:2,cursor:"pointer",textAlign:"center",transition:"all .2s"}}>⬇ DOWNLOAD OPERATOR CARD</div>
         <div style={{textAlign:"center",marginTop:12}}>
-          <div style={{fontSize:12,color:"var(--tx)",lineHeight:1.6}}><strong style={{color:"#ffd700"}}>FINAL STEP:</strong> Post your Operator Card in <span style={{color:"#00ff88",fontFamily:"'JetBrains Mono',monospace"}}>#introductions</span> to complete your activation.</div>
+          <div style={{fontSize:12,color:"var(--tx)",lineHeight:1.6}}><strong style={{color:"#ffd700"}}>FINAL STEP:</strong> Post your Operator Card in <span style={{color:"#00ff88",fontFamily:"'JetBrains Mono',monospace"}}>#post-your-card</span> to complete your activation.</div>
           <div style={{fontSize:11,color:"var(--tx2)",marginTop:4}}>This is how the crew knows you're locked in.</div>
         </div>
         <div style={{textAlign:"center",marginTop:12,fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#ff335580",letterSpacing:1}}>⚠ ACTIVATION INCOMPLETE UNTIL POSTED</div>
