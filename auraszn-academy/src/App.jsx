@@ -568,7 +568,7 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
   function generateCard(res){
     setTimeout(function(){
       var canvas=canvasRef.current;if(!canvas)return;
-      var ctx=canvas.getContext("2d");var w=640,h=400;canvas.width=w;canvas.height=h;
+      var ctx=canvas.getContext("2d");var w=640,h=440;canvas.width=w;canvas.height=h;
       var c=CLASS_DATA[res];var colorMap={sniper:"#00f0ff",breacher:"#ff00ff",ghost:"#00ff88",architect:"#BF00FF",oracle:"#FFD700"};var ac=colorMap[res]||"#00f0ff";
       var today=new Date();var dateStr=today.toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"});
 
@@ -870,7 +870,7 @@ function OperatorProfile({systems,onOpenGuide,vault,onUpdateVault}) {
       <div className="card" style={{padding:20,marginBottom:14,borderLeft:"3px solid #ffd700"}}>
         <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#ffd700",letterSpacing:2,marginBottom:12}}>// Operator Card — Save & Share</div>
         <div style={{borderRadius:8,overflow:"hidden",border:"1px solid #1a1a2e",marginBottom:16}}>
-          <canvas ref={canvasRef} style={{width:"100%",height:"auto",display:"block"}}/>
+          <canvas ref={canvasRef} style={{width:"100%",height:"auto",display:"block",aspectRatio:"640/440"}}/>
         </div>
         <div onClick={downloadCard} style={{width:"100%",padding:"14px",borderRadius:6,background:accentColor+"15",border:"1px solid "+accentColor+"40",color:accentColor,fontSize:13,fontFamily:"'Oxanium',sans-serif",fontWeight:700,letterSpacing:2,cursor:"pointer",textAlign:"center",transition:"all .2s"}}>⬇ DOWNLOAD OPERATOR CARD</div>
         <div style={{textAlign:"center",marginTop:12}}>
