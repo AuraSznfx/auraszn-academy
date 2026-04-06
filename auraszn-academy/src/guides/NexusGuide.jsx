@@ -3,49 +3,49 @@ import { useState, useEffect } from "react";
 const C = "#00FFFF", M = "#FF00AA", G = "#00FF6A", R = "#FF3B5C", Y = "#FFD700", N = "#00E5FF", BG = "#0a0a0f", B2 = "#12121f", B3 = "#1a1a2e", D = "#555577", W = "#E8E8F0";
 
 const stages = [
-  { n: 1, name: "LIQUIDITY SWEEP", i: "💧", c: C, d: "Asia or London high/low gets violated with a rejection wick. Smart money grabbed liquidity — the trap is set.", ex: "Price pushes above Asia high by 3pts, prints long upper wick, closes back below. Retail longs trapped." },
-  { n: 2, name: "SMT DIVERGENCE", i: "🔀", c: M, d: "NQ makes a higher high but ES doesn't confirm. Indices disagreeing = institutional divergence signal.", ex: "NQ prints 24,950 (new high) but ES only 5,580 (lower high). Smart money distributing." },
-  { n: 3, name: "STRUCTURE SHIFT", i: "💥", c: R, d: "Price breaks swing low (shorts) or swing high (longs). Market structure has officially changed direction.", ex: "After sweep at 24,950, price breaks below 24,920 swing low. Bears now in control." },
-  { n: 4, name: "DISPLACEMENT", i: "🚀", c: G, d: "Monster candle: body ≥80%, wick ≤30%, size ≥1.5× ATR. This is the institutional confirmation candle.", ex: "15-point red candle with almost no wicks slams through 24,920-24,905. Displacement." },
-  { n: 5, name: "RETRACE → BOX", i: "📦", c: Y, d: "Price pulls back into the HTF liquidity box where displacement originated. This is the entry zone.", ex: "Price bounces from 24,905 back up to 24,918, right into 15m supply zone at 24,915-24,922." },
-  { n: 6, name: "ARMED 🔫", i: "🎯", c: "#00FF00", d: "All conditions met. Score ≥ threshold. Kill zone active. Energy phase ready. System fires the signal.", ex: "Score 10/8, 9:42am Kill Zone Phase 1, Energy ARMED → SHORT at 24,918." },
+  { n: 1, name: "LIQUIDITY SWEEP", i: "💧", c: C, d: "Asia or London high/low gets taken out with a rejection wick. Smart money grabbed the stop losses — the trap is set.", ex: "Price pushes above Asia high by 3pts, prints a long upper wick, closes back below. Longs are trapped." },
+  { n: 2, name: "SMT DIVERGENCE", i: "🔀", c: M, d: "NQ makes a higher high but ES doesn't. When the indices disagree — something is off. That's your signal.", ex: "NQ prints 24,950 (new high) but ES only hits 5,580 (lower high). Distribution happening." },
+  { n: 3, name: "STRUCTURE SHIFT", i: "💥", c: R, d: "Price breaks a key swing level. Direction has officially flipped.", ex: "After the sweep at 24,950, price breaks below the 24,920 swing low. Bears in control." },
+  { n: 4, name: "DISPLACEMENT", i: "🚀", c: G, d: "A monster candle confirms the move. Big body, tiny wicks, larger than average. This is the real move.", ex: "15-point red candle with almost no wicks slams through 24,920–24,905. Confirmed." },
+  { n: 5, name: "RETRACE → BOX", i: "📦", c: Y, d: "Price pulls back into the zone where the big move started. This is your entry zone.", ex: "Price bounces from 24,905 back up to 24,918, right into the supply zone at 24,915–24,922." },
+  { n: 6, name: "ARMED 🔫", i: "🎯", c: "#00FF00", d: "All conditions met. Score above threshold. Kill zone active. The system fires.", ex: "Score 10/8, 9:42am Kill Zone Phase 1, Energy ARMED → SHORT at 24,918." },
 ];
 
 const modes = [
-  { name: "GHOST", sc: 3, f: "None", i: "👻", d: "Everything fires. No filters. Raw signals for backtesting or trusting your own eyes.", c: "#8888AA" },
-  { name: "SOFT", sc: 5, f: "Basic", i: "🌙", d: "Light filtering. No SMT or chop required. Good for learning the system and seeing patterns.", c: "#66AAFF" },
-  { name: "BALANCED", sc: 8, f: "SMT+Chop+ADR", i: "⚖️", d: "The sweet spot. Requires confluence without missing good setups. START HERE.", c: C },
-  { name: "HARD", sc: 10, f: "All+Bias", i: "🔒", d: "Institutional grade. Requires bias alignment + full confluence. Fewer signals, higher win rate.", c: Y },
-  { name: "SNIPER", sc: 12, f: "Maximum", i: "🎯", d: "A+ setups only. You might get 1-2 signals per day. But they're surgical precision.", c: R },
+  { name: "GHOST", sc: 3, f: "None", i: "👻", d: "Everything fires. No filters. Raw signals for backtesting or studying the system.", c: "#8888AA" },
+  { name: "SOFT", sc: 5, f: "Basic", i: "🌙", d: "Light filtering. Good for learning the system and seeing how setups form.", c: "#66AAFF" },
+  { name: "BALANCED", sc: 8, f: "SMT+Chop+ADR", i: "⚖️", d: "The sweet spot. Enough filtering to avoid bad trades without missing good ones. START HERE.", c: C },
+  { name: "HARD", sc: 10, f: "All+Bias", i: "🔒", d: "High conviction only. Requires full alignment. Fewer signals, higher win rate.", c: Y },
+  { name: "SNIPER", sc: 12, f: "Maximum", i: "🎯", d: "A+ setups only. You might get 1–2 per day. But they're surgical.", c: R },
 ];
 
 const phases = [
   { name: "COMPRESS", r: "0-40%", i: "🫧", c: "#6666AA", d: "Market coiling. Low volatility. Candles shrinking. The calm before the storm." },
-  { name: "CHARGING", r: "40-70%", i: "⚡", c: C, d: "Energy building. Range tightening. Levels clustering. Spring is loading." },
-  { name: "ARMED", r: "70-threshold", i: "💣", c: Y, d: "Ready to explode. One displacement candle away from ignition. BE READY." },
-  { name: "IGNITION", r: "Threshold breach", i: "🔥", c: R, d: "BOOM. Displacement confirmed. High-probability expansion move in progress." },
-  { name: "EXPANSION", r: "Post-ignition", i: "🚀", c: G, d: "Locked in. The move is happening. Ride it until energy depletes below 40%." },
+  { name: "CHARGING", r: "40-70%", i: "⚡", c: C, d: "Energy building. Range tightening. Levels clustering. Something is loading." },
+  { name: "ARMED", r: "70-threshold", i: "💣", c: Y, d: "Ready to explode. One big candle away from ignition. BE READY." },
+  { name: "IGNITION", r: "Threshold breach", i: "🔥", c: R, d: "BOOM. The move is confirmed. High-probability expansion in progress." },
+  { name: "EXPANSION", r: "Post-ignition", i: "🚀", c: G, d: "Locked in. The move is happening. Ride it until energy drops below 40%." },
 ];
 
 const hf = [
-  { name: "Momentum (1m)", p: 20, c: C, d: "10-bar rate of change normalized by ATR — raw directional force" },
-  { name: "State Machine", p: 20, c: M, d: "AIMLOCK stage direction + conviction boost from higher stages" },
-  { name: "MTF Agreement", p: 18, c: Y, d: "1m + 15m + 1H momentum aligned? 3/3 = full directional conviction" },
-  { name: "Candle Memory", p: 12, c: G, d: "Last 3 candles: growing bullish bodies = continuation bias forward" },
-  { name: "EMA Structure", p: 10, c: "#66AAFF", d: "9 EMA vs 21 EMA crossover — trend direction confirmation" },
-  { name: "VWAP Gravity", p: 8, c: "#FF9800", d: "Distance from VWAP creates pull — extended = mean reversion" },
-  { name: "Liquidity Pull", p: 7, c: N, d: "Nearby equal highs/lows magnetically attract projected price" },
-  { name: "RSI Caps", p: 5, c: R, d: "Overbought >70 or oversold <30 applies reversal pressure" },
+  { name: "Momentum (1m)", p: 20, c: C, d: "Raw directional force — how hard price is pushing right now" },
+  { name: "State Machine", p: 20, c: M, d: "Which stage are we in? Higher stages = higher conviction" },
+  { name: "MTF Agreement", p: 18, c: Y, d: "Are the 1m, 15m, and 1H charts all pointing the same way?" },
+  { name: "Candle Memory", p: 12, c: G, d: "Last 3 candles growing in the same direction = continuation" },
+  { name: "EMA Structure", p: 10, c: "#66AAFF", d: "Fast EMA vs slow EMA — which way is the trend leaning?" },
+  { name: "VWAP Gravity", p: 8, c: "#FF9800", d: "How far from the average price? Too far = snap-back coming" },
+  { name: "Liquidity Pull", p: 7, c: N, d: "Equal highs/lows nearby pulling price toward them like a magnet" },
+  { name: "RSI Caps", p: 5, c: R, d: "Overbought or oversold? Applies reversal pressure at extremes" },
 ];
 
 const lvls = [
   { z: "Supply Box", i: "🔴", c: R, b: "Shrinks 20%", w: "Upper wick 2× (rejection into supply)", m: "Reverses downward", nx: "Strong follow-through candle pushes away" },
   { z: "Demand Box", i: "🟢", c: G, b: "Shrinks 20%", w: "Lower wick 2× (rejection into demand)", m: "Bounces upward", nx: "Strong follow-through candle pushes away" },
-  { z: "Equal Highs", i: "💧", c: C, b: "GROWS 40%", w: "Short wicks (pure momentum)", m: "Accelerates INTO liquidity grab", nx: "Reversal candle after the sweep" },
-  { z: "Equal Lows", i: "💧", c: C, b: "GROWS 40%", w: "Short wicks (pure momentum)", m: "Accelerates INTO liquidity grab", nx: "Reversal candle after the sweep" },
-  { z: "VWAP", i: "🧲", c: "#FF9800", b: "Shrinks 50%", w: "Long wicks BOTH ways (doji)", m: "Indecision wobble at VWAP", nx: "Direction depends on overall bias" },
+  { z: "Equal Highs", i: "💧", c: C, b: "GROWS 40%", w: "Short wicks (pure momentum)", m: "Accelerates INTO the grab", nx: "Reversal candle after the sweep" },
+  { z: "Equal Lows", i: "💧", c: C, b: "GROWS 40%", w: "Short wicks (pure momentum)", m: "Accelerates INTO the grab", nx: "Reversal candle after the sweep" },
+  { z: "VWAP", i: "🧲", c: "#FF9800", b: "Shrinks 50%", w: "Long wicks BOTH ways (indecision)", m: "Wobbles at the average price", nx: "Direction depends on overall bias" },
   { z: "9 EMA", i: "📊", c: "#66AAFF", b: "Normal size", w: "Wick reaches into EMA (tests it)", m: "Tests then bounces or breaks", nx: "Continuation if trend holds" },
-  { z: "Extended", i: "↩️", c: M, b: "Normal size", w: "Normal", m: "Mean reversion pull back to VWAP", nx: "Candle body leans back toward value" },
+  { z: "Extended", i: "↩️", c: M, b: "Normal size", w: "Normal", m: "Snaps back toward the average", nx: "Candle body leans back toward value" },
 ];
 
 const Glow = ({ children, color = C, size = "1rem", glow = true }) => (
@@ -85,7 +85,7 @@ export default function NexusGuide() {
   useEffect(() => { const t = setInterval(() => setPulse(p => !p), 1500); return () => clearInterval(t); }, []);
 
   const tabs = [
-    { i: "⚡", l: "NEXUS" }, { i: "🎯", l: "STAGES" }, { i: "🎮", l: "MODES" }, { i: "⚡", l: "ENERGY" },
+    { i: "⚡", l: "OVERVIEW" }, { i: "🎯", l: "STAGES" }, { i: "🎮", l: "MODES" }, { i: "⚡", l: "ENERGY" },
     { i: "👻", l: "HOLOGRAM" }, { i: "🗺️", l: "MAP" }, { i: "🛡️", l: "DEFENSE" }, { i: "💰", l: "TRADE" }, { i: "🚀", l: "SETUP" },
   ];
 
@@ -93,9 +93,9 @@ export default function NexusGuide() {
     <div>
       <div style={{ textAlign: "center", marginBottom: 28, position: "relative" }}>
         <div style={{ position: "absolute", top: -20, left: "50%", transform: "translateX(-50%)", width: 200, height: 200, borderRadius: "50%", background: `radial-gradient(circle, ${C}08, transparent 70%)`, pointerEvents: "none" }} />
-        <div style={{ fontSize: 14, color: Y, letterSpacing: 4, fontFamily: "'Orbitron',sans-serif", marginBottom: 4 }}>AURASZN</div>
-        <Glow color={C} size="2.4rem">NEXUS v1.1</Glow>
-        <p style={{ color: D, fontSize: 13, marginTop: 8, lineHeight: 1.5 }}>Unified ICT Trading Intelligence<br />9 Engines • 1 System • Zero Guesswork</p>
+        <div style={{ fontSize: 14, color: Y, letterSpacing: 4, fontFamily: "'Orbitron',sans-serif", marginBottom: 4 }}>AURΔBØT™</div>
+        <Glow color={C} size="2.4rem">HOLOGRAM CANDLES</Glow>
+        <p style={{ color: D, fontSize: 13, marginTop: 8, lineHeight: 1.5 }}>See the candle before it prints.<br />9 Engines • 1 System • Zero Guesswork</p>
         <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: 12 }}>
           {[{ l: "Engines", v: "9", c: C }, { l: "Factors", v: "9", c: G }, { l: "Defenses", v: "5", c: R }].map((s, i) => (
             <div key={i} style={{ textAlign: "center" }}>
@@ -108,14 +108,14 @@ export default function NexusGuide() {
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
         {[
-          { n: "AIMLOCK™", d: "6-stage liquidity → entry state machine", i: "🎯", c: C },
-          { n: "Energy Engine", d: "Compression → ignition timing", i: "⚡", c: Y },
-          { n: "Smart Hologram™", d: "9-factor AI predictive candles", i: "👻", c: G },
-          { n: "Gravity Zones", d: "Pivot-based rolling S/R + zone lock", i: "🔮", c: M },
-          { n: "HTF Dual Boxes", d: "15m+1H liquidity zones with 4 states", i: "📦", c: "#FF9800" },
-          { n: "Session Map", d: "Asia/London/NY + VWAP + Opening Print", i: "🗺️", c: N },
-          { n: "Defense Shield", d: "5 layers of loss prevention", i: "🛡️", c: R },
-          { n: "Trade Manager", d: "Entry/SL/3-tier TP + daily P&L tracker", i: "💰", c: "#00FF00" },
+          { n: "AIMLOCK™", d: "6-stage entry system — sweep to signal", i: "🎯", c: C },
+          { n: "Energy Engine", d: "Detects when the move is about to hit", i: "⚡", c: Y },
+          { n: "Smart Hologram™", d: "Projects future candles using 9 factors", i: "👻", c: G },
+          { n: "Gravity Zones", d: "Auto S/R that moves with price", i: "🔮", c: M },
+          { n: "HTF Dual Boxes", d: "15m + 1H zones with 4 states", i: "📦", c: "#FF9800" },
+          { n: "Session Map", d: "Asia/London/NY ranges + VWAP + Open", i: "🗺️", c: N },
+          { n: "Defense Shield", d: "5 layers of bad-trade prevention", i: "🛡️", c: R },
+          { n: "Trade Manager", d: "Entry, stop, 3 targets + daily P&L", i: "💰", c: "#00FF00" },
         ].map((e, i) => (
           <Bx key={i} color={e.c}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -130,24 +130,24 @@ export default function NexusGuide() {
       </div>
 
       <Bx color={Y}>
-        <Glow color={Y} size="0.85rem">⚡ 30-SECOND FLOW</Glow>
+        <Glow color={Y} size="0.85rem">⚡ HOW IT WORKS — 30 SECONDS</Glow>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 12, flexWrap: "wrap" }}>
-          {["💧 Sweep", "→", "🔀 SMT", "→", "💥 Shift", "→", "🚀 Displace", "→", "📦 Retrace", "→", "🎯 FIRE"].map((s, i) => (
+          {["💧 Sweep", "→", "🔀 Diverge", "→", "💥 Shift", "→", "🚀 Confirm", "→", "📦 Retrace", "→", "🎯 FIRE"].map((s, i) => (
             <span key={i} style={{ fontSize: i % 2 === 1 ? 10 : 13, color: i % 2 === 1 ? D : i === 10 ? G : C, fontFamily: "'Orbitron',sans-serif", fontWeight: i === 10 ? 900 : 500, textShadow: i === 10 ? `0 0 12px ${G}` : "none", transition: "all 0.3s" }}>{s}</span>
           ))}
         </div>
       </Bx>
 
       <Bx color={G} style={{ marginTop: 12 }}>
-        <Glow color={G} size="0.85rem">🆕 v1.1 FEATURES</Glow>
+        <Glow color={G} size="0.85rem">🆕 WHAT MAKES THIS DIFFERENT</Glow>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
           {[
-            { f: "9-Factor Hologram", d: "MTF momentum + candle pattern memory", c: G },
-            { f: "Per-Bar Intelligence", d: "Each candle reads its position vs all levels", c: M },
-            { f: "Rolling Gravity Zones", d: "Real pivot S/R that staircase with price", c: Y },
-            { f: "Zone Lock Window", d: "Freeze zones during NY open (customizable)", c: R },
-            { f: "Session Map", d: "Asia/London/NY boxes + VWAP + Open line", c: N },
-            { f: "Live Market Seed", d: "Patterns change only when price moves 2pts+", c: C },
+            { f: "9-Factor Hologram", d: "Projects candles forward using momentum + pattern memory", c: G },
+            { f: "Per-Bar Intelligence", d: "Each candle reads where it is vs every level on the chart", c: M },
+            { f: "Rolling Gravity Zones", d: "S/R that moves with price like a staircase", c: Y },
+            { f: "Zone Lock Window", d: "Freezes zones during NY open so they don't shift on you", c: R },
+            { f: "Session Map", d: "Asia/London/NY ranges + VWAP + Opening Price — one glance", c: N },
+            { f: "Live Market Seed", d: "Hologram only updates when price actually moves 2+ points", c: C },
           ].map((f, i) => (
             <div key={i} style={{ display: "flex", gap: 6, alignItems: "start" }}>
               <span style={{ color: f.c, fontSize: 12 }}>◈</span>
@@ -162,8 +162,8 @@ export default function NexusGuide() {
   const renderStages = () => (
     <div>
       <div style={{ textAlign: "center", marginBottom: 20 }}>
-        <Glow color={C} size="1.5rem">6-STAGE STATE MACHINE</Glow>
-        <p style={{ color: D, fontSize: 12, marginTop: 4 }}>Each stage must confirm sequentially. No shortcuts. No skipping.</p>
+        <Glow color={C} size="1.5rem">6-STAGE ENTRY SYSTEM</Glow>
+        <p style={{ color: D, fontSize: 12, marginTop: 4 }}>Each stage must confirm in order. No shortcuts. No skipping.</p>
       </div>
       <div style={{ display: "flex", gap: 4, marginBottom: 16 }}>
         {stages.map((s, i) => (
@@ -189,9 +189,9 @@ export default function NexusGuide() {
       </Bx>
       <div style={{ marginTop: 14 }}><SBar score={stg + 1} max={6} threshold={6} /></div>
       <Bx color={C} style={{ marginTop: 14 }}>
-        <Glow color={C} size="0.8rem">💡 KEY INSIGHT</Glow>
+        <Glow color={C} size="0.8rem">💡 WHY THIS MATTERS</Glow>
         <p style={{ color: "#999", fontSize: 12, marginTop: 6, lineHeight: 1.6 }}>
-          The state machine prevents you from entering on incomplete setups. Stage 3 without Stage 1? The sweep never happened — you'd be entering without a liquidity grab. Stage 5 without Stage 4? No displacement = no institutional commitment = trap.
+          The system prevents you from entering on incomplete setups. Stage 3 without Stage 1? The sweep never happened — there's no trap to trade. Stage 5 without Stage 4? No big candle = no confirmation = you'd be guessing. Every stage exists for a reason.
         </p>
       </Bx>
     </div>
@@ -231,7 +231,7 @@ export default function NexusGuide() {
           {[
             { q: "I'm new to the system", a: "Start BALANCED — best signal-to-noise ratio", c: C },
             { q: "Too many signals firing", a: "Move to HARD or SNIPER — raises the bar", c: Y },
-            { q: "Missing good moves", a: "Drop to SOFT — removes SMT requirement", c: M },
+            { q: "Missing good moves", a: "Drop to SOFT — loosens the filters", c: M },
             { q: "Backtesting/studying", a: "Use GHOST — see every potential setup", c: D },
           ].map((item, i) => (
             <div key={i} style={{ display: "flex", gap: 8, alignItems: "start" }}>
@@ -248,7 +248,7 @@ export default function NexusGuide() {
     <div>
       <div style={{ textAlign: "center", marginBottom: 24 }}>
         <Glow color={Y} size="1.5rem">ENERGY PRESSURE ENGINE</Glow>
-        <p style={{ color: D, fontSize: 12, marginTop: 4 }}>Markets compress before they expand. This engine times the explosion.</p>
+        <p style={{ color: D, fontSize: 12, marginTop: 4 }}>Markets compress before they explode. This engine times the move.</p>
       </div>
       <div style={{ display: "flex", gap: 4, marginBottom: 20 }}>
         {phases.map((p, i) => (
@@ -270,9 +270,9 @@ export default function NexusGuide() {
       </Bx>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 16 }}>
         {[
-          { n: "ATR Compression", w: "35%", d: "Current ATR vs baseline", c: C },
+          { n: "Volatility Compression", w: "35%", d: "Is the range shrinking?", c: C },
           { n: "Range Tightening", w: "30%", d: "First half vs second half", c: M },
-          { n: "Level Clustering", w: "35%", d: "How close H/L are", c: Y },
+          { n: "Level Clustering", w: "35%", d: "How close are the highs and lows?", c: Y },
         ].map((e, i) => (
           <Bx key={i} color={e.c} style={{ textAlign: "center" }}>
             <Glow color={e.c} size="0.75rem">{e.n}</Glow>
@@ -305,11 +305,11 @@ export default function NexusGuide() {
       <div style={{ textAlign: "center", marginBottom: 24, position: "relative" }}>
         <div style={{ position: "absolute", top: -10, left: "50%", transform: "translateX(-50%)", width: 160, height: 160, borderRadius: "50%", background: `radial-gradient(circle, ${G}0A, transparent 70%)`, pointerEvents: "none" }} />
         <Glow color={G} size="1.5rem">👻 SMART AI HOLOGRAM™</Glow>
-        <p style={{ color: D, fontSize: 12, marginTop: 4 }}>9-factor bias • per-bar intelligence • live seed • gravity zones • zone lock</p>
+        <p style={{ color: D, fontSize: 12, marginTop: 4 }}>9 factors • per-bar intelligence • gravity zones • zone lock</p>
       </div>
 
       <Bx color={G} style={{ marginBottom: 14 }}>
-        <Glow color={G} size="0.9rem">9-FACTOR AI BIAS MODEL</Glow>
+        <Glow color={G} size="0.9rem">9-FACTOR PREDICTION MODEL</Glow>
         <div style={{ marginTop: 12 }}>
           {hf.map((f, i) => (
             <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
@@ -330,7 +330,7 @@ export default function NexusGuide() {
 
       <Bx color={M} style={{ marginBottom: 14 }}>
         <Glow color={M} size="0.9rem">🧠 PER-BAR LEVEL AWARENESS</Glow>
-        <p style={{ color: "#888", fontSize: 11, margin: "8px 0" }}>Each hologram candle individually scans WHERE IT IS vs every known level — then adjusts its own body size, wick direction, and movement:</p>
+        <p style={{ color: "#888", fontSize: 11, margin: "8px 0" }}>Each hologram candle scans where it is vs every known level — then adjusts its own body, wicks, and direction:</p>
         <div style={{ display: "flex", gap: 3, marginBottom: 10 }}>
           {lvls.map((l, i) => (
             <button key={i} onClick={() => setLi(i)} style={{ flex: 1, padding: "6px 2px", border: `1px solid ${i === li ? l.c : D}44`, borderRadius: 6, background: i === li ? `${l.c}18` : B3, cursor: "pointer", transition: "all 0.3s", boxShadow: i === li ? `0 0 8px ${l.c}22` : "none" }}>
@@ -355,7 +355,7 @@ export default function NexusGuide() {
       <Bx color={Y} style={{ marginBottom: 14 }}>
         <Glow color={Y} size="0.9rem">🔮 ROLLING GRAVITY ZONES</Glow>
         <p style={{ color: "#888", fontSize: 12, margin: "8px 0", lineHeight: 1.5 }}>
-          Detects real swing pivots on chart → stores up to 12 levels → selects closest above as <span style={{ color: R }}>Resistance</span> and closest below as <span style={{ color: G }}>Support</span>. When price breaks through decisively, that pivot is removed and the next nearest takes over. Natural staircase.
+          Detects real swing points → stores up to 12 levels → picks the closest one above as <span style={{ color: R }}>Resistance</span> and closest below as <span style={{ color: G }}>Support</span>. When price breaks through, that level is removed and the next one takes over. Natural staircase.
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 12 }}>
           {[
@@ -375,7 +375,7 @@ export default function NexusGuide() {
           {[
             { label: "Resistance above", color: R, icon: "🔴" },
             { label: "Price breaks through", color: Y, icon: "💥" },
-            { label: "Pivot removed, next takes over", color: G, icon: "🔄" },
+            { label: "Next level takes over", color: G, icon: "🔄" },
           ].map((s, i) => (
             <div key={i} style={{ flex: 1, textAlign: "center", padding: 8, borderRadius: 6, background: `${s.color}08`, border: `1px solid ${s.color}22` }}>
               <div style={{ fontSize: 18 }}>{s.icon}</div>
@@ -407,9 +407,9 @@ export default function NexusGuide() {
           </div>
         </div>
         <div style={{ marginTop: 14, fontSize: 12, color: "#999", lineHeight: 1.7 }}>
-          <span style={{ color: G, fontWeight: "bold" }}>Before lock:</span> Zones roll freely through premarket, finding best pivot levels naturally.
-          <br /><span style={{ color: R, fontWeight: "bold" }}>During lock:</span> Zones freeze. Labels show 🔒. Borders go solid + thicker. No flipping, no moving. Hologram candles project between frozen zones.
-          <br /><span style={{ color: C, fontWeight: "bold" }}>After lock:</span> Zones unlock and resume rolling with new session pivots.
+          <span style={{ color: G, fontWeight: "bold" }}>Before lock:</span> Zones move freely through premarket, finding the best levels naturally.
+          <br /><span style={{ color: R, fontWeight: "bold" }}>During lock:</span> Zones freeze. No flipping, no moving. Hologram candles project between frozen zones.
+          <br /><span style={{ color: C, fontWeight: "bold" }}>After lock:</span> Zones unlock and start rolling again with new session data.
         </div>
         <div style={{ marginTop: 10, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
           {[
@@ -428,7 +428,7 @@ export default function NexusGuide() {
         <Bx color={N}>
           <Glow color={N} size="0.8rem">🔄 LIVE SEED</Glow>
           <p style={{ color: "#888", fontSize: 11, marginTop: 6, lineHeight: 1.5 }}>
-            Patterns seeded from <span style={{ color: C }}>close rounded to 2pts</span>. Price still = hologram still. Price moves = new pattern. No random flickering.
+            Hologram pattern is seeded from <span style={{ color: C }}>price rounded to 2pts</span>. Price still = hologram still. Price moves = new projection. No random flickering.
           </p>
         </Bx>
         <Bx color={N}>
@@ -450,16 +450,16 @@ export default function NexusGuide() {
     <div>
       <div style={{ textAlign: "center", marginBottom: 24 }}>
         <Glow color={N} size="1.5rem">🗺️ SESSION MAP</Glow>
-        <p style={{ color: D, fontSize: 12, marginTop: 4 }}>Open your chart → instantly read the entire day's order flow narrative.</p>
+        <p style={{ color: D, fontSize: 12, marginTop: 4 }}>Open your chart → read the entire day's story in one glance.</p>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
         {[
-          { n: "Asia Box", c: C, ic: "🌏", d: "Overnight range drawn as cyan box. Top & bottom = major liquidity sweep targets." },
-          { n: "London Box", c: M, ic: "🇬🇧", d: "London session range as magenta box. See instantly if London swept Asia's high or low." },
-          { n: "NY Range Box", c: Y, ic: "🗽", d: "Real-time gold box from 9:30 open. See how much daily range NY has consumed." },
+          { n: "Asia Box", c: C, ic: "🌏", d: "Overnight range drawn as a box. Top & bottom = where stop losses are sitting." },
+          { n: "London Box", c: M, ic: "🇬🇧", d: "London session range. Did London sweep Asia's high or low? Instant context." },
+          { n: "NY Range Box", c: Y, ic: "🗽", d: "Real-time box from 9:30 open. See how much of the day's range has been used." },
           { n: "Opening Print", c: W, ic: "📍", d: "White dashed line at 9:30 open price. NQ respects this level — instant bias read." },
-          { n: "Prev Day H/L/C", c: "#AA88FF", ic: "📊", d: "Yesterday's high, low, and close as dotted lines. Key institutional reference levels." },
-          { n: "VWAP Line", c: "#FF9800", ic: "🧲", d: "Orange VWAP line. The gravity center of the day. Price always returns to VWAP." },
+          { n: "Prev Day H/L/C", c: "#AA88FF", ic: "📊", d: "Yesterday's high, low, and close. Key reference levels the market remembers." },
+          { n: "VWAP Line", c: "#FF9800", ic: "🧲", d: "The average price of the day. Price always comes back to it eventually." },
         ].map((s, i) => (
           <Bx key={i} color={s.c}>
             <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 6 }}>
@@ -473,16 +473,16 @@ export default function NexusGuide() {
       <Bx color={Y}>
         <Glow color={Y} size="0.85rem">📖 READING THE MAP</Glow>
         <p style={{ color: "#bbb", fontSize: 13, lineHeight: 1.7, marginTop: 8 }}>
-          "Asia built a range at 24,900-24,950. London swept the Asia low. NY opened at 24,920 below VWAP. Price is in discount below yesterday's close. Hologram projecting bearish toward demand."
+          "Asia built a range at 24,900–24,950. London swept the Asia low. NY opened at 24,920 below the average price. Price is at a discount below yesterday's close. Hologram projecting bearish toward demand."
         </p>
         <p style={{ color: D, fontSize: 11, marginTop: 6 }}>The whole story in one glance. Zero analysis needed.</p>
       </Bx>
       <Bx color={C} style={{ marginTop: 14 }}>
-        <Glow color={C} size="0.85rem">📊 NEW HUD ROWS</Glow>
+        <Glow color={C} size="0.85rem">📊 HUD DISPLAY</Glow>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 10 }}>
           {[
             { l: "MTF Align", v: "3/3 BULL", d: "1m + 15m + 1H agree", c: G },
-            { l: "vs Open", v: "+12.5pts", d: "From 9:30 open print", c: C },
+            { l: "vs Open", v: "+12.5pts", d: "From 9:30 open price", c: C },
             { l: "Today", v: "2 sig | 1W 0L", d: "Daily trade tracker", c: Y },
           ].map((h, i) => (
             <div key={i} style={{ textAlign: "center", padding: 10, borderRadius: 8, background: `${h.c}0A`, border: `1px solid ${h.c}22`, boxShadow: `0 0 6px ${h.c}08` }}>
@@ -500,14 +500,14 @@ export default function NexusGuide() {
     <div>
       <div style={{ textAlign: "center", marginBottom: 24 }}>
         <Glow color={R} size="1.5rem">🛡️ LOSS PREVENTION SHIELD</Glow>
-        <p style={{ color: D, fontSize: 12, marginTop: 4 }}>5 layers of defense. Bad setups get blocked before they can hurt you.</p>
+        <p style={{ color: D, fontSize: 12, marginTop: 4 }}>5 layers of defense. Bad setups get blocked before they hurt you.</p>
       </div>
       {[
-        { n: "CHOP DAY FILTER", i: "🌀", c: R, h: "Range < 40% ADR + NY crosses > 3 = CHOP", r: "All signals blocked for the day. Saves you from death by 1000 cuts." },
-        { n: "ADR CONSUMPTION GATE", i: "📏", c: Y, h: "Current range > 55% of 20-bar ADR", r: "No new trades. The daily range is exhausted — moves are over." },
-        { n: "FAKE-BREAK DEFENSE", i: "🎭", c: M, h: "Sweep reclaimed within 3 bars", r: "Sweep invalidated. Prevents entering on false sweeps that reverse instantly." },
-        { n: "PREMIUM/DISCOUNT", i: "💎", c: C, h: "Above EQ = Premium, below = Discount", r: "Shorts only in Premium, longs only in Discount. No buying at the top." },
-        { n: "KILL ZONE GATE", i: "🕐", c: G, h: "Phase 1: 8:30-9:45 | Phase 2: 10:15-11:00", r: "Signals only during high-probability windows. No 2am entries." },
+        { n: "CHOP DAY FILTER", i: "🌀", c: R, h: "Range is tiny + price keeps crossing back and forth = CHOP", r: "All signals blocked for the day. Saves you from death by 1000 cuts." },
+        { n: "DAILY RANGE GATE", i: "📏", c: Y, h: "The day's range is already 55%+ used up", r: "No new trades. The big move already happened — you'd be late." },
+        { n: "FAKE-BREAK DEFENSE", i: "🎭", c: M, h: "Price breaks a level but snaps back within 3 candles", r: "Sweep invalidated. Prevents entering on fake moves that reverse instantly." },
+        { n: "PREMIUM/DISCOUNT", i: "💎", c: C, h: "Above the midpoint = expensive, below = cheap", r: "Only sells when price is expensive. Only buys when price is cheap." },
+        { n: "KILL ZONE GATE", i: "🕐", c: G, h: "Phase 1: 8:30–9:45 | Phase 2: 10:15–11:00", r: "Signals only fire during high-probability windows. No random entries." },
       ].map((d, i) => (
         <Bx key={i} color={d.c} style={{ marginBottom: 12 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -530,7 +530,7 @@ export default function NexusGuide() {
         <p style={{ color: D, fontSize: 12, marginTop: 4 }}>Full visual trade system with 3-tier exits.</p>
       </div>
       <Bx color={C} style={{ marginBottom: 14 }}>
-        <Glow color={C} size="0.85rem">ENTRY VISUALS ON CHART</Glow>
+        <Glow color={C} size="0.85rem">WHAT YOU'LL SEE ON CHART</Glow>
         <div style={{ marginTop: 10, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, fontSize: 12 }}>
           {[
             { v: "▲/▼ Triangle", d: "On the entry candle", c: C },
@@ -564,10 +564,10 @@ export default function NexusGuide() {
         <Glow color={Y} size="0.85rem">⚙️ ENTRY MODELS</Glow>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 10 }}>
           {[
-            { n: "Box Breakout", d: "Enter when price breaks out of HTF box", c: C },
-            { n: "Box Retest", d: "Enter on pullback retest of broken box", c: G },
-            { n: "Wick Entry", d: "Enter on wick rejection from box edge", c: Y },
-            { n: "Close Inside", d: "Enter when candle closes inside the box", c: M },
+            { n: "Box Breakout", d: "Enter when price breaks out of the zone", c: C },
+            { n: "Box Retest", d: "Enter on pullback to the broken level", c: G },
+            { n: "Wick Entry", d: "Enter on wick rejection from the zone edge", c: Y },
+            { n: "Close Inside", d: "Enter when candle closes inside the zone", c: M },
           ].map((e, i) => (
             <div key={i} style={{ padding: 10, borderRadius: 8, background: `${e.c}08`, border: `1px solid ${e.c}22` }}>
               <Glow color={e.c} size="0.75rem">{e.n}</Glow>
@@ -586,11 +586,11 @@ export default function NexusGuide() {
         <p style={{ color: D, fontSize: 12, marginTop: 4 }}>From zero to trading in 5 steps.</p>
       </div>
       {[
-        { s: 1, t: "Add to Chart", d: "NQ1! or MNQ1! • 5-minute timeframe • Apply NEXUS indicator", c: C },
-        { s: 2, t: "Set Signal Mode", d: "Start with BALANCED (score 8). Drop to SOFT if missing setups. Rise to HARD if too many.", c: G },
+        { s: 1, t: "Add to Chart", d: "NQ1! or MNQ1! • 5-minute timeframe • Apply AURΔBØT™ Hologram Candles", c: C },
+        { s: 2, t: "Set Signal Mode", d: "Start with BALANCED (score 8). Drop to SOFT if you're missing setups. Rise to HARD if you're getting too many.", c: G },
         { s: 3, t: "Configure Gravity Zones", d: "Pivot Lookback: 12 • Min Distance: 10pts • Thickness: 10pts. Adjust to your style.", c: Y },
-        { s: 4, t: "Set Zone Lock Window", d: "Lock Start: 9:25 ET → Lock End: 10:00 ET. Freezes zones during opening volatility.", c: R },
-        { s: 5, t: "Trade the System", d: "Wait for 6 stages during kill zone. Read the session map. Trust the hologram. Execute.", c: M },
+        { s: 4, t: "Set Zone Lock Window", d: "Lock Start: 9:25 ET → Lock End: 10:00 ET. Freezes zones during the opening volatility.", c: R },
+        { s: 5, t: "Trade the System", d: "Wait for all 6 stages during kill zone. Read the session map. Trust the hologram. Execute.", c: M },
       ].map((s, i) => (
         <Bx key={i} color={s.c} style={{ marginBottom: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
@@ -621,12 +621,12 @@ export default function NexusGuide() {
         <div style={{ marginTop: 10 }}>
           {[
             "Chart loaded on NQ 5m before 8:30am ET",
-            "Check HUD: Chop Score < 3, ADR < 55%",
-            "Read session map: Asia range → London swept?",
-            "Identify premium/discount zone from sweep",
-            "Wait for kill zone Phase 1 (8:30-9:45am)",
-            "Watch 6 stages complete sequentially",
-            "Execute signal. Trust the system.",
+            "Check HUD: Chop Score low, Daily Range not exhausted",
+            "Read session map: Where did Asia range? Did London sweep it?",
+            "Identify if price is at a premium or discount",
+            "Wait for kill zone Phase 1 (8:30–9:45am)",
+            "Watch all 6 stages complete in order",
+            "Execute the signal. Trust the system.",
           ].map((item, i) => (
             <div key={i} style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 6 }}>
               <div style={{ width: 18, height: 18, borderRadius: 4, border: `1px solid ${G}44`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, color: G, flexShrink: 0 }}>✓</div>
@@ -654,7 +654,7 @@ export default function NexusGuide() {
       </div>
       <div style={{ padding: 16, maxWidth: 680, margin: "0 auto" }}>{pages[tab]()}</div>
       <div style={{ textAlign: "center", padding: "16px 0 24px", borderTop: `1px solid ${D}22` }}>
-        <span style={{ fontSize: 10, color: D, fontFamily: "'Orbitron',sans-serif" }}>AURASZN NEXUS v1.1 • 9 ENGINES • SMART AI HOLOGRAM™ • 2026</span>
+        <span style={{ fontSize: 10, color: D, fontFamily: "'Orbitron',sans-serif" }}>AURΔBØT™ HOLOGRAM CANDLES • 9 ENGINES • SMART AI HOLOGRAM™ • 2026</span>
       </div>
     </div>
   );
